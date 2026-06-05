@@ -1,0 +1,45 @@
+# Dependencias
+node_modules/
+.pnpm-store/
+
+# Build / Next.js
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+
+# Entorno y secretos (NUNCA commitear claves)
+.env
+.env.*
+!.env.example
+
+# Postgres / datos locales
+*.sqlite
+*.db
+/data/
+/pgdata/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Tests / cobertura
+coverage/
+.vitest/
+
+# Documentos generados (artefactos de runtime)
+/tmp/
+/generated/
+*.pptx
+*.docx
+*.pdf
+!docs/**/*.pdf
+
+# OS / editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
