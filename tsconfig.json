@@ -10,6 +10,7 @@
     { "path": "./packages/application" },
     { "path": "./packages/infra-db" },
     { "path": "./packages/infra-ai" },
+    { "path": "./packages/infra-export" },
     { "path": "./apps/worker" }
   ]
 }

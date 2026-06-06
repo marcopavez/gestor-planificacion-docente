@@ -16,10 +16,12 @@ export type {
 
 // --- Puertos (firmas TS — los adapters los implementan en infra-*) ---
 export type {
+  ArchivoExportado,
   BloqueSistema,
   ClockPort,
   DocumentoRepository,
   EmbeddingsPort,
+  ExportPort,
   JobRepository,
   LlmPort,
   NormaRepository,

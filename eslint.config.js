@@ -98,7 +98,7 @@ const config = [
   // --- packages/infra-*: puede importar domain (y application si expone use cases); nunca apps ---
   // INV-5: los adapters implementan puertos del dominio; la composition root vive solo en apps.
   {
-    files: ['packages/infra-db/**/*.ts', 'packages/infra-ai/**/*.ts'],
+    files: ['packages/infra-db/**/*.ts', 'packages/infra-ai/**/*.ts', 'packages/infra-export/**/*.ts'],
     rules: {
       'no-restricted-imports': [
         'error',

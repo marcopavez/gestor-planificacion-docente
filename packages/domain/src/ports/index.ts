@@ -5,6 +5,7 @@
 import type { ZodType } from 'zod';
 import type {
   Cita,
+  ClaseDeck,
   DocumentoGenerado,
   EstadoGeneracion,
   FiltrosRecuperacion,
@@ -64,6 +65,19 @@ export interface LlmPort {
     system: readonly BloqueSistema[];
     entradaUsuario: string;
   }): Promise<SalidaEstructurada<T>>;
+}
+
+// --- Export (.pptx/.docx) — INV-6: render tras puerto; cambiarlo no toca la cascada ---
+
+export interface ArchivoExportado {
+  readonly ruta: string;
+  readonly mime: string;
+  readonly bytes: number;
+}
+
+export interface ExportPort {
+  exportarPptx(deck: ClaseDeck): Promise<ArchivoExportado>;
+  // TODO RF-2.17: exportarPptx(deck, plantilla?: DefinicionPlantilla) + exportarDocx(doc, plantilla).
 }
 
 // --- Verificación ---
