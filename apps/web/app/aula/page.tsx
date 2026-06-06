@@ -4,7 +4,7 @@
 // Prueba y descargar el .pptx. Materia-agnóstico: las opciones vienen de /api/aula/materias.
 
 import { useEffect, useState } from 'react';
-import type { ClaseDeck, PlanificacionClase, PlanificacionUnidad, Prueba } from '@faro/domain';
+import type { ClaseDeck, Hallazgo, PlanificacionClase, PlanificacionUnidad, ReporteGates, ResultadoGate, Prueba } from '@faro/domain';
 
 interface OaItem {
   codigo: string;
@@ -26,7 +26,7 @@ interface PptxDescargable {
 interface Salida {
   modo: 'demo' | 'live';
   materiaId: string;
-  resultado: { unidad: PlanificacionUnidad; clase: PlanificacionClase; prueba: Prueba; deck: ClaseDeck };
+  resultado: { unidad: PlanificacionUnidad; clase: PlanificacionClase; prueba: Prueba; deck: ClaseDeck; gates: ReporteGates };
   pptx: PptxDescargable;
 }
 
@@ -194,14 +194,63 @@ export default function AulaPage() {
   );
 }
 
+function PanelGate({ titulo, gate }: { titulo: string; gate: ResultadoGate }): React.ReactElement {
+  return (
+    <div style={{ marginBottom: 8 }}>
+      <p style={{ margin: '4px 0', fontWeight: 600 }}>
+        {gate.ok ? '✅' : '⛔'} {titulo}
+        {gate.hallazgos.length === 0 && <span style={{ color: '#1a7f37', fontWeight: 400 }}> — sin observaciones</span>}
+      </p>
+      {gate.hallazgos.length > 0 && (
+        <ul style={{ margin: '2px 0 0' }}>
+          {gate.hallazgos.map((h: Hallazgo, i: number) => (
+            <li key={i} style={{ fontSize: 13 }}>
+              <span
+                style={{
+                  fontSize: 11,
+                  padding: '1px 6px',
+                  borderRadius: 999,
+                  background: h.severidad === 'bloquea' ? '#ffeef0' : '#fff8c5',
+                  marginRight: 6,
+                }}
+              >
+                {h.severidad}
+              </span>
+              {h.mensaje}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function Validacion({ gates }: { gates: ReporteGates }): React.ReactElement {
+  return (
+    <section style={{ ...card, borderColor: gates.ok ? '#1a7f37' : '#cf222e', borderWidth: 2 }}>
+      <h3 style={{ marginTop: 0 }}>
+        {gates.ok ? '✅ Validación: lista para revisar' : '⛔ Validación: hallazgos bloqueantes'}
+      </h3>
+      <p style={{ fontSize: 13, color: COLOR.suave, marginTop: 0 }}>
+        Chequeos deterministas (no IA): cobertura de OA, ítem→OA, puntajes y citas al currículum vigente.
+      </p>
+      <PanelGate titulo="Planificación (cobertura OA, indicadores, duración)" gate={gates.planificacion} />
+      <PanelGate titulo="Prueba (ítem→OA, una correcta, puntajes, Decreto 67)" gate={gates.pedagogica} />
+      <PanelGate titulo="Citas (OA existe + vigente en el corpus)" gate={gates.citas} />
+    </section>
+  );
+}
+
 function Resultados({ salida }: { salida: Salida }): React.ReactElement {
-  const { unidad, clase, prueba, deck } = salida.resultado;
+  const { unidad, clase, prueba, deck, gates } = salida.resultado;
   return (
     <>
       <h2 style={{ color: COLOR.acento }}>Resultado</h2>
       <p style={{ fontSize: 13, color: COLOR.suave }}>
         Todos los artefactos nacen <strong>borrador</strong> y requieren revisión docente (human-in-the-loop).
       </p>
+
+      <Validacion gates={gates} />
 
       <section style={card}>
         <h3 style={{ marginTop: 0 }}>📘 Planificación de Unidad</h3>

@@ -38,7 +38,10 @@ const unidadMuestra = {
     { codigo: 'TE02 OA 03', categoria: 'basal', descripcion: 'Elaborar un objeto tecnológico para resolver una necesidad.' },
   ],
   habilidades: ['Crear', 'Comunicar'],
-  indicadores_evaluacion: [{ oa: 'TE02 OA 01', texto: 'Dibujan un objeto que resuelve una necesidad.', fuente: 'ia_borrador' }],
+  indicadores_evaluacion: [
+    { oa: 'TE02 OA 01', texto: 'Dibujan un objeto que resuelve una necesidad.', fuente: 'ia_borrador' },
+    { oa: 'TE02 OA 03', texto: 'Elaboran un objeto tecnológico simple.', fuente: 'ia_borrador' },
+  ],
   contenidos: { conceptuales: ['Objetos tecnológicos'], procedimentales: ['Dibujo de diseño'], actitudinales: ['Trabajo en equipo'] },
   actividades: ['Identifican objetos tecnológicos de la sala.'],
   instrumentos_evaluacion: ['Lista de cotejo'],
@@ -135,6 +138,8 @@ describe('CascadaAulaUseCase (RF-2.5–2.8, e2e sin API key)', () => {
     expect(r.deck.slides).toHaveLength(3);
     // 4 llamadas al LLM (unidad, clase, prueba, deck), todas de redacción.
     expect(llamadas).toEqual(['redaccion', 'redaccion', 'redaccion', 'redaccion']);
+    // Los gates deterministas corren sobre los artefactos y no bloquean este caso válido.
+    expect(r.gates.ok).toBe(true);
   });
 
   it('bloquea si no hay OA en el contexto (ReglaDominioError)', async () => {

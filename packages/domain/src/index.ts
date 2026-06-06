@@ -97,5 +97,23 @@ export type { PlanificacionClase, ClasePlanificadaType } from './schemas/planifi
 export { SchemaClaseDeck, SlideDeck } from './schemas/claseDeck.js';
 export type { ClaseDeck, SlideDeckType } from './schemas/claseDeck.js';
 
+// --- Gates deterministas de la cascada (INV-1/INV-2) ---
+export {
+  citationGate,
+  construirResultado,
+  correrGatesCascada,
+  pedagogicalGate,
+  planificacionGate,
+} from './gates/index.js';
+export type {
+  EntradaCitationGate,
+  EntradaGatesCascada,
+  Hallazgo,
+  OaVigencia,
+  ReporteGates,
+  ResultadoGate,
+  Severidad,
+} from './gates/index.js';
+
 // --- Errores del dominio ---
 export { CitaInvalidaError, GeneracionError, ReglaDominioError } from './errors/index.js';

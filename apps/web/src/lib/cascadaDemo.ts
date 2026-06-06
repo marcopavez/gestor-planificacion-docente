@@ -75,6 +75,9 @@ export async function ejecutarCascadaDemo(input: EntradaCascadaDemo): Promise<Sa
     unidadTitulo: input.unidadTitulo,
     oaSeleccionados,
     corpusVersionId: corpus.corpusVersionId,
+    // citationGate valida contra el corpus COMPLETO de la asignatura (existe + vigente),
+    // no solo contra la selección del docente. En el demo todo el corpus está vigente.
+    oaCorpusValidacion: corpus.oa.map((oa) => ({ codigo: oa.codigo, vigente: true })),
   };
 
   const resultado = await new CascadaAulaUseCase(llm).ejecutar(ctx);

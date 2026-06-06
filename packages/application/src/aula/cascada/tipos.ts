@@ -2,7 +2,14 @@
 // Entradas/salidas de la cascada de Aula. Genérico por asignatura/nivel: el OA del corpus
 // entra como dato, nunca hardcodeado (extensibilidad a cualquier materia).
 
-import type { ClaseDeck, PlanificacionClase, PlanificacionUnidad, Prueba } from '@faro/domain';
+import type {
+  ClaseDeck,
+  OaVigencia,
+  PlanificacionClase,
+  PlanificacionUnidad,
+  Prueba,
+  ReporteGates,
+} from '@faro/domain';
 
 /** OA del corpus curado para una asignatura/nivel (única fuente válida para grounding). */
 export interface OaCorpus {
@@ -22,12 +29,16 @@ export interface ContextoCascada {
   readonly unidadTitulo?: string; // opcional: título sugerido de la unidad
   readonly oaSeleccionados: readonly OaCorpus[];
   readonly corpusVersionId: string;
+  // Corpus completo (con vigencia) para validar citas en citationGate; si falta, se deriva de
+  // oaSeleccionados (todos vigentes). En vivo conviene pasar el corpus completo de la asignatura.
+  readonly oaCorpusValidacion?: readonly OaVigencia[];
 }
 
-/** Los cuatro artefactos que produce la cascada (todos borradores — HIL). */
+/** Los cuatro artefactos que produce la cascada (todos borradores — HIL) + el veredicto de gates. */
 export interface ResultadoCascada {
   readonly unidad: PlanificacionUnidad;
   readonly clase: PlanificacionClase;
   readonly prueba: Prueba;
   readonly deck: ClaseDeck;
+  readonly gates: ReporteGates;
 }

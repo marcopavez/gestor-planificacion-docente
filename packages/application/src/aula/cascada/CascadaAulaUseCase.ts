@@ -3,8 +3,8 @@
 // Full-context (sin DB/RAG, blueprint §6) y genérico por asignatura/nivel. El .pptx lo produce
 // el ExportPort en la composition root; aquí se generan los 4 artefactos estructurados.
 
-import type { LlmPort } from '@faro/domain';
-import { ReglaDominioError } from '@faro/domain';
+import type { LlmPort, OaVigencia } from '@faro/domain';
+import { correrGatesCascada, ReglaDominioError } from '@faro/domain';
 import { GenerarClaseDeckUseCase } from './GenerarClaseDeckUseCase.js';
 import { GenerarPlanificacionClaseUseCase } from './GenerarPlanificacionClaseUseCase.js';
 import { GenerarPlanificacionUnidadUseCase } from './GenerarPlanificacionUnidadUseCase.js';
@@ -45,6 +45,12 @@ export class CascadaAulaUseCase {
 
     const deck = await this.deck.ejecutar(ctx, unidad, clasePrincipal);
 
-    return { unidad, clase, prueba, deck };
+    // INV-2: el LLM propuso; los gates deterministas disponen. Se reporta (no se persiste) —
+    // la revisión humana (HIL) decide; el reintento acotado (RF-2.15) queda como TODO.
+    const corpus: readonly OaVigencia[] =
+      ctx.oaCorpusValidacion ?? ctx.oaSeleccionados.map((o) => ({ codigo: o.codigo, vigente: true }));
+    const gates = correrGatesCascada({ unidad, clase, prueba, deck, corpus });
+
+    return { unidad, clase, prueba, deck, gates };
   }
 }

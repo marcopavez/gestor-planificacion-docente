@@ -7,6 +7,8 @@ export { GenerarPruebaUseCase, GeneracionError } from './aula/GenerarPruebaUseCa
 
 // --- Cascada de Aula (demo síncrono, full-context, genérico por asignatura/nivel) ---
 export type { ContextoCascada, OaCorpus, ResultadoCascada } from './aula/cascada/tipos.js';
+// Veredicto de gates (re-export del dominio) para tipar respuestas en apps.
+export type { Hallazgo, ReporteGates, ResultadoGate, Severidad } from '@faro/domain';
 export { CascadaAulaUseCase } from './aula/cascada/CascadaAulaUseCase.js';
 export { GenerarPlanificacionUnidadUseCase } from './aula/cascada/GenerarPlanificacionUnidadUseCase.js';
 export { GenerarPlanificacionClaseUseCase } from './aula/cascada/GenerarPlanificacionClaseUseCase.js';
