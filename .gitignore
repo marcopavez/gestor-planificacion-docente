@@ -43,3 +43,7 @@ Thumbs.db
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# Área de trabajo temporal (no commitear)
+.scratch/
+

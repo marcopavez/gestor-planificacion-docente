@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "feat/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    name: lint · typecheck · test · build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Enable Corepack (pnpm)
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+  # TODO H-0.2: añadir servicio Postgres+pgvector cuando se integren las migraciones.
+  # services:
+  #   postgres:
+  #     image: pgvector/pgvector:pg16
+  #     env:
+  #       POSTGRES_DB: faro_test
+  #       POSTGRES_USER: faro
+  #       POSTGRES_PASSWORD: faro
+  #     ports: ["5432:5432"]
+  #     options: >-
+  #       --health-cmd pg_isready
+  #       --health-interval 10s
+  #       --health-timeout 5s
+  #       --health-retries 5
