@@ -35,7 +35,6 @@ coverage/
 *.pptx
 *.docx
 *.pdf
-!docs/**/*.pdf
 
 # OS / editores
 .DS_Store
