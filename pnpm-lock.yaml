@@ -38,9 +38,21 @@ importers:
 
   apps/web:
     dependencies:
+      '@faro/application':
+        specifier: workspace:*
+        version: link:../../packages/application
       '@faro/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@faro/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
+      '@faro/infra-ai':
+        specifier: workspace:*
+        version: link:../../packages/infra-ai
+      '@faro/infra-export':
+        specifier: workspace:*
+        version: link:../../packages/infra-export
       '@faro/observability':
         specifier: workspace:*
         version: link:../../packages/observability

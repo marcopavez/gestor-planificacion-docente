@@ -10,7 +10,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@faro/application": "workspace:*",
     "@faro/config": "workspace:*",
+    "@faro/domain": "workspace:*",
+    "@faro/infra-ai": "workspace:*",
+    "@faro/infra-export": "workspace:*",
     "@faro/observability": "workspace:*",
     "next": "^15.3.3",
     "react": "^19.0.0",

@@ -18,6 +18,10 @@
     "paths": {
       "@faro/config": ["../../packages/config/src/index.ts"],
       "@faro/observability": ["../../packages/observability/src/index.ts"],
+      "@faro/domain": ["../../packages/domain/src/index.ts"],
+      "@faro/application": ["../../packages/application/src/index.ts"],
+      "@faro/infra-ai": ["../../packages/infra-ai/src/index.ts"],
+      "@faro/infra-export": ["../../packages/infra-export/src/index.ts"],
       "@/*": ["./src/*"]
     }
   },
