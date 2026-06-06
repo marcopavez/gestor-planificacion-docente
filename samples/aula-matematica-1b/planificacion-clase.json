@@ -1,0 +1,41 @@
+{
+  "unidad_ref": "Unidad 1: Exploremos los números hasta el 20",
+  "clases": [
+    {
+      "numero": 1,
+      "oa": ["MA01 OA 03"],
+      "objetivo_clase": "Leer y representar números del 0 al 20 en forma concreta, pictórica y simbólica.",
+      "inicio": "Saludo y rutina de conteo colectivo del 0 al 20 con palmas. Se presenta el objetivo de la clase en lenguaje sencillo y se activan conocimientos previos preguntando '¿dónde vemos números en la sala?'.",
+      "desarrollo": "En grupos reciben tapitas y tarjetas con números. Representan cantidades con material concreto, las dibujan con círculos en su cuaderno y escriben el símbolo correspondiente. La docente modela con el número 7 (siete tapitas → siete círculos → '7'). Luego cada estudiante representa de tres maneras un número entregado.",
+      "cierre": "Puesta en común: tres estudiantes muestran su representación. Ticket de salida: dibujar y escribir el número que indique la docente (oral).",
+      "recursos": ["Tapitas de colores", "Tarjetas con números 0–20", "Cuaderno", "Proyector", "PowerPoint de la clase"],
+      "evaluacion_formativa": "Lista de cotejo de la representación concreta–pictórica–simbólica + ticket de salida.",
+      "indicadores": ["Leen en voz alta números del 0 al 20.", "Representan un número dado en forma concreta, pictórica y simbólica."],
+      "duracion_min": 90
+    },
+    {
+      "numero": 2,
+      "oa": ["MA01 OA 04"],
+      "objetivo_clase": "Comparar y ordenar números del 0 al 20 usando 'mayor que' y 'menor que'.",
+      "inicio": "Juego rápido '¿quién tiene más?': en parejas sacan una tarjeta con un número y deciden quién tiene el mayor. Se recoge el vocabulario 'mayor' y 'menor'.",
+      "desarrollo": "Con material concreto comparan dos colecciones (diferencia poco apreciable) estableciendo correspondencia uno a uno. Luego ordenan tres tarjetas de menor a mayor y viceversa en la pizarra, justificando su decisión. Registran comparaciones con los símbolos <, > e =.",
+      "cierre": "Síntesis: '¿cómo sabemos cuál número es mayor?'. Ticket de salida con una comparación.",
+      "recursos": ["Tarjetas con números", "Material concreto (cubos)", "Pizarra", "Guía de trabajo"],
+      "evaluacion_formativa": "Escala de apreciación de la comparación y el orden + ticket de salida.",
+      "indicadores": ["Comparan dos cantidades hasta 20 usando 'mayor que' y 'menor que'.", "Ordenan hasta tres números del 0 al 20 de menor a mayor y viceversa."],
+      "duracion_min": 90
+    },
+    {
+      "numero": 3,
+      "oa": ["MA01 OA 06"],
+      "objetivo_clase": "Componer y descomponer números del 0 al 20 de manera aditiva.",
+      "inicio": "Activación con 'cajas mágicas': la docente muestra 6 objetos y los separa en dos grupos; el curso dice la operación (6 = 4 + 2).",
+      "desarrollo": "Cada estudiante recibe una cantidad (por ejemplo, 10 cubos) y descubre todas las formas de separarla en dos grupos, registrando 10 = 7 + 3, 10 = 2 + 8, etc. Comparten descomposiciones y notan que hay más de una manera.",
+      "cierre": "Cierre metacognitivo: '¿de cuántas formas pudimos formar el número?'. Ticket de salida con una descomposición.",
+      "recursos": ["Cubos encajables", "Cuaderno", "Guía de trabajo"],
+      "evaluacion_formativa": "Lista de cotejo de composición/descomposición + ticket de salida.",
+      "indicadores": ["Componen un número hasta 20 a partir de dos sumandos.", "Descomponen un número hasta 20 de más de una manera."],
+      "duracion_min": 90
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "asignatura": "Matemática",
+  "curso": "1º básico",
+  "perfil_nivel": "1B",
+  "tabla_especificaciones": [
+    { "oa": "MA01 OA 03", "n_items": 2, "puntaje": 4 },
+    { "oa": "MA01 OA 04", "n_items": 1, "puntaje": 2 },
+    { "oa": "MA01 OA 06", "n_items": 1, "puntaje": 2 },
+    { "oa": "MA01 OA 08", "n_items": 1, "puntaje": 2 },
+    { "oa": "MA01 OA 11", "n_items": 1, "puntaje": 2 }
+  ],
+  "items": [
+    {
+      "oa": "MA01 OA 03",
+      "habilidad": "recordar",
+      "tipo": "seleccion_multiple",
+      "enunciado": "(Lee la docente) Cuenta las estrellas y marca el número correcto. [Imagen: 7 estrellas ⭐]",
+      "alternativas": [
+        { "texto": "6", "correcta": false },
+        { "texto": "7", "correcta": true },
+        { "texto": "8", "correcta": false }
+      ],
+      "puntaje": 2
+    },
+    {
+      "oa": "MA01 OA 03",
+      "habilidad": "comprender",
+      "tipo": "completacion",
+      "enunciado": "(Lee la docente) Escribe el número que falta en la serie: 1, 2, 3, ___, 5.",
+      "respuesta_correcta": "4",
+      "puntaje": 2
+    },
+    {
+      "oa": "MA01 OA 04",
+      "habilidad": "aplicar",
+      "tipo": "seleccion_multiple",
+      "enunciado": "(Lee la docente) ¿Cuál grupo tiene MÁS manzanas? [Imagen: Grupo A = 5 manzanas, Grupo B = 8 manzanas]",
+      "alternativas": [
+        { "texto": "Grupo A", "correcta": false },
+        { "texto": "Grupo B", "correcta": true },
+        { "texto": "Tienen la misma cantidad", "correcta": false }
+      ],
+      "puntaje": 2
+    },
+    {
+      "oa": "MA01 OA 06",
+      "habilidad": "aplicar",
+      "tipo": "seleccion_multiple",
+      "enunciado": "(Lee la docente) Tengo 6 fichas. Las separo en un grupo de 4 y otro grupo. ¿Cuántas fichas tiene el otro grupo? [Imagen: 6 fichas ●, 4 en un círculo]",
+      "alternativas": [
+        { "texto": "1", "correcta": false },
+        { "texto": "2", "correcta": true },
+        { "texto": "3", "correcta": false }
+      ],
+      "puntaje": 2
+    },
+    {
+      "oa": "MA01 OA 08",
+      "habilidad": "comprender",
+      "tipo": "verdadero_falso",
+      "enunciado": "(Lee la docente) El número 14 tiene 1 decena y 4 unidades. [Imagen: 1 paquete de 10 palitos + 4 palitos sueltos]",
+      "alternativas": [
+        { "texto": "Verdadero", "correcta": true },
+        { "texto": "Falso", "correcta": false }
+      ],
+      "puntaje": 2
+    },
+    {
+      "oa": "MA01 OA 11",
+      "habilidad": "aplicar",
+      "tipo": "seleccion_multiple",
+      "enunciado": "(Lee la docente) Observa el patrón y marca la figura que sigue: 🔵 🔴 🔵 🔴 🔵 ___",
+      "alternativas": [
+        { "texto": "🔵 (azul)", "correcta": false },
+        { "texto": "🔴 (rojo)", "correcta": true },
+        { "texto": "🟢 (verde)", "correcta": false }
+      ],
+      "puntaje": 2
+    }
+  ],
+  "pauta_correccion": "Cada ítem vale 2 puntos (total 12). Ítems de selección múltiple y verdadero/falso: 2 puntos si la alternativa marcada es la correcta, 0 si no. Completación: 2 puntos si escribe 4. La prueba se lee en voz alta por la docente (perfil 1º básico, pre-lectores). Se sugiere acompañar con apoyo visual proyectado.",
+  "alineada_reglamento": false,
+  "version_nee_dua": false
+}
