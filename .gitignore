@@ -46,3 +46,6 @@ Thumbs.db
 # Área de trabajo temporal (no commitear)
 .scratch/
 
+# Claude Code (artefactos de runtime locales)
+.claude/scheduled_tasks.lock
+
