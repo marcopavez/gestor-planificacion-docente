@@ -85,26 +85,29 @@ importers:
   packages/config:
     dependencies:
       zod:
-        specifier: ^3.24.4
-        version: 3.25.76
+        specifier: ^4.4.3
+        version: 4.4.3
 
   packages/domain:
     dependencies:
       zod:
-        specifier: ^3.24.4
-        version: 3.25.76
+        specifier: ^4.4.3
+        version: 4.4.3
 
   packages/infra-ai:
     dependencies:
       '@anthropic-ai/sdk':
         specifier: ^0.102.0
-        version: 0.102.0(zod@3.25.76)
+        version: 0.102.0(zod@4.4.3)
       '@faro/domain':
         specifier: workspace:*
         version: link:../domain
       '@faro/observability':
         specifier: workspace:*
         version: link:../observability
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
 
   packages/infra-db:
     dependencies:
@@ -1792,8 +1795,8 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  zod@3.25.76:
-    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+  zod@4.4.3:
+    resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
 
 snapshots:
 
@@ -1802,12 +1805,12 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
 
-  '@anthropic-ai/sdk@0.102.0(zod@3.25.76)':
+  '@anthropic-ai/sdk@0.102.0(zod@4.4.3)':
     dependencies:
       json-schema-to-ts: 3.1.1
       standardwebhooks: 1.0.0
     optionalDependencies:
-      zod: 3.25.76
+      zod: 4.4.3
 
   '@babel/helper-string-parser@7.29.7': {}
 
@@ -3240,4 +3243,4 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  zod@3.25.76: {}
+  zod@4.4.3: {}

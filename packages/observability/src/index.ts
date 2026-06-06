@@ -21,6 +21,8 @@ export const logger = crearLogger('faro');
 
 export { pino };
 export type { pino as PinoType };
+// Tipo de logger estructural para inyectar en adapters sin acoplarlos a pino.
+export type Logger = pino.Logger;
 
 /**
  * Crea un logger hijo con un nombre de subsistema.
