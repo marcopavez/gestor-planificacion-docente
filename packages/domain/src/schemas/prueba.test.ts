@@ -34,6 +34,7 @@ const pruebaValida = {
   pauta_correccion: 'Ver rúbrica adjunta.',
   alineada_reglamento: true,
   version_nee_dua: false,
+  perfil_nivel: '1B' as const,
 };
 
 describe('SchemaPrueba', () => {

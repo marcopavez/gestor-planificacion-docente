@@ -83,5 +83,17 @@ export type { ItemPruebaType, Prueba } from './schemas/prueba.js';
 export { SchemaReglamentoAuditoria } from './schemas/reglamentoAuditoria.js';
 export type { ReglamentoAuditoria } from './schemas/reglamentoAuditoria.js';
 
+// --- Schemas de la cascada M0 Aula (spec 02-aula-cascada) ---
+export { SchemaPlanificacionUnidad, OaReferenciado, IndicadorEvaluacion } from './schemas/planificacionUnidad.js';
+export type {
+  PlanificacionUnidad,
+  OaReferenciadoType,
+  IndicadorEvaluacionType,
+} from './schemas/planificacionUnidad.js';
+export { SchemaPlanificacionClase, ClasePlanificada } from './schemas/planificacionClase.js';
+export type { PlanificacionClase, ClasePlanificadaType } from './schemas/planificacionClase.js';
+export { SchemaClaseDeck, SlideDeck } from './schemas/claseDeck.js';
+export type { ClaseDeck, SlideDeckType } from './schemas/claseDeck.js';
+
 // --- Errores del dominio ---
 export { CitaInvalidaError, GeneracionError, ReglaDominioError } from './errors/index.js';

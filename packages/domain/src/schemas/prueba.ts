@@ -31,6 +31,8 @@ export const SchemaPrueba = z.object({
   pauta_correccion: z.string(),
   alineada_reglamento: z.boolean(), // respeta reglamento Decreto 67 [E10]
   version_nee_dua: z.boolean(), // variante Decreto 83 [E11] — deferida a Fase 2
+  // Perfil por nivel: ajusta tipo/conteo de ítems en pedagogicalGate (1B = 1º básico, pre-lectores).
+  perfil_nivel: z.enum(['1B', '2B', '3B', 'generico']),
 });
 
 export type Prueba = z.infer<typeof SchemaPrueba>;
