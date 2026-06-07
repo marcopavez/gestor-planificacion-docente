@@ -1,0 +1,215 @@
+{
+  "asignatura": "Historia, Geografía y Ciencias Sociales",
+  "nivel": "6º básico",
+  "codigoAsignaturaNivel": "HI06",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Historia",
+    "Geografía",
+    "Formación ciudadana"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "HI06 OA 01",
+      "numero": 1,
+      "eje": null,
+      "descripcion": "Explicar los múltiples antecedentes de la independencia de las colonias americanas y reconocer que la independencia de Chile se enmarca en un proceso continental.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 02",
+      "numero": 2,
+      "eje": "Historia",
+      "descripcion": "Explicar el desarrollo del proceso de independencia de Chile, considerando actores y bandos que se enfrentaron, hombres y mujeres destacados, avances y retrocesos de la causa patriota, y algunos acontecimientos significativos, como la celebración del cabildo abierto de 1810 y la formación de la Primera Junta Nacional de Gobierno, la elección del primer Congreso Nacional, las batallas de Rancagua, Chacabuco y Maipú, y la Declaración de la Independencia, entre otros.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 03",
+      "numero": 3,
+      "eje": "Historia",
+      "descripcion": "Describir algunos hitos y procesos de la organización de la república, incluyendo las dificultades y los desafíos que implicó organizar en Chile una nueva forma de gobierno, el surgimiento de grupos con diferentes ideas políticas (conservadores y liberales), las características de la Constitución de 1833 y el impacto de las reformas realizadas por los liberales en la segunda mitad del siglo XIX.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 04",
+      "numero": 4,
+      "eje": "Historia",
+      "descripcion": "Investigar sobre algunos aspectos culturales del siglo XIX, como los avances en educación y la fundación de instituciones, el aporte de intelectuales y científicos nacionales (por ejemplo, Diego Barros Arana, Benjamín Vicuña Mackenna, José Victorino Lastarria) y extranjeros (por ejemplo, Andrés Bello, Claudio Gay, Charles Darwin y María Graham), las primeras mujeres en obtener títulos universitarios y el impacto en la sociedad de la llegada del ferrocarril y de otros avances tecnológicos, entre otros.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 05",
+      "numero": 5,
+      "eje": "Historia",
+      "descripcion": "Describir cómo se conformó el territorio de Chile durante el siglo XIX, considerando colonizaciones europeas, la incorporación de Isla de Pascua, la ocupación de la Araucanía, la Guerra del Pacífico y diversos conflictos bélicos, entre otros factores.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 06",
+      "numero": 6,
+      "eje": "Historia",
+      "descripcion": "Caracterizar los principales aspectos que definieron el período de riqueza aportada por la explotación del salitre, considerando la expansión económica y el inicio de la “cuestión social”.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 07",
+      "numero": 7,
+      "eje": "Historia",
+      "descripcion": "Explicar y dar ejemplos de la progresiva democratización de la sociedad durante el siglo XX, considerando el acceso creciente al voto, la participación de la mujer en la vida pública y el acceso a la educación y a la cultura, entre otros.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 08",
+      "numero": 8,
+      "eje": "Historia",
+      "descripcion": "Comparar diferentes visiones sobre el quiebre de la democracia en Chile, el régimen o dictadura militar y el proceso de recuperación de la democracia a fines del siglo XX, considerando los distintos actores, experiencias y puntos de vista, y el consenso actual con respecto al valor de la democracia.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 09",
+      "numero": 9,
+      "eje": "Historia",
+      "descripcion": "Explicar y dar ejemplos de aspectos que se mantienen y aspectos que han cambiado o se han desarrollado en la sociedad chilena a lo largo de su historia.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 10",
+      "numero": 10,
+      "eje": "Geografía",
+      "descripcion": "Identificar elementos constitutivos del territorio nacional, considerando la localización de Chile en el mundo y su carácter tricontinental.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 11",
+      "numero": 11,
+      "eje": "Geografía",
+      "descripcion": "Caracterizar geográficamente las regiones político-administrativas del país, destacando los rasgos físicos (como clima, relieve, hidrografía y vegetación) y humanos (como volumen y distribución de la población y actividades económicas) que les dan unidad.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 12",
+      "numero": 12,
+      "eje": "Geografía",
+      "descripcion": "Comparar diversos ambientes naturales en Chile (desértico, altiplánico, costero, mediterráneo, andino, frío y lluvioso, patagónico y polar), considerando como criterios las oportunidades y las dificultades que presentan y cómo las personas las han aprovechado y superado para vivir y desarrollarse.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 13",
+      "numero": 13,
+      "eje": "Geografía",
+      "descripcion": "Explicar las principales características físicas, humanas y económicas de su región y de su localidad.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 14",
+      "numero": 14,
+      "eje": "Geografía",
+      "descripcion": "Explicar cómo han influido los desastres naturales en el desarrollo de Chile durante su historia reciente, dando ejemplos de nivel nacional y regional (sismos, volcanismo, sequía, inundaciones y derrumbes, entre otros).",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 15",
+      "numero": 15,
+      "eje": "Formación ciudadana",
+      "descripcion": "Explicar algunos elementos fundamentales de la organización democrática de Chile, incluyendo:",
+      "indicadores": [],
+      "detalle": [
+        "la división de poderes del Estado",
+        "la representación mediante cargos de elección popular (concejales, alcaldes, diputados, senadores y Presidente)",
+        "la importancia de la participación ciudadana"
+      ]
+    },
+    {
+      "codigo": "HI06 OA 16",
+      "numero": 16,
+      "eje": "Formación ciudadana",
+      "descripcion": "Reconocer que la Constitución Política de Chile establece la organización política del país y garantiza los derechos y las libertades de las personas, instaurando un sistema democrático.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 17",
+      "numero": 17,
+      "eje": "Formación ciudadana",
+      "descripcion": "Comprender que todas las personas tienen derechos que deben ser respetados por los pares, la comunidad y el Estado, lo que constituye la base para vivir en una sociedad justa, y dar como ejemplo algunos artículos de la Constitución y de la Declaración Universal de los Derechos Humanos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 18",
+      "numero": 18,
+      "eje": "Formación ciudadana",
+      "descripcion": "Explicar que los derechos generan deberes y responsabilidades en las personas e instituciones, y lo importante que es cumplirlos para la convivencia social y el bien común.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 19",
+      "numero": 19,
+      "eje": "Formación ciudadana",
+      "descripcion": "Proponer y fundamentar distintas formas en que la sociedad puede proteger a las personas de situaciones en las que no se respetan sus derechos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 20",
+      "numero": 20,
+      "eje": "Formación ciudadana",
+      "descripcion": "Demostrar actitudes cívicas con acciones en su vida diaria, como:",
+      "indicadores": [],
+      "detalle": [
+        "respetar a todas las personas (ejemplos: actuar considerando la igualdad de derechos, escuchar respetuosamente opiniones distintas, etc.)",
+        "contribuir a la buena convivencia (ejemplos: proponer posibles soluciones frente a un problema, usar el diálogo para plantear ideas a sus pares, alcanzar acuerdos, cooperar activamente en el logro de metas comunes, etc.)",
+        "actuar con honestidad y responsabilidad (ejemplos: hablar con la verdad, actuar de acuerdo a sus convicciones y de las responsabilidades que se deriven, cumplir las responsabilidades asumidas, evitar la copia textual y el plagio, etc.)",
+        "cuidar y valorar el patrimonio y el medioambiente (ejemplos: impulsar y participar en campañas de reciclaje, realizar acciones en la casa y en la escuela para ahorrar luz, agua y gas, etc.)"
+      ]
+    },
+    {
+      "codigo": "HI06 OA 21",
+      "numero": 21,
+      "eje": "Formación ciudadana",
+      "descripcion": "Trabajar en equipo de manera efectiva para llevar a cabo una investigación u otro proyecto, asignando y asumiendo roles, cumpliendo las responsabilidades asignadas y los tiempos acordados, escuchando los argumentos de los demás, manifestando opiniones fundamentadas y llegando a puntos de vista en común.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 22",
+      "numero": 22,
+      "eje": "Formación ciudadana",
+      "descripcion": "Participar en su comunidad, tomando parte en elecciones para una directiva de curso, evaluando las propuestas realizadas por los diferentes aspirantes y considerando la importancia de elegir personas responsables.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 23",
+      "numero": 23,
+      "eje": "Formación ciudadana",
+      "descripcion": "Participar, mediante acciones concretas, en proyectos que impliquen aportes dentro de la escuela, la comunidad y la sociedad, como voluntariado y ayuda social, entre otros, ateniéndose a un plan y un presupuesto.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 24",
+      "numero": 24,
+      "eje": "Formación ciudadana",
+      "descripcion": "Opinar y argumentar con fundamentos sobre temas de la asignatura u otros.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 25",
+      "numero": 25,
+      "eje": "Formación ciudadana",
+      "descripcion": "Evaluar posibles soluciones frente a un problema o proyecto y justificar su elección.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI06 OA 26",
+      "numero": 26,
+      "eje": "Formación ciudadana",
+      "descripcion": "Informarse y opinar sobre temas relevantes y de su interés en el país y el mundo (política, medioambiente, deporte, arte y música, entre otros) por medio de periódicos y TICs.",
+      "indicadores": []
+    }
+  ]
+}

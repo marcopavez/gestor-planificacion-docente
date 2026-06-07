@@ -1,0 +1,108 @@
+{
+  "asignatura": "Orientación",
+  "nivel": "3º básico",
+  "codigoAsignaturaNivel": "OR03",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Crecimiento personal",
+    "Relaciones interpersonales",
+    "Participación y pertenencia",
+    "Trabajo escolar"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "OR03 OA 01",
+      "numero": 1,
+      "eje": "Crecimiento personal",
+      "descripcion": "Observar, describir y valorar sus características, habilidades y fortalezas (en lo familiar, afectivo, académico y social, entre otros) y proponerse acciones concretas para los aspectos que requiera superar.",
+      "indicadores": []
+    },
+    {
+      "codigo": "OR03 OA 02",
+      "numero": 2,
+      "eje": "Crecimiento personal",
+      "descripcion": "Identificar y aceptar sus propias emociones y las de los demás, y practicar estrategias personales de manejo emocional (por ejemplo, esperar un tiempo, escuchar al otro y considerar su impacto en los demás).",
+      "indicadores": []
+    },
+    {
+      "codigo": "OR03 OA 03",
+      "numero": 3,
+      "eje": "Crecimiento personal",
+      "descripcion": "Reconocer y valorar la sexualidad como expresión de amor, vínculo e intimidad entre dos personas y como gestora de su propia vida.",
+      "indicadores": []
+    },
+    {
+      "codigo": "OR03 OA 04",
+      "numero": 4,
+      "eje": "Crecimiento personal",
+      "descripcion": "Identificar y practicar, en forma guiada, conductas protectoras y de autocuidado en relación a:",
+      "indicadores": [],
+      "detalle": [
+        "rutinas de higiene",
+        "actividades de descanso, recreación y actividad física",
+        "hábitos de alimentación",
+        "resguardo del cuerpo y la intimidad",
+        "la entrega de información personal",
+        "situaciones de potencial abuso",
+        "consumo de drogas"
+      ]
+    },
+    {
+      "codigo": "OR03 OA 05",
+      "numero": 5,
+      "eje": "Relaciones interpersonales",
+      "descripcion": "Manifestar actitudes de solidaridad y respeto, que favorezcan la convivencia, como:",
+      "indicadores": [],
+      "detalle": [
+        "actuar en forma empática (poniéndose en el lugar del otro)",
+        "utilizar un buen trato (por ejemplo, saludar, despedirse, pedir por favor)",
+        "evitar y rechazar toda forma de violencia y discriminación, ya sea por etnia, género, religión, nacionalidad, etc.",
+        "respetar el derecho de todos a expresar opiniones y ser diferente",
+        "prestar ayuda especialmente a quien lo necesite",
+        "respetar el ambiente de aprendizaje"
+      ]
+    },
+    {
+      "codigo": "OR03 OA 06",
+      "numero": 6,
+      "eje": "Relaciones interpersonales",
+      "descripcion": "Resolver conflictos entre pares en forma guiada y aplicar estrategias diversas de resolución de problemas, tales como escuchar, describir los sentimientos del otro y buscar un acuerdo que satisfaga a ambas partes.",
+      "indicadores": []
+    },
+    {
+      "codigo": "OR03 OA 07",
+      "numero": 7,
+      "eje": "Participación y pertenencia",
+      "descripcion": "Participar en forma guiada en la comunidad escolar y en la organización del curso:",
+      "indicadores": [],
+      "detalle": [
+        "proponiendo y aceptando iniciativas, y asumiendo responsabilidades",
+        "respetando los derechos de los demás en la distribución de roles y responsabilidades"
+      ]
+    },
+    {
+      "codigo": "OR03 OA 08",
+      "numero": 8,
+      "eje": "Trabajo escolar",
+      "descripcion": "Manifestar hábitos y actitudes de esfuerzo e interés que favorezcan el aprendizaje, como:",
+      "indicadores": [],
+      "detalle": [
+        "asistir puntualmente a clases y cumplir a tiempo con los trabajos pedidos",
+        "organizar su tiempo y sus útiles",
+        "respetar el estudio y el trabajo de otros",
+        "evitar el plagio y la copia",
+        "preguntar y buscar información sobre temas de su interés",
+        "desarrollar actividades en relación a sus propios intereses"
+      ]
+    }
+  ]
+}

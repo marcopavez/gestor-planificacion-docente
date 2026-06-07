@@ -9,10 +9,14 @@
 ```
 corpus/
 ├── curriculum/         # Objetivos de Aprendizaje (OA) por asignatura/nivel
-│   └── matematica-1-basico.json     ✅ curado (20 OA, verificado contra el PDF)
-└── normativa/          # normas MINEDUC (artículos citables)
-    └── decreto-67-2018-art-18.json  🟡 curado (16 literales a–p · pendiente validación del dueño)
+│   ├── _manifest.json                # índice: 56 bloques, 791 OA
+│   ├── matematica-1-basico.json      ✅ curado a mano (20 OA + 10 habilidades, verificado)
+│   └── <asignatura>-<nivel>-basico.json   ✅ 55 archivos extraídos del PDF (script, ver abajo)
+└── normativa/          # normas MINEDUC — FUERA DE ALCANCE v2 (ver specs/README §0)
+    └── decreto-67-2018-art-18.json  🟡 aparcado (normativa no entra en v2)
 ```
+
+**Cobertura (v2):** las 10 asignaturas de básica × 1º–6º (Inglés solo 5º–6º, como en el currículum) = **56 bloques, 791 OA**. Generado por `scripts/curriculum/extract_oa.py` (pdfplumber, extracción por coordenadas) y **validado contra el oráculo** (Matemática 1º reproduce los 20 OA exactos). Re-generar: `python scripts/curriculum/extract_oa.py`.
 
 ## Procedencia (cómo se generó)
 
@@ -28,8 +32,8 @@ corpus/
 
 ## Estado y pendientes
 
-- ✅ **Matemática 1º básico** — 20 OA + 10 habilidades, verificado contra el PDF. Suficiente para el **seed mínimo de Fase 0** (RF-0.5 pide 2–3 OA reales).
-- ⬜ **Resto del currículum** (otras asignaturas/niveles del PDF) — se cura durante la **Fase 1** (ingesta completa). El PDF tiene todo 1º–6º.
-- 🟡 **Decreto 67/2018 art. 18** — curado (16 literales a–p, texto oficial BCN/MINEDUC `idNorma=1127255`). **Pendiente de validación del dueño** antes de usarse como fuente de citas (CLAUDE.md: no inventar normas chilenas).
-- ⬜ **Reglamento de evaluación real** — falta, para completar el seed de Fase 0 (RF-0.5). Es un documento de un colegio: lo aporta el dueño.
-- ⬜ **Decreto 83 + los 6 planes** — se curan en la ingesta de Fase 1.
+- ✅ **Currículum OA completo (Fase 1)** — 56 bloques / 791 OA, 1º–6º, todas las asignaturas. Extraído del PDF y validado (Matemática 1º = 20/20 vs oráculo).
+- 🟡 **OA con extracción dudosa** (5 de 791, ~0.6%) — marcados `"revision": "[VERIFICAR…]"` en el JSON (layout a 2 columnas/notas): `CN02 OA 09`, `LE03 OA 28`, `LE04 OA 27`, `LE06 OA 24`, `MA03 OA 08`. Además 2 OA sin `eje` (`HI06 OA 01`, `IN06 OA 01`). Revisar a mano contra el PDF (no se inventan).
+- ⬜ **Habilidades por asignatura** (`a–j`) — solo extraídas en el `matematica-1-basico.json` curado a mano; el resto trae solo OA (suficiente para v2). Extraerlas es mejora futura.
+- ⬜ **Indicadores** — vacíos (viven en los Programas de Estudio). En v2 los redacta la IA como `ia_borrador` (decisión híbrida; ver `specs/02-planificacion.md`).
+- ⏸️ **Normativa** (Decreto 67/83, reglamentos, 6 planes) — **fuera de alcance v2** (aparcado; ver `specs/README.md §0`).

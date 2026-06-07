@@ -1,0 +1,87 @@
+{
+  "asignatura": "Música",
+  "nivel": "3º básico",
+  "codigoAsignaturaNivel": "MU03",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Escuchar y apreciar",
+    "Interpretar y crear",
+    "Reflexionar y contextualizar"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "MU03 OA 01",
+      "numero": 1,
+      "eje": "Escuchar y apreciar",
+      "descripcion": "Escuchar cualidades del sonido (altura, timbre, intensidad, duración) y elementos del lenguaje musical (pulsos, acentos, patrones, reiteraciones, contrastes, variaciones, dinámica, tempo, preguntas-respuestas, secciones, A-AB-BA), y representarlos de distintas formas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MU03 OA 02",
+      "numero": 2,
+      "eje": "Escuchar y apreciar",
+      "descripcion": "Expresar, mostrando grados crecientes de elaboración, sensaciones, emociones e ideas que les sugiere la música, escuchada, usando diversos medios expresivos (verbal, corporal, musical, visual).",
+      "indicadores": []
+    },
+    {
+      "codigo": "MU03 OA 03",
+      "numero": 3,
+      "eje": "Escuchar y apreciar",
+      "descripcion": "Escuchar música en forma abundante de diversos contextos y culturas, poniendo énfasis en: (Escuchar apreciativamente al menos 20 músicas de corta duración.)",
+      "indicadores": [],
+      "detalle": [
+        "Tradición escrita (docta)",
+        "música inspirada en raíces folclóricas de Chile y el mundo (por ejemplo, Chile en cuatro cuerdas de G. Soublette, Danzas Eslavas de A. Dvorak)",
+        "música descriptiva (por ejemplo, El Carnaval de los Animales de C. Saint- Saens, extractos de La Suite Gran Cañón de F. Gofré)",
+        "Tradición oral (folclor, música de pueblos originarios)",
+        "canciones, bailes, festividades, tradiciones de Chile y del mundo (por ejemplo, El chuico y la damajuana de V. Parra, música de la Tirana, El Pavo)",
+        "Popular (jazz, rock, fusión, etc.)",
+        "fusión con raíces folclóricas (por ejemplo, Los Jaivas y Congreso)"
+      ]
+    },
+    {
+      "codigo": "MU03 OA 04",
+      "numero": 4,
+      "eje": "Interpretar y crear",
+      "descripcion": "Cantar (al unísono y cánones simples, entre otros) y tocar instrumentos de percusión y melódicos (metalófono, flauta dulce u otros).",
+      "indicadores": []
+    },
+    {
+      "codigo": "MU03 OA 05",
+      "numero": 5,
+      "eje": "Interpretar y crear",
+      "descripcion": "Improvisar y crear ideas musicales con diversos medios sonoros con un propósito, utilizando las cualidades del sonido y elementos del lenguaje musical.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MU03 OA 06",
+      "numero": 6,
+      "eje": "Interpretar y crear",
+      "descripcion": "Presentar su trabajo musical al curso y la comunidad, en forma individual y grupal, con compromiso y responsabilidad.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MU03 OA 07",
+      "numero": 7,
+      "eje": "Reflexionar y contextualizar",
+      "descripcion": "Identificar y describir experiencias musicales y sonoras en su propia vida y en la sociedad (celebraciones, reuniones, festividades, situaciones cotidianas u otros).",
+      "indicadores": []
+    },
+    {
+      "codigo": "MU03 OA 08",
+      "numero": 8,
+      "eje": "Reflexionar y contextualizar",
+      "descripcion": "Reflexionar sobre sus fortalezas y las áreas en que pueden mejorar su audición, su interpretación y su creación.",
+      "indicadores": []
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "asignatura": "Ciencias Naturales",
+  "nivel": "3º básico",
+  "codigoAsignaturaNivel": "CN03",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Ciencias de la vida",
+    "Ciencias físicas y químicas",
+    "Ciencias de la tierra y el universo"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "CN03 OA 01",
+      "numero": 1,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Observar y describir, por medio de la investigación experimental, las necesidades de las plantas y su relación con la raíz, el tallo y las hojas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN03 OA 02",
+      "numero": 2,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Observar, registrar e identificar variadas plantas de nuestro país, incluyendo vegetales autóctonos y cultivos principales a nivel nacional y regional.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN03 OA 03",
+      "numero": 3,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Observar y describir algunos cambios de las plantas con flor durante su ciclo de vida (germinación, crecimiento, reproducción, formación de la flor y del fruto), reconociendo la importancia de la polinización y de la dispersión de la semilla.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN03 OA 04",
+      "numero": 4,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Describir la importancia de las plantas para los seres vivos, el ser humano y el medioambiente (por ejemplo: alimentación, aire para respirar, productos derivados, ornamentación, uso medicinal), proponiendo y comunicando medidas de cuidado.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN03 OA 05",
+      "numero": 5,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Explicar la importancia de usar adecuadamente los recursos, proponiendo acciones y construyendo instrumentos tecnológicos para reutilizarlos, reducirlos y reciclarlos en la casa y en la escuela. CUERpo hUmANo Y sALUD",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN03 OA 06",
+      "numero": 6,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Clasificar los alimentos, distinguiendo sus efectos sobre la salud, y proponer hábitos alimenticios saludables.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN03 OA 07",
+      "numero": 7,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Proponer, comunicar y ejercitar buenas prácticas de higiene en la manipulación de alimentos para prevenir enfermedades.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN03 OA 08",
+      "numero": 8,
+      "eje": "Ciencias físicas y químicas",
+      "descripcion": "Distinguir fuentes naturales y artificiales de luz, como el Sol, las ampolletas y el fuego, entre otras.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN03 OA 09",
+      "numero": 9,
+      "eje": "Ciencias físicas y químicas",
+      "descripcion": "Investigar experimentalmente y explicar algunas características de la luz; por ejemplo: viaja en línea recta, se refleja, puede ser separada en colores.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN03 OA 10",
+      "numero": 10,
+      "eje": "Ciencias físicas y químicas",
+      "descripcion": "Investigar experimentalmente y explicar las características del sonido; por ejemplo: viaja en todas las direcciones, se absorbe o se refleja, se transmite por medio de distintos materiales, tiene tono e intensidad.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN03 OA 11",
+      "numero": 11,
+      "eje": "Ciencias de la tierra y el universo",
+      "descripcion": "Describir las características de algunos de los componentes del Sistema Solar (Sol, planetas, lunas, cometas y asteroides) en relación con su tamaño, localización, apariencia y distancia relativa a la Tierra, entre otros.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN03 OA 12",
+      "numero": 12,
+      "eje": "Ciencias de la tierra y el universo",
+      "descripcion": "Explicar, por medio de modelos, los movimientos de rotación y traslación, considerando sus efectos en la Tierra.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN03 OA 13",
+      "numero": 13,
+      "eje": "Ciencias de la tierra y el universo",
+      "descripcion": "Diseñar y construir modelos tecnológicos para explicar eventos del Sistema Solar, como la sucesión de las fases de la Luna y los eclipses de Luna y de Sol, entre otros.",
+      "indicadores": []
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "asignatura": "Orientación",
+  "nivel": "1º básico",
+  "codigoAsignaturaNivel": "OR01",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Crecimiento personal",
+    "Relaciones interpersonales",
+    "Participación y pertenencia",
+    "Trabajo escolar"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "OR01 OA 01",
+      "numero": 1,
+      "eje": "Crecimiento personal",
+      "descripcion": "Observar, describir y valorar sus características personales, sus habilidades e intereses.",
+      "indicadores": []
+    },
+    {
+      "codigo": "OR01 OA 02",
+      "numero": 2,
+      "eje": "Crecimiento personal",
+      "descripcion": "Identificar emociones experimentadas por ellos y por los demás (por ejemplo, pena, rabia, miedo, alegría) y distinguir diversas formas de expresarlas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "OR01 OA 03",
+      "numero": 3,
+      "eje": "Crecimiento personal",
+      "descripcion": "Observar, describir y valorar las expresiones de afecto y cariño, que dan y reciben, en los ámbitos familiar, escolar y social (por ejemplo, compartir tiempo, escuchar a los demás, dar y recibir ayuda).",
+      "indicadores": []
+    },
+    {
+      "codigo": "OR01 OA 04",
+      "numero": 4,
+      "eje": "Crecimiento personal",
+      "descripcion": "Identificar y practicar, en forma guiada, conductas protectoras y de autocuidado en relación a:",
+      "indicadores": [],
+      "detalle": [
+        "rutinas de higiene",
+        "actividades de descanso, recreación y actividad física",
+        "hábitos de alimentación",
+        "resguardo del cuerpo y la intimidad",
+        "la entrega de información personal"
+      ]
+    },
+    {
+      "codigo": "OR01 OA 05",
+      "numero": 5,
+      "eje": "Relaciones interpersonales",
+      "descripcion": "Manifestar actitudes de solidaridad y respeto, que favorezcan la convivencia, como:",
+      "indicadores": [],
+      "detalle": [
+        "utilizar formas de buen trato (por ejemplo, saludar, despedirse, pedir por favor)",
+        "actuar en forma respetuosa (por ejemplo, escuchar, respetar turnos, rutinas y pertenencias)",
+        "compartir con los pares (por ejemplo, jugar juntos, prestarse útiles, ayudar al que lo necesita)"
+      ]
+    },
+    {
+      "codigo": "OR01 OA 06",
+      "numero": 6,
+      "eje": "Relaciones interpersonales",
+      "descripcion": "Identificar conflictos que surgen entre pares y practicar formas de solucionarlos como escuchar al otro, ponerse en su lugar, buscar un acuerdo, reconciliarse.",
+      "indicadores": []
+    },
+    {
+      "codigo": "OR01 OA 07",
+      "numero": 7,
+      "eje": "Participación y pertenencia",
+      "descripcion": "Reconocer, describir y valorar sus grupos de pertenencia (familia, curso, pares), las personas que los componen y sus características y participar activamente en ellos (por ejemplo, ayudando en el orden de la casa y sala de clases).",
+      "indicadores": []
+    },
+    {
+      "codigo": "OR01 OA 08",
+      "numero": 8,
+      "eje": "Trabajo escolar",
+      "descripcion": "Practicar hábitos y actitudes que favorezcan el proceso de aprendizaje, como:",
+      "indicadores": [],
+      "detalle": [
+        "traer y cuidar los útiles escolares",
+        "mantener el orden de la sala de clases y materiales",
+        "identificar los nuevos aprendizajes adquiridos para incentivar la motivación"
+      ]
+    }
+  ]
+}

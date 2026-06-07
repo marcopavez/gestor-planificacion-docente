@@ -1,0 +1,148 @@
+{
+  "asignatura": "Historia, Geografía y Ciencias Sociales",
+  "nivel": "4º básico",
+  "codigoAsignaturaNivel": "HI04",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Historia",
+    "Geografía",
+    "Formación ciudadana"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "HI04 OA 01",
+      "numero": 1,
+      "eje": "Historia",
+      "descripcion": "Describir la civilización maya, considerando ubicación geográfica, organización política, actividades económicas, formas de cultivo y alimentos, organización de la sociedad, roles y oficios de hombres y mujeres, religión y ritos, desarrollo de la astronomía y la matemática, sistemas de escritura, guerras y sacrificios humanos, construcciones, costumbres y vida cotidiana, entre otros.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI04 OA 02",
+      "numero": 2,
+      "eje": "Historia",
+      "descripcion": "Describir la civilización azteca, considerando ubicación geográfica, organización política y extensión, la ciudad de Tenochtitlán, formas de cultivo y alimentos, religión y ritos, avances tecnológicos, organización de la sociedad, roles y oficios de hombres y mujeres, construcciones, costumbres y vida cotidiana, entre otros.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI04 OA 03",
+      "numero": 3,
+      "eje": "Historia",
+      "descripcion": "Describir la civilización inca, considerando ubicación geográfica, organización política, sistema de caminos y correos, religión y ritos, avances tecnológicos, organización de la sociedad, roles y oficios de hombres y mujeres, formas de cultivo y alimentos, construcciones, costumbres y vida cotidiana, entre otros.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI04 OA 04",
+      "numero": 4,
+      "eje": "Historia",
+      "descripcion": "Analizar y comparar las principales características de las civilizaciones americanas (mayas, aztecas e incas).",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI04 OA 05",
+      "numero": 5,
+      "eje": "Historia",
+      "descripcion": "Investigar en diversas fuentes (imágenes, medios audiovisuales, TICs, gráficos, textos y otras) sobre algunos temas relacionados con el presente de los pueblos indígenas americanos; por ejemplo, el protagonismo que tienen hoy, la influencia de las civilizaciones maya, azteca e inca sobre la cultura y la sociedad de los países actuales situados donde ellos se desarrollaron, y su influencia en las comidas y en la lengua que empleamos en la actualidad, entre otros.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI04 OA 06",
+      "numero": 6,
+      "eje": "Geografía",
+      "descripcion": "Ubicar lugares en un mapa, utilizando coordenadas geográficas como referencia (paralelos y meridianos).",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI04 OA 07",
+      "numero": 7,
+      "eje": "Geografía",
+      "descripcion": "Distinguir recursos naturales renovables y no renovables, reconocer el carácter limitado de los recursos naturales y la necesidad de cuidarlos, e identificar recursos presentes en objetos y bienes cotidianos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI04 OA 08",
+      "numero": 8,
+      "eje": "Geografía",
+      "descripcion": "Describir distintos paisajes del continente americano, considerando climas, ríos, población, idiomas, países y grandes ciudades, entre otros, y utilizando vocabulario geográfico adecuado.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI04 OA 09",
+      "numero": 9,
+      "eje": "Geografía",
+      "descripcion": "Reconocer y ubicar los principales recursos naturales de América, considerando su distribución geográfica, su uso, y la importancia de cuidarlos en el marco de un desarrollo sostenible.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI04 OA 10",
+      "numero": 10,
+      "eje": "Geografía",
+      "descripcion": "Comparar, mediante la observación en imágenes, mapas y otras fuentes, paisajes de su región con paisajes de América, distinguiendo distintas formas de adaptación y transformación de la población a su ambiente natural.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI04 OA 11",
+      "numero": 11,
+      "eje": "Formación ciudadana",
+      "descripcion": "Distinguir algunos actores de la organización política y democrática de Chile, como Presidente, ministros, senadores, diputados y alcaldes, considerando las instituciones en las que ejercen y cómo son nombrados o elegidos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI04 OA 12",
+      "numero": 12,
+      "eje": "Formación ciudadana",
+      "descripcion": "Reconocer sus principales derechos en situaciones de la vida cotidiana, como el derecho a la educación, a contar con alimentación, vivienda, recreo y servicios médicos adecuados, a expresarse, a ser protegido contra el abandono y la crueldad, y a no trabajar antes de la edad apropiada, y dar ejemplos de cómo se pueden ejercer y proteger esos derechos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI04 OA 13",
+      "numero": 13,
+      "eje": "Formación ciudadana",
+      "descripcion": "Mantener una conducta honesta en la vida cotidiana, en los juegos y en el trabajo escolar, hablando con la verdad, respetando las reglas de los juegos sin hacer trampa, evitando la copia y el plagio y reconociendo sus errores y sus acciones, entre otros.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI04 OA 14",
+      "numero": 14,
+      "eje": "Formación ciudadana",
+      "descripcion": "Demostrar respeto por todas las personas mediante acciones en su vida diaria, sin discriminar por condiciones físicas, sociales, económicas, étnicas o culturales.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI04 OA 15",
+      "numero": 15,
+      "eje": "Formación ciudadana",
+      "descripcion": "Participar en su comunidad, tomando parte en elecciones para una directiva del curso, asignando roles y funciones a cada cargo, y considerando la importancia de mantener una buena convivencia y una organización del curso que favorezca el trabajo escolar.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI04 OA 16",
+      "numero": 16,
+      "eje": "Formación ciudadana",
+      "descripcion": "Resolver conflictos, aplicando estrategias como determinar la causa del problema, proponer posibles soluciones, dialogar, buscar un punto de vista común y votar, entre otras, demostrando respeto y empatía por las partes involucradas para mejorar la convivencia en el curso y en la comunidad escolar.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI04 OA 17",
+      "numero": 17,
+      "eje": "Formación ciudadana",
+      "descripcion": "Diseñar y participar activamente en un proyecto grupal que solucione un problema de la comunidad escolar; por ejemplo, reciclaje de la basura, exceso de ruido, organización de turnos, leer o entretener a alumnos más pequeños, etc.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI04 OA 18",
+      "numero": 18,
+      "eje": "Formación ciudadana",
+      "descripcion": "Opinar y argumentar con fundamentos sobre temas de la asignatura u otros.",
+      "indicadores": []
+    }
+  ]
+}

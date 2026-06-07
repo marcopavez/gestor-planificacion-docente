@@ -1,0 +1,125 @@
+{
+  "asignatura": "Ciencias Naturales",
+  "nivel": "5º básico",
+  "codigoAsignaturaNivel": "CN05",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Ciencias de la vida",
+    "Ciencias físicas y químicas",
+    "Ciencias de la tierra y el universo"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "CN05 OA 01",
+      "numero": 1,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Reconocer y explicar que los seres vivos están formados por una o más células y que estas se organizan en tejidos, órganos y sistemas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN05 OA 02",
+      "numero": 2,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Identificar y describir, por medio de modelos, las estructuras básicas del sistema digestivo (boca, esófago, estómago, hígado, intestino delgado, intestino grueso, recto y ano) y sus funciones en la digestión, la absorción de alimentos y la eliminación de desechos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN05 OA 03",
+      "numero": 3,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Explicar, por medio de modelos, la respiración (inspiración-espiración-intercambio de oxígeno y dióxido de carbono), identificando las estructuras básicas del sistema respiratorio (nariz, tráquea, bronquios, alvéolos, pulmones).",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN05 OA 04",
+      "numero": 4,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Explicar la función de transporte del sistema circulatorio (sustancias alimenticias, oxígeno y dióxido de carbono), identificando sus estructuras básicas (corazón, vasos sanguíneos y sangre). CUERpo hUmANo Y sALUD",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN05 OA 05",
+      "numero": 5,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Analizar el consumo de alimento diario (variedad, tamaño y frecuencia de porciones), reconociendo los alimentos para el crecimiento, la reparación, el desarrollo y el movimiento del cuerpo.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN05 OA 06",
+      "numero": 6,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Investigar en diversas fuentes y comunicar los efectos nocivos que produce el cigarrillo (humo del tabaco) en los sistemas respiratorio y circulatorio.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN05 OA 07",
+      "numero": 7,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Investigar e identificar algunos microorganismos beneficiosos y dañinos para la salud (bacterias, virus y hongos), y proponer medidas de cuidado e higiene del cuerpo.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN05 OA 08",
+      "numero": 8,
+      "eje": "Ciencias físicas y químicas",
+      "descripcion": "Reconocer los cambios que experimenta la energía eléctrica al pasar de una forma a otra (eléctrica a calórica, sonora, lumínica, etc.) e investigar los principales aportes de científicos en su estudio a lo largo del tiempo.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN05 OA 09",
+      "numero": 9,
+      "eje": "Ciencias físicas y químicas",
+      "descripcion": "Construir un circuito eléctrico simple (cable, ampolleta, interruptor y pila), usarlo para resolver problemas cotidianos y explicar su funcionamiento.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN05 OA 10",
+      "numero": 10,
+      "eje": "Ciencias físicas y químicas",
+      "descripcion": "Observar y distinguir, por medio de la investigación experimental, los materiales conductores (cobre y aluminio) y aisladores (plásticos y goma) de electricidad, relacionándolos con la manipulación segura de artefactos tecnológicos y circuitos eléctricos domiciliarios.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN05 OA 11",
+      "numero": 11,
+      "eje": "Ciencias físicas y químicas",
+      "descripcion": "Explicar la importancia de la energía eléctrica en la vida cotidiana y proponer medidas para promover su ahorro y su uso responsable.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN05 OA 12",
+      "numero": 12,
+      "eje": "Ciencias de la tierra y el universo",
+      "descripcion": "Describir la distribución del agua dulce y salada en la Tierra, considerando océanos, glaciares, ríos y lagos, aguas subterráneas, nubes, vapor de agua, etc., y comparar sus volúmenes, reconociendo la escasez relativa de agua dulce.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN05 OA 13",
+      "numero": 13,
+      "eje": "Ciencias de la tierra y el universo",
+      "descripcion": "Analizar y describir las características de los océanos y lagos:",
+      "indicadores": [],
+      "detalle": [
+        "variación de temperatura, luminosidad y presión en relación con la profundidad",
+        "diversidad de flora y fauna",
+        "movimiento de las aguas, como olas, mareas, corrientes (El Niño y Humboldt)"
+      ]
+    },
+    {
+      "codigo": "CN05 OA 14",
+      "numero": 14,
+      "eje": "Ciencias de la tierra y el universo",
+      "descripcion": "Investigar y explicar efectos positivos y negativos de la actividad humana en océanos, lagos, ríos, glaciares, entre otros, proponiendo acciones de protección de las reservas hídricas en Chile y comunicando sus resultados.",
+      "indicadores": []
+    }
+  ]
+}

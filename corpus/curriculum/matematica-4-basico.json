@@ -1,0 +1,278 @@
+{
+  "asignatura": "Matemática",
+  "nivel": "4º básico",
+  "codigoAsignaturaNivel": "MA04",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "Matemática: validado vs corpus oráculo."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Números y operaciones",
+    "Patrones y álgebra",
+    "Geometría",
+    "Medición",
+    "Datos y probabilidades"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "MA04 OA 01",
+      "numero": 1,
+      "eje": "Números y operaciones",
+      "descripcion": "Representar y describir números del 0 al 10 000:",
+      "indicadores": [],
+      "detalle": [
+        "contándolos de 10 en 10, de 100 en 100, de 1 000 en 1 000",
+        "leyéndolos y escribiéndolos",
+        "representándolos en forma concreta, pictórica y simbólica",
+        "comparándolos y ordenándolos en la recta numérica o la tabla posicional",
+        "identificando el valor posicional de los dígitos hasta la decena de mil",
+        "componiendo y descomponiendo números naturales hasta 10 000 en forma aditiva, de acuerdo a su valor posicional"
+      ]
+    },
+    {
+      "codigo": "MA04 OA 02",
+      "numero": 2,
+      "eje": "Números y operaciones",
+      "descripcion": "Describir y aplicar estrategias de cálculo mental para determinar las multiplicaciones hasta 10 10 y sus divisiones correspondientes:",
+      "indicadores": [],
+      "detalle": [
+        "conteo hacia delante y atrás",
+        "doblar y dividir por 2",
+        "por descomposición",
+        "usar el doble del doble"
+      ]
+    },
+    {
+      "codigo": "MA04 OA 03",
+      "numero": 3,
+      "eje": "Números y operaciones",
+      "descripcion": "Demostrar que comprenden la adición y la sustracción de números hasta 1 000:",
+      "indicadores": [],
+      "detalle": [
+        "usando estrategias personales para realizar estas operaciones",
+        "descomponiendo los números involucrados",
+        "estimando sumas y diferencias",
+        "resolviendo problemas rutinarios y no rutinarios que incluyan adiciones y sustracciones",
+        "aplicando los algoritmos en la adición de hasta cuatro sumandos y en la sustracción de hasta un sustraendo"
+      ]
+    },
+    {
+      "codigo": "MA04 OA 04",
+      "numero": 4,
+      "eje": "Números y operaciones",
+      "descripcion": "Fundamentar y aplicar las propiedades del 0 y del 1 para la multiplicación y la propiedad del 1 para la división.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA04 OA 05",
+      "numero": 5,
+      "eje": "Números y operaciones",
+      "descripcion": "Demostrar que comprenden la multiplicación de números de tres dígitos por números de un dígito:",
+      "indicadores": [],
+      "detalle": [
+        "usando estrategias con o sin material concreto",
+        "utilizando las tablas de multiplicación",
+        "estimando productos",
+        "usando la propiedad distributiva de la multiplicación respecto de la suma",
+        "aplicando el algoritmo de la multiplicación",
+        "resolviendo problemas rutinarios"
+      ]
+    },
+    {
+      "codigo": "MA04 OA 06",
+      "numero": 6,
+      "eje": "Números y operaciones",
+      "descripcion": "Demostrar que comprenden la división con dividendos de dos dígitos y divisores de un dígito:",
+      "indicadores": [],
+      "detalle": [
+        "usando estrategias para dividir, con o sin material concreto",
+        "utilizando la relación que existe entre la división y la multiplicación",
+        "estimando el cociente",
+        "aplicando la estrategia por descomposición del dividendo",
+        "aplicando el algoritmo de la división"
+      ]
+    },
+    {
+      "codigo": "MA04 OA 07",
+      "numero": 7,
+      "eje": "Números y operaciones",
+      "descripcion": "Resolver problemas rutinarios y no rutinarios en contextos cotidianos que incluyen dinero, seleccionando y utilizando la operación apropiada.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA04 OA 08",
+      "numero": 8,
+      "eje": "Números y operaciones",
+      "descripcion": "Demostrar que comprende las fracciones con denominadores 100, 12, 10, 8, 6, 5, 4, 3, 2:",
+      "indicadores": [],
+      "detalle": [
+        "explicando que una fracción representa la parte de un todo o de un grupo de elementos y un lugar en la recta numérica",
+        "describiendo situaciones en las cuales se puede usar fracciones",
+        "mostrando que una fracción puede tener representaciones diferentes",
+        "comparando y ordenando fracciones (por ejemplo: 1 1 1 1 1 con 100 8 5 4 2 material concreto y pictórico"
+      ]
+    },
+    {
+      "codigo": "MA04 OA 09",
+      "numero": 9,
+      "eje": "Números y operaciones",
+      "descripcion": "Resolver adiciones y sustracciones de fracciones con igual denominador (denominadores 100, 12, 10, 8, 6, 5, 4, 3, 2) de manera concreta y pictórica en el contexto de la resolución de problemas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA04 OA 10",
+      "numero": 10,
+      "eje": "Números y operaciones",
+      "descripcion": "Identificar, escribir y representar fracciones propias y los números mixtos hasta el 5 de manera concreta, pictórica y simbólica, en el contexto de la resolución de problemas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA04 OA 11",
+      "numero": 11,
+      "eje": "Números y operaciones",
+      "descripcion": "Describir y representar decimales (décimos y centésimos):",
+      "indicadores": [],
+      "detalle": [
+        "representándolos en forma concreta, pictórica y simbólica, de manera manual y/o con software educativo",
+        "comparándolos y ordenándolos hasta la centésima"
+      ]
+    },
+    {
+      "codigo": "MA04 OA 12",
+      "numero": 12,
+      "eje": "Números y operaciones",
+      "descripcion": "Resolver adiciones y sustracciones de decimales, empleando el valor posicional hasta la centésima en el contexto de la resolución de problemas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA04 OA 13",
+      "numero": 13,
+      "eje": "Patrones y álgebra",
+      "descripcion": "Identificar y describir patrones numéricos en tablas que involucren una operación, de manera manual y/o usando software educativo.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA04 OA 14",
+      "numero": 14,
+      "eje": "Patrones y álgebra",
+      "descripcion": "Resolver ecuaciones e inecuaciones de un paso que involucren adiciones y sustracciones, comprobando los resultados en forma pictórica y simbólica del 0 al 100 y aplicando las relaciones inversas entre la adición y la sustracción.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA04 OA 15",
+      "numero": 15,
+      "eje": "Geometría",
+      "descripcion": "Describir la localización absoluta de un objeto en un mapa simple con coordenadas informales (por ejemplo: con letras y números) y la localización relativa con relación a otros objetos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA04 OA 16",
+      "numero": 16,
+      "eje": "Geometría",
+      "descripcion": "Determinar las vistas de figuras 3D desde el frente, desde el lado y desde arriba.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA04 OA 17",
+      "numero": 17,
+      "eje": "Geometría",
+      "descripcion": "Demostrar que comprenden una línea de simetría:",
+      "indicadores": [],
+      "detalle": [
+        "identificando figuras simétricas 2D",
+        "creando figuras simétricas 2D",
+        "dibujando una o más líneas de simetría en figuras 2D",
+        "usando software geométrico"
+      ]
+    },
+    {
+      "codigo": "MA04 OA 18",
+      "numero": 18,
+      "eje": "Geometría",
+      "descripcion": "Trasladar, rotar y reflejar figuras 2D.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA04 OA 19",
+      "numero": 19,
+      "eje": "Geometría",
+      "descripcion": "Construir ángulos con el transportador y compararlos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA04 OA 20",
+      "numero": 20,
+      "eje": "Medición",
+      "descripcion": "Leer y registrar diversas mediciones del tiempo en relojes análogos y digitales, usando los conceptos A.M., P.M. y 24 horas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA04 OA 21",
+      "numero": 21,
+      "eje": "Medición",
+      "descripcion": "Realizar conversiones entre unidades de tiempo en el contexto de la resolución de problemas: el número de segundos en un minuto, el número de minutos en una hora, el número de días en un mes y el número de meses en un año.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA04 OA 22",
+      "numero": 22,
+      "eje": "Medición",
+      "descripcion": "Medir longitudes con unidades estandarizadas (m, cm) y realizar transformaciones entre estas unidades (m a cm y viceversa) en el contexto de la resolución de problemas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA04 OA 23",
+      "numero": 23,
+      "eje": "Medición",
+      "descripcion": "Demostrar que comprenden el concepto de área de un rectángulo y de un cuadrado:",
+      "indicadores": [],
+      "detalle": [
+        "reconociendo que el área de una superficie se mide en unidades cuadradas",
+        "seleccionando y justificando la elección de la unidad estandarizada (cm2 y m2)",
+        "determinando y registrando el área en cm2 y m2 en contextos cercanos",
+        "construyendo diferentes rectángulos para un área dada (cm2 y m2), para mostrar que distintos rectángulos pueden tener la misma área",
+        "usando software geométrico"
+      ]
+    },
+    {
+      "codigo": "MA04 OA 24",
+      "numero": 24,
+      "eje": "Medición",
+      "descripcion": "Demostrar que comprenden el concepto de volumen de un cuerpo:",
+      "indicadores": [],
+      "detalle": [
+        "seleccionando una unidad no estandarizada para medir el volumen de un cuerpo",
+        "reconociendo que el volumen se mide en unidades de cubo",
+        "midiendo y registrando el volumen en unidades de cubo",
+        "usando software geométrico"
+      ]
+    },
+    {
+      "codigo": "MA04 OA 25",
+      "numero": 25,
+      "eje": "Datos y probabilidades",
+      "descripcion": "Realizar encuestas, analizar los datos y comparar con los resultados de muestras aleatorias, usando tablas y gráficos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA04 OA 26",
+      "numero": 26,
+      "eje": "Datos y probabilidades",
+      "descripcion": "Realizar experimentos aleatorios lúdicos y cotidianos, y tabular y representar mediante gráficos de manera manual y/o con software educativo.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA04 OA 27",
+      "numero": 27,
+      "eje": "Datos y probabilidades",
+      "descripcion": "Leer e interpretar pictogramas y gráficos de barra simple con escala y comunicar sus conclusiones.",
+      "indicadores": []
+    }
+  ]
+}
