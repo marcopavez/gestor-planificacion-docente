@@ -16,6 +16,7 @@ import type {
   Recuperado,
   Tarea,
 } from '../index.js';
+import type { PlanificacionAnual, PlanificacionAnualGuardada } from '../schemas/planificacionAnual.js';
 
 // --- Recuperación (RAG) ---
 
@@ -137,4 +138,19 @@ export interface JobRepository {
   // FOR UPDATE SKIP LOCKED — ADR-003
   tomarSiguiente(workerId: string): Promise<{ id: string; documentoId: string } | null>;
   marcar(id: string, estado: 'hecho' | 'fallido'): Promise<void>;
+}
+
+// --- Planificación Anual (RF-PA.4/PA.5 — §4.2 plan-fase-1) ---
+// Solo la interfaz; el adapter Drizzle se implementa en H-PA.3/H-PA.5 (infra-db).
+
+export interface PlanificacionAnualRepository {
+  // corpusVersionId ligado al corpus vigente en el momento de guardar (INV-4, RF-PA.4).
+  guardar(p: PlanificacionAnual, corpusVersionId: string): Promise<PlanificacionAnualGuardada>;
+  obtener(id: string): Promise<PlanificacionAnualGuardada | null>;
+  listar(filtro: {
+    establecimiento: string;
+    asignatura?: string;
+    nivel?: string;
+    anio?: number;
+  }): Promise<PlanificacionAnualGuardada[]>;
 }

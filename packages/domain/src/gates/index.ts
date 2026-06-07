@@ -15,6 +15,7 @@ export { construirResultado } from './tipos.js';
 export { planificacionGate } from './planificacionGate.js';
 export { pedagogicalGate } from './pedagogicalGate.js';
 export { citationGate, type OaVigencia, type EntradaCitationGate } from './citationGate.js';
+export { secuenciaAnualGate, type OaCorpus, type OpcionesSecuenciaAnualGate } from './secuenciaAnualGate.js';
 
 export interface ReporteGates {
   readonly ok: boolean;
