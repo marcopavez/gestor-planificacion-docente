@@ -8,11 +8,13 @@ const nextConfig: NextConfig = {
     '@faro/domain',
     '@faro/application',
     '@faro/infra-ai',
+    '@faro/infra-db',
     '@faro/infra-export',
   ],
   // pptxgenjs es CJS con dependencias de Node (jszip, fs): se carga desde node_modules en el
   // server, no se empaqueta (evita problemas de interop al bundlear).
-  serverExternalPackages: ['pptxgenjs'],
+  // pg es un driver nativo de Node: se externaliza para que webpack no intente bundlearlo.
+  serverExternalPackages: ['pptxgenjs', 'pg'],
   // Los paquetes @faro/* son NodeNext y usan specifiers con extensión .js en sus imports
   // internos; al transpilarlos desde fuente, webpack debe mapear .js → .ts/.tsx.
   webpack(config) {

@@ -68,6 +68,9 @@ importers:
       '@faro/infra-ai':
         specifier: workspace:*
         version: link:../../packages/infra-ai
+      '@faro/infra-db':
+        specifier: workspace:*
+        version: link:../../packages/infra-db
       '@faro/infra-export':
         specifier: workspace:*
         version: link:../../packages/infra-export
@@ -83,6 +86,9 @@ importers:
       react-dom:
         specifier: ^19.0.0
         version: 19.2.7(react@19.2.7)
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
     devDependencies:
       '@types/node':
         specifier: ^22.0.0
