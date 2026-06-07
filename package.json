@@ -7,7 +7,7 @@
     "build": "pnpm -r --filter \"@faro/*\" build",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --build tsconfig.json && pnpm --filter @faro/web typecheck",
-    "test": "vitest run",
+    "test": "node --max-old-space-size=4096 ./node_modules/vitest/vitest.mjs run",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

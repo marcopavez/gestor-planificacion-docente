@@ -82,7 +82,9 @@ export class ClaudeCodeLlmAdapter implements LlmPort {
       throw new Error(`ClaudeCodeLlmAdapter: falló la generación vía Agent SDK: ${detalle}`);
     }
 
-    const stopReason = resultMsg?.subtype ?? 'sin_resultado';
+    // Si el SDK terminó sin emitir un mensaje 'result', usamos un subtype REAL del vocabulario del
+    // SDK (no un string inventado) para que worker/traza interpreten el campo de forma consistente.
+    const stopReason: string = resultMsg?.subtype ?? 'error_during_execution';
     const usage = mapearUsage(resultMsg);
 
     // structured_output solo viene en el resultado 'success'; otros subtypes (max_turns,
