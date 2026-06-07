@@ -1,0 +1,132 @@
+{
+  "asignatura": "Historia, Geografía y Ciencias Sociales",
+  "nivel": "1º básico",
+  "codigoAsignaturaNivel": "HI01",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Historia",
+    "Geografía",
+    "Formación ciudadana"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "HI01 OA 01",
+      "numero": 1,
+      "eje": "Historia",
+      "descripcion": "Nombrar y secuenciar días de la semana y meses del año, utilizando calendarios, e identificar el año en curso.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI01 OA 02",
+      "numero": 2,
+      "eje": "Historia",
+      "descripcion": "Secuenciar acontecimientos y actividades de la vida cotidiana, personal y familiar, utilizando categorías relativas de ubicación temporal, como antes, después; ayer, hoy, mañana; día, noche; este año, el año pasado, el año próximo.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI01 OA 03",
+      "numero": 3,
+      "eje": "Historia",
+      "descripcion": "Registrar y comunicar información sobre elementos que forman parte de su identidad personal (nombre, fecha de nacimiento, lugar de procedencia, ascendencias, gustos, intereses, amigos y otros) para reconocer sus características individuales.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI01 OA 04",
+      "numero": 4,
+      "eje": "Historia",
+      "descripcion": "Obtener y comunicar aspectos de la historia de su familia y sus características, como costumbres, tradiciones, ritos, fiestas, recuerdos y roles que desempeñan los distintos miembros de su grupo familiar, mediante la formulación de preguntas a adultos de su entorno cercano.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI01 OA 05",
+      "numero": 5,
+      "eje": "Historia",
+      "descripcion": "Reconocer los símbolos representativos de Chile (como la bandera, el escudo y el himno nacional), describir costumbres, actividades y la participación de hombres y mujeres respecto de conmemoraciones nacionales (como Fiestas Patrias, Día del Descubrimiento de dos mundos y Combate Naval de Iquique) y reconocer en ellos un elemento de unidad e identidad nacional.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI01 OA 06",
+      "numero": 6,
+      "eje": "Historia",
+      "descripcion": "Conocer expresiones culturales locales y nacionales (como comidas, flores y animales típicos, música y juegos, entre otros), describir fiestas y tradiciones importantes de nivel local (como Fiesta de La Tirana, Fiesta de San Pedro, Fiesta de Cuasimodo, carreras a la chilena, el rodeo, la vendimia y la fundación del pueblo o de la ciudad, entre otras) y reconocer estas expresiones como elementos de unidad e identidad local y/o nacional.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI01 OA 07",
+      "numero": 7,
+      "eje": "Historia",
+      "descripcion": "Conocer sobre la vida de hombres y mujeres que han contribuido a la sociedad chilena en diversos ámbitos; por ejemplo, los fundadores de las ciudades, los exploradores, las personas que han fundado o creado instituciones, las personas que se han destacado por su emprendimiento y su solidaridad, los deportistas, los científicos, los artistas y los grandes poetas, entre otros.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI01 OA 08",
+      "numero": 8,
+      "eje": "Geografía",
+      "descripcion": "Reconocer que los mapas y los planos son formas de representar lugares.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI01 OA 09",
+      "numero": 9,
+      "eje": "Geografía",
+      "descripcion": "Identificar a Chile en mapas, incluyendo la cordillera de los Andes, el océano Pacífico, la ciudad de Santiago, su región, su capital y su localidad.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI01 OA 10",
+      "numero": 10,
+      "eje": "Geografía",
+      "descripcion": "Observar y describir paisajes de su entorno local, utilizando vocabulario geográfico adecuado (país, ciudad, camino, pueblo, construcciones, cordillera, mar, vegetación y desierto) y categorías de ubicación relativa (derecha, izquierda, delante, detrás, entre otros).",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI01 OA 11",
+      "numero": 11,
+      "eje": "Geografía",
+      "descripcion": "Identificar trabajos y productos de su familia y su localidad y cómo estos aportan a su vida diaria, reconociendo la importancia de todos los trabajos, tanto remunerados como no remunerados.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI01 OA 12",
+      "numero": 12,
+      "eje": "Geografía",
+      "descripcion": "Conocer cómo viven otros niños en diferentes partes del mundo por medio de imágenes y relatos, ubicando en un globo terráqueo o mapamundi los países donde habitan y comparando su idioma, vestimenta, comida, fiestas, costumbres y principales tareas con las de niños chilenos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI01 OA 13",
+      "numero": 13,
+      "eje": "Formación ciudadana",
+      "descripcion": "Mostrar actitudes y realizar acciones concretas en su entorno cercano (familia, escuela y comunidad) que reflejen:",
+      "indicadores": [],
+      "detalle": [
+        "respeto al otro (ejemplos: escuchar atentamente al otro, tratar con cortesía a los demás, etc.)",
+        "empatía (ejemplos: ayudar a los demás cuando sea necesario, no discriminar a otros por su aspecto o costumbres, etc.)",
+        "responsabilidad (ejemplos: asumir encargos en su casa y en la sala de clases, cuidar sus pertenencias y la de los demás, cuidar los espacios comunes, etc.)"
+      ]
+    },
+    {
+      "codigo": "HI01 OA 14",
+      "numero": 14,
+      "eje": "Formación ciudadana",
+      "descripcion": "Explicar y aplicar algunas normas para la buena convivencia y para la seguridad y el autocuidado en su familia, en la escuela y en la vía pública.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI01 OA 15",
+      "numero": 15,
+      "eje": "Formación ciudadana",
+      "descripcion": "Identificar la labor que cumplen, en beneficio de la comunidad, instituciones como la escuela, la municipalidad, el hospital o la posta, Carabineros de Chile, y las personas que trabajan en ellas.",
+      "indicadores": []
+    }
+  ]
+}

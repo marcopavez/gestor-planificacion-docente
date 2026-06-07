@@ -1,0 +1,145 @@
+{
+  "asignatura": "Historia, Geografía y Ciencias Sociales",
+  "nivel": "2º básico",
+  "codigoAsignaturaNivel": "HI02",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Historia",
+    "Geografía",
+    "Formación ciudadana"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "HI02 OA 01",
+      "numero": 1,
+      "eje": "Historia",
+      "descripcion": "Describir los modos de vida de algunos pueblos originarios de Chile en el período precolombino, incluyendo ubicación geográfica, medio natural en que habitaban, vida nómade o sedentaria, roles de hombres y mujeres, herramientas y tecnología, principales actividades, vivienda, costumbres, idioma, creencias, alimentación y fiestas, entre otros.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI02 OA 02",
+      "numero": 2,
+      "eje": "Historia",
+      "descripcion": "Comparar el modo de vida y expresiones culturales de pueblos indígenas presentes en Chile actual (como mapuche, aimara, rapa nui) con respecto al periodo precolombino, identificando aspectos de su cultura que se han mantenido hasta el presente y aspectos que han cambiado.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI02 OA 03",
+      "numero": 3,
+      "eje": "Historia",
+      "descripcion": "Distinguir los diversos aportes a la sociedad chilena proveniente de los pueblos originarios (palabras, alimentos, tradiciones, cultura, etc.) y de los españoles (idioma, religión, alimentos, cultura, etc.) y reconocer nuestra sociedad como mestiza.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI02 OA 04",
+      "numero": 4,
+      "eje": "Historia",
+      "descripcion": "Reconocer y dar ejemplos de la influencia y los aportes de inmigrantes de distintas naciones europeas, orientales, árabes y latinoamericanas a la diversidad de la sociedad chilena, a lo largo de su historia.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI02 OA 05",
+      "numero": 5,
+      "eje": "Historia",
+      "descripcion": "Reconocer diversas expresiones del patrimonio cultural del país y de su región, como manifestaciones artísticas, tradiciones folclóricas, leyendas y tradiciones orales, costumbres familiares, creencias, idioma, construcciones, comidas típicas, fiestas, monumentos y sitios históricos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI02 OA 06",
+      "numero": 6,
+      "eje": "Geografía",
+      "descripcion": "Leer y dibujar planos simples de su entorno, utilizando puntos de referencia, categorías de posición relativa y simbología pictórica.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI02 OA 07",
+      "numero": 7,
+      "eje": "Geografía",
+      "descripcion": "Ubicar Chile, Santiago, la propia región y su capital en el globo terráqueo o en mapas, y describir la ubicación relativa de países limítrofes y de otros países de América del Sur, utilizando los puntos cardinales.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI02 OA 08",
+      "numero": 8,
+      "eje": "Geografía",
+      "descripcion": "Clasificar y caracterizar algunos paisajes de Chile según su ubicación en la zona norte, centro y sur del país, observando imágenes, y utilizando diversas fuentes y un vocabulario geográfico adecuado (océano, río, cordillera de los Andes y de la Costa, desierto, valle, costa, volcán, archipiélago, isla, fiordo, lago, ciudad y pueblo, entre otros).",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI02 OA 09",
+      "numero": 9,
+      "eje": "Geografía",
+      "descripcion": "Reconocer diversas expresiones del patrimonio natural de Chile y de su región, como paisajes, flora y fauna característica, y parques nacionales, entre otros.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI02 OA 10",
+      "numero": 10,
+      "eje": "Geografía",
+      "descripcion": "Ubicar en mapas las zonas habitadas por algunos pueblos originarios de Chile, distinguiendo zonas norte, centro y sur.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI02 OA 11",
+      "numero": 11,
+      "eje": "Geografía",
+      "descripcion": "Relacionar las principales características geográficas (disponibilidad de agua, temperatura y vegetación) de las zonas habitadas por algunos pueblos originarios de Chile, con los recursos que utilizaron para satisfacer sus necesidades de alimentación, abrigo y vivienda.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI02 OA 12",
+      "numero": 12,
+      "eje": "Formación ciudadana",
+      "descripcion": "Mostrar actitudes y realizar acciones concretas en su entorno cercano (familia, escuela y comunidad) que reflejen:",
+      "indicadores": [],
+      "detalle": [
+        "respeto al otro (interactuar con cortesía, cuidar espacios comunes, respetar la propiedad de los demás, etc.)",
+        "responsabilidad (ejemplos: cumplir con sus deberes escolares, asumir encargos en el hogar y dentro de la sala de clases, etc.)",
+        "tolerancia (ejemplos: respetar opiniones diversas, no discriminar a otros por su aspecto o costumbres, etc.)",
+        "empatía (ejemplos: integrar a los demás en sus juegos y actividades, ayudar a los otros, etc.)"
+      ]
+    },
+    {
+      "codigo": "HI02 OA 13",
+      "numero": 13,
+      "eje": "Formación ciudadana",
+      "descripcion": "Mantener una conducta honesta en la vida cotidiana, en los juegos y en el trabajo escolar, hablando con la verdad, respetando las reglas de los juegos sin hacer trampa y reconociendo sus errores y sus acciones, entre otros.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI02 OA 14",
+      "numero": 14,
+      "eje": "Formación ciudadana",
+      "descripcion": "Conocer, proponer, aplicar y explicar la importancia de algunas normas necesarias para:",
+      "indicadores": [],
+      "detalle": [
+        "cuidarse, cuidar a otros y evitar situaciones de riesgo (como seguridad vial, vías de evacuación, adaptaciones para discapacitados, zonas de silencio, etc.)",
+        "organizar un ambiente propicio al aprendizaje y acogedor para todos (por ejemplo, respetar los turnos, cuidar el espacio y las pertenencias comunes y de sus pares, etc.)",
+        "cuidar el patrimonio y el medioambiente"
+      ]
+    },
+    {
+      "codigo": "HI02 OA 15",
+      "numero": 15,
+      "eje": "Formación ciudadana",
+      "descripcion": "Identificar la labor que cumplen en beneficio de la comunidad servicios como los medios de transporte y de comunicación y el mercado, y algunas instituciones encargadas de proteger nuestro patrimonio cultural y natural.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI02 OA 16",
+      "numero": 16,
+      "eje": "Formación ciudadana",
+      "descripcion": "Practicar y proponer acciones para cuidar y respetar los espacios públicos dentro y fuera de la escuela (como baños, patios, salas de clase, plazas, parques, playas y calles, entre otros), reconociendo que pertenecen y benefician a todos y que, por lo tanto, su cuidado es responsabilidad de todos los miembros de la comunidad.",
+      "indicadores": []
+    }
+  ]
+}

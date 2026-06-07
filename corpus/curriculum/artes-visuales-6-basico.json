@@ -1,0 +1,76 @@
+{
+  "asignatura": "Artes Visuales",
+  "nivel": "6º básico",
+  "codigoAsignaturaNivel": "AR06",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Expresar y crear visualmente",
+    "Apreciar y responder frente al arte"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "AR06 OA 01",
+      "numero": 1,
+      "eje": "Expresar y crear visualmente",
+      "descripcion": "Crear trabajos de arte y diseños a partir de sus propias ideas y de la observación del:",
+      "indicadores": [],
+      "detalle": [
+        "entorno cultural: el hombre contemporáneo y la ciudad",
+        "entorno artístico: el arte contemporáneo y el arte en el espacio público (murales y esculturas)"
+      ]
+    },
+    {
+      "codigo": "AR06 OA 02",
+      "numero": 2,
+      "eje": "Expresar y crear visualmente",
+      "descripcion": "Aplicar y combinar elementos del lenguaje visual (incluidos los de niveles anteriores) en trabajos de arte y diseños con diferentes propósitos expresivos y creativos:",
+      "indicadores": [],
+      "detalle": [
+        "color (gamas y contrastes)",
+        "volumen (lleno y vacío)"
+      ]
+    },
+    {
+      "codigo": "AR06 OA 03",
+      "numero": 3,
+      "eje": "Expresar y crear visualmente",
+      "descripcion": "Crear trabajos de arte y diseños a partir de diferentes desafíos y temas del entorno cultural y artístico, demostrando dominio en el uso de:",
+      "indicadores": [],
+      "detalle": [
+        "materiales de modelado, de reciclaje, naturales, papeles, cartones, pegamentos, lápices, pinturas e imágenes digitales",
+        "herramientas para dibujar, pintar, cortar, unir, modelar y tecnológicas (rodillos de grabado, sierra de calar, mirete, cámara de video y proyector multimedia, entre otros)",
+        "procedimientos de pintura, grabado, escultura, instalación, técnicas mixtas, arte digital, fotografía, video, murales, entre otros"
+      ]
+    },
+    {
+      "codigo": "AR06 OA 04",
+      "numero": 4,
+      "eje": "Apreciar y responder frente al arte",
+      "descripcion": "Analizar e interpretar obras de arte y objetos en relación con la aplicación del lenguaje visual, contextos, materiales, estilos u otros. (Observar anualmente al menos 50 obras de arte chileno, latinoamericano y universal).",
+      "indicadores": []
+    },
+    {
+      "codigo": "AR06 OA 05",
+      "numero": 5,
+      "eje": "Apreciar y responder frente al arte",
+      "descripcion": "Evaluar críticamente trabajos de arte y diseños personales y de sus pares, considerando:",
+      "indicadores": [],
+      "detalle": [
+        "selarutaN",
+        "expresión de emociones y problemáticas sociales",
+        "uso de materiales y procedimientos",
+        "aplicación de elementos del lenguaje visual",
+        "propósitos expresivos"
+      ]
+    }
+  ]
+}

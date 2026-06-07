@@ -1,0 +1,71 @@
+{
+  "asignatura": "Artes Visuales",
+  "nivel": "2º básico",
+  "codigoAsignaturaNivel": "AR02",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Expresar y crear visualmente",
+    "Apreciar y responder frente al arte"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "AR02 OA 01",
+      "numero": 1,
+      "eje": "Expresar y crear visualmente",
+      "descripcion": "Expresar y crear trabajos de arte a partir de la observación del:",
+      "indicadores": [],
+      "detalle": [
+        "entorno natural: figura humana y paisajes chilenos",
+        "entorno cultural: personas y patrimonio cultural de Chile",
+        "entorno artístico: obras de arte local, chileno, latinoamericano y del resto del mundo"
+      ]
+    },
+    {
+      "codigo": "AR02 OA 02",
+      "numero": 2,
+      "eje": "Expresar y crear visualmente",
+      "descripcion": "Experimentar y aplicar elementos de lenguaje visual (incluidos los del nivel anterior) en sus trabajos de arte:",
+      "indicadores": [],
+      "detalle": [
+        "línea (vertical, horizontal, diagonal, espiral y quebrada)",
+        "color (primarios y secundarios)",
+        "formas (geométricas)"
+      ]
+    },
+    {
+      "codigo": "AR02 OA 03",
+      "numero": 3,
+      "eje": "Expresar y crear visualmente",
+      "descripcion": "Expresar emociones e ideas en sus trabajos de arte, a partir de la experimentación con:",
+      "indicadores": [],
+      "detalle": [
+        "materiales de modelado, de reciclaje, naturales, papeles, cartones, pegamentos, lápices, pinturas, textiles e imágenes digitales",
+        "herramientas para dibujar, pintar, cortar, modelar, unir y tecnológicas (pincel, tijera, mirete, computador, entre otras)",
+        "procedimientos de dibujo, pintura, collage, escultura, dibujo digital, entre otros"
+      ]
+    },
+    {
+      "codigo": "AR02 OA 04",
+      "numero": 4,
+      "eje": "Apreciar y responder frente al arte",
+      "descripcion": "Comunicar y explicar sus impresiones de lo que sienten y piensan de obras de arte por variados medios. (Observar anualmente al menos 10 obras de arte local o chileno, 10 latinoamericanas y 10 de arte universal).",
+      "indicadores": []
+    },
+    {
+      "codigo": "AR02 OA 05",
+      "numero": 5,
+      "eje": "Apreciar y responder frente al arte",
+      "descripcion": "Explicar sus preferencias frente al trabajo de arte personal y de sus pares, usando elementos del lenguaje visual.",
+      "indicadores": []
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "asignatura": "Educación Física y Salud",
+  "nivel": "1º básico",
+  "codigoAsignaturaNivel": "EF01",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Habilidades motrices",
+    "Vida activa y saludable",
+    "Seguridad, juego limpio y liderazgo"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "EF01 OA 01",
+      "numero": 1,
+      "eje": "Habilidades motrices",
+      "descripcion": "Demostrar habilidades motrices básicas de locomoción, manipulación y estabilidad en una variedad de juegos y actividades físicas, como saltar con dos pies en una dirección, caminar y correr alternadamente, lanzar y recoger un balón, caminar sobre una línea manteniendo el control del cuerpo, realizar suspensiones, giros y rodadas o volteos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "EF01 OA 02",
+      "numero": 2,
+      "eje": "Habilidades motrices",
+      "descripcion": "Ejecutar acciones motrices en relación a sí mismo, a un objeto o un compañero, usando diferentes categorías de ubicación espacial y temporal, como derecha, izquierda, adelante, atrás, arriba, abajo, adentro, afuera, entre, al lado, antes, durante, después, rápido y lento.",
+      "indicadores": []
+    },
+    {
+      "codigo": "EF01 OA 03",
+      "numero": 3,
+      "eje": "Habilidades motrices",
+      "descripcion": "Practicar una amplia gama de juegos con y sin oposición, con y sin colaboración, de persecución, individuales y colectivos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "EF01 OA 04",
+      "numero": 4,
+      "eje": "Habilidades motrices",
+      "descripcion": "Ejecutar habilidades motrices básicas en diferentes entornos, como las plazas activas, el patio del colegio, parques, playas, entre otros.",
+      "indicadores": []
+    },
+    {
+      "codigo": "EF01 OA 05",
+      "numero": 5,
+      "eje": "Habilidades motrices",
+      "descripcion": "Ejecutar movimientos corporales, expresando sensaciones, ideas, estados de ánimo y emociones en variados espacios y a diferentes ritmos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "EF01 OA 06",
+      "numero": 6,
+      "eje": "Vida activa y saludable",
+      "descripcion": "Ejecutar actividades físicas de intensidad moderada a vigorosa que incrementen la condición física, por medio de juegos y circuitos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "EF01 OA 07",
+      "numero": 7,
+      "eje": "Vida activa y saludable",
+      "descripcion": "Practicar en su vida cotidiana de forma guiada actividades físicas de intensidad moderada a vigorosa por medio de juegos tradicionales y actividades lúdicas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "EF01 OA 08",
+      "numero": 8,
+      "eje": "Vida activa y saludable",
+      "descripcion": "Reconocer las sensaciones y respuestas corporales provocadas por la práctica de actividad física, como cambios del color de la piel, sudor, agitación, ritmo de respiración, cansancio y dificultad al hablar.",
+      "indicadores": []
+    },
+    {
+      "codigo": "EF01 OA 09",
+      "numero": 9,
+      "eje": "Vida activa y saludable",
+      "descripcion": "Practicar actividades físicas en forma segura, demostrando la adquisición de hábitos de higiene, posturales y de vida saludable, como lavarse las manos y la cara después de la clase, mantener una correcta postura y comer una colación saludable antes y luego de la práctica de actividad física.",
+      "indicadores": []
+    },
+    {
+      "codigo": "EF01 OA 10",
+      "numero": 10,
+      "eje": "Seguridad, juego limpio y liderazgo",
+      "descripcion": "Practicar juegos o actividades motrices para aprender a trabajar en equipo, asumiendo diferentes roles (respetar al otro, recoger los materiales solicitados o liderar si se le asigna ese rol).",
+      "indicadores": []
+    },
+    {
+      "codigo": "EF01 OA 11",
+      "numero": 11,
+      "eje": "Seguridad, juego limpio y liderazgo",
+      "descripcion": "Practicar actividades físicas, demostrando comportamientos seguros, como:",
+      "indicadores": [],
+      "detalle": [
+        "realizar un calentamiento mediante un juego",
+        "escuchar y seguir instrucciones",
+        "utilizar implementos bajo supervisión",
+        "mantener su posición dentro de los límites establecidos para la actividad"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,209 @@
+{
+  "asignatura": "Matemática",
+  "nivel": "6º básico",
+  "codigoAsignaturaNivel": "MA06",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "Matemática: validado vs corpus oráculo."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Números y operaciones",
+    "Patrones y álgebra",
+    "Geometría",
+    "Medición",
+    "Datos y probabilidades"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "MA06 OA 01",
+      "numero": 1,
+      "eje": "Números y operaciones",
+      "descripcion": "Demostrar que comprenden los factores y los múltiplos:",
+      "indicadores": [],
+      "detalle": [
+        "determinando los múltiplos y los factores de números naturales menores de 100",
+        "identificando números primos y compuestos",
+        "resolviendo problemas que involucran múltiplos"
+      ]
+    },
+    {
+      "codigo": "MA06 OA 02",
+      "numero": 2,
+      "eje": "Números y operaciones",
+      "descripcion": "Realizar cálculos que involucren las cuatro operaciones en el contexto de la resolución de problemas, utilizando la calculadora en ámbitos superiores a 10 000.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA06 OA 03",
+      "numero": 3,
+      "eje": "Números y operaciones",
+      "descripcion": "Demostrar que comprenden el concepto de razón de manera concreta, pictórica y simbólica, en forma manual y/o usando software educativo.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA06 OA 04",
+      "numero": 4,
+      "eje": "Números y operaciones",
+      "descripcion": "Demostrar que comprenden el concepto de porcentaje de manera concreta, pictórica y simbólica, de forma manual y/o usando software educativo.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA06 OA 05",
+      "numero": 5,
+      "eje": "Números y operaciones",
+      "descripcion": "Demostrar que comprenden las fracciones y los números mixtos:",
+      "indicadores": [],
+      "detalle": [
+        "identificando y determinando equivalencias entre fracciones impropias y números mixtos, usando material concreto y representaciones pictóricas de manera manual y/o con software educativo",
+        "representando estos números en la recta numérica"
+      ]
+    },
+    {
+      "codigo": "MA06 OA 06",
+      "numero": 6,
+      "eje": "Números y operaciones",
+      "descripcion": "Resolver adiciones y sustracciones de fracciones propias e impropias y números mixtos con numeradores y denominadores de hasta dos dígitos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA06 OA 07",
+      "numero": 7,
+      "eje": "Números y operaciones",
+      "descripcion": "Demostrar que comprenden la multiplicación y la división de decimales por números naturales de un dígito, múltiplos de 10 y decimales hasta la milésima de manera concreta, pictórica y simbólica.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA06 OA 08",
+      "numero": 8,
+      "eje": "Números y operaciones",
+      "descripcion": "Resolver problemas rutinarios y no rutinarios que involucren adiciones y sustracciones de fracciones propias, impropias, números mixtos o decimales hasta la milésima.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA06 OA 09",
+      "numero": 9,
+      "eje": "Patrones y álgebra",
+      "descripcion": "Demostrar que comprenden la relación entre los valores de una tabla y aplicarla en la resolución de problemas sencillos:",
+      "indicadores": [],
+      "detalle": [
+        "identificando patrones entre los valores de la tabla",
+        "formulando una regla con lenguaje matemático"
+      ]
+    },
+    {
+      "codigo": "MA06 OA 10",
+      "numero": 10,
+      "eje": "Patrones y álgebra",
+      "descripcion": "Representar generalizaciones de relaciones entre números naturales, usando expresiones con letras y ecuaciones.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA06 OA 11",
+      "numero": 11,
+      "eje": "Patrones y álgebra",
+      "descripcion": "Resolver ecuaciones de primer grado con una incógnita, utilizando estrategias como: y aplicando procedimientos formales de resolución.",
+      "indicadores": [],
+      "detalle": [
+        "usar una balanza",
+        "usar la descomposición y la correspondencia 1 a 1 entre los términos en cada lado de la ecuación"
+      ]
+    },
+    {
+      "codigo": "MA06 OA 12",
+      "numero": 12,
+      "eje": "Patrones y álgebra",
+      "descripcion": "Construir y comparar triángulos de acuerdo a la medida de sus lados y/o sus ángulos con instrumentos geométricos o software geométrico.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA06 OA 13",
+      "numero": 13,
+      "eje": "Geometría",
+      "descripcion": "Demostrar que comprenden el concepto de área de una superficie en cubos y paralelepípedos, calculando el área de sus redes (plantillas) asociadas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA06 OA 14",
+      "numero": 14,
+      "eje": "Geometría",
+      "descripcion": "Realizar teselados de figuras 2D, usando traslaciones, reflexiones y rotaciones.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA06 OA 15",
+      "numero": 15,
+      "eje": "Geometría",
+      "descripcion": "Construir ángulos agudos, obtusos, rectos, extendidos y completos con instrumentos geométricos o software geométrico.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA06 OA 16",
+      "numero": 16,
+      "eje": "Geometría",
+      "descripcion": "Identificar los ángulos que se forman entre dos rectas que se cortan (pares de ángulos opuestos por el vértice y pares de ángulos complementarios).",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA06 OA 17",
+      "numero": 17,
+      "eje": "Geometría",
+      "descripcion": "Demostrar de manera concreta, pictórica y simbólica que la suma de los ángulos interiores de un triángulo es 180º y de un cuadrilátero es 360o.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA06 OA 18",
+      "numero": 18,
+      "eje": "Geometría",
+      "descripcion": "Calcular la superficie de cubos y paralelepípedos, expresando el resultado en cm2 y m2.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA06 OA 19",
+      "numero": 19,
+      "eje": "Medición",
+      "descripcion": "Calcular el volumen de cubos y paralelepípedos, expresando el resultado en cm3, m3 y mm3.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA06 OA 20",
+      "numero": 20,
+      "eje": "Medición",
+      "descripcion": "Estimar y medir ángulos, usando el transportador y expresando las mediciones en grados.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA06 OA 21",
+      "numero": 21,
+      "eje": "Medición",
+      "descripcion": "Calcular ángulos en rectas paralelas cortadas por una transversal y en triángulos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA06 OA 22",
+      "numero": 22,
+      "eje": "Datos y probabilidades",
+      "descripcion": "Comparar distribuciones de dos grupos, provenientes de muestras aleatorias, usando diagramas de puntos y de tallo y hojas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA06 OA 23",
+      "numero": 23,
+      "eje": "Datos y probabilidades",
+      "descripcion": "Conjeturar acerca de la tendencia de resultados obtenidos en repeticiones de un mismo experimento con dados, monedas u otros, de manera manual y/o usando software educativo.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA06 OA 24",
+      "numero": 24,
+      "eje": "Datos y probabilidades",
+      "descripcion": "Leer e interpretar gráficos de barra doble y circulares y comunicar sus conclusiones.",
+      "indicadores": []
+    }
+  ]
+}

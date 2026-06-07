@@ -1,0 +1,342 @@
+{
+  "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+  "fuentePdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+  "bloques": [
+    {
+      "asignatura": "Artes Visuales",
+      "nivel": "1º básico",
+      "archivo": "artes-visuales-1-basico.json",
+      "oa": 5
+    },
+    {
+      "asignatura": "Artes Visuales",
+      "nivel": "2º básico",
+      "archivo": "artes-visuales-2-basico.json",
+      "oa": 5
+    },
+    {
+      "asignatura": "Artes Visuales",
+      "nivel": "3º básico",
+      "archivo": "artes-visuales-3-basico.json",
+      "oa": 5
+    },
+    {
+      "asignatura": "Artes Visuales",
+      "nivel": "4º básico",
+      "archivo": "artes-visuales-4-basico.json",
+      "oa": 5
+    },
+    {
+      "asignatura": "Artes Visuales",
+      "nivel": "5º básico",
+      "archivo": "artes-visuales-5-basico.json",
+      "oa": 5
+    },
+    {
+      "asignatura": "Artes Visuales",
+      "nivel": "6º básico",
+      "archivo": "artes-visuales-6-basico.json",
+      "oa": 5
+    },
+    {
+      "asignatura": "Ciencias Naturales",
+      "nivel": "1º básico",
+      "archivo": "ciencias-naturales-1-basico.json",
+      "oa": 12
+    },
+    {
+      "asignatura": "Ciencias Naturales",
+      "nivel": "2º básico",
+      "archivo": "ciencias-naturales-2-basico.json",
+      "oa": 14
+    },
+    {
+      "asignatura": "Ciencias Naturales",
+      "nivel": "3º básico",
+      "archivo": "ciencias-naturales-3-basico.json",
+      "oa": 13
+    },
+    {
+      "asignatura": "Ciencias Naturales",
+      "nivel": "4º básico",
+      "archivo": "ciencias-naturales-4-basico.json",
+      "oa": 17
+    },
+    {
+      "asignatura": "Ciencias Naturales",
+      "nivel": "5º básico",
+      "archivo": "ciencias-naturales-5-basico.json",
+      "oa": 14
+    },
+    {
+      "asignatura": "Ciencias Naturales",
+      "nivel": "6º básico",
+      "archivo": "ciencias-naturales-6-basico.json",
+      "oa": 18
+    },
+    {
+      "asignatura": "Educación Física y Salud",
+      "nivel": "1º básico",
+      "archivo": "educacion-fisica-y-salud-1-basico.json",
+      "oa": 11
+    },
+    {
+      "asignatura": "Educación Física y Salud",
+      "nivel": "2º básico",
+      "archivo": "educacion-fisica-y-salud-2-basico.json",
+      "oa": 11
+    },
+    {
+      "asignatura": "Educación Física y Salud",
+      "nivel": "3º básico",
+      "archivo": "educacion-fisica-y-salud-3-basico.json",
+      "oa": 11
+    },
+    {
+      "asignatura": "Educación Física y Salud",
+      "nivel": "4º básico",
+      "archivo": "educacion-fisica-y-salud-4-basico.json",
+      "oa": 11
+    },
+    {
+      "asignatura": "Educación Física y Salud",
+      "nivel": "5º básico",
+      "archivo": "educacion-fisica-y-salud-5-basico.json",
+      "oa": 11
+    },
+    {
+      "asignatura": "Educación Física y Salud",
+      "nivel": "6º básico",
+      "archivo": "educacion-fisica-y-salud-6-basico.json",
+      "oa": 11
+    },
+    {
+      "asignatura": "Historia, Geografía y Ciencias Sociales",
+      "nivel": "1º básico",
+      "archivo": "historia-geografia-y-ciencias-sociales-1-basico.json",
+      "oa": 15
+    },
+    {
+      "asignatura": "Historia, Geografía y Ciencias Sociales",
+      "nivel": "2º básico",
+      "archivo": "historia-geografia-y-ciencias-sociales-2-basico.json",
+      "oa": 16
+    },
+    {
+      "asignatura": "Historia, Geografía y Ciencias Sociales",
+      "nivel": "3º básico",
+      "archivo": "historia-geografia-y-ciencias-sociales-3-basico.json",
+      "oa": 16
+    },
+    {
+      "asignatura": "Historia, Geografía y Ciencias Sociales",
+      "nivel": "4º básico",
+      "archivo": "historia-geografia-y-ciencias-sociales-4-basico.json",
+      "oa": 18
+    },
+    {
+      "asignatura": "Historia, Geografía y Ciencias Sociales",
+      "nivel": "5º básico",
+      "archivo": "historia-geografia-y-ciencias-sociales-5-basico.json",
+      "oa": 22
+    },
+    {
+      "asignatura": "Historia, Geografía y Ciencias Sociales",
+      "nivel": "6º básico",
+      "archivo": "historia-geografia-y-ciencias-sociales-6-basico.json",
+      "oa": 26
+    },
+    {
+      "asignatura": "Tecnología",
+      "nivel": "1º básico",
+      "archivo": "tecnologia-1-basico.json",
+      "oa": 6
+    },
+    {
+      "asignatura": "Tecnología",
+      "nivel": "2º básico",
+      "archivo": "tecnologia-2-basico.json",
+      "oa": 7
+    },
+    {
+      "asignatura": "Tecnología",
+      "nivel": "3º básico",
+      "archivo": "tecnologia-3-basico.json",
+      "oa": 7
+    },
+    {
+      "asignatura": "Tecnología",
+      "nivel": "4º básico",
+      "archivo": "tecnologia-4-basico.json",
+      "oa": 7
+    },
+    {
+      "asignatura": "Tecnología",
+      "nivel": "5º básico",
+      "archivo": "tecnologia-5-basico.json",
+      "oa": 7
+    },
+    {
+      "asignatura": "Tecnología",
+      "nivel": "6º básico",
+      "archivo": "tecnologia-6-basico.json",
+      "oa": 7
+    },
+    {
+      "asignatura": "Matemática",
+      "nivel": "1º básico",
+      "archivo": "matematica-1-basico.json",
+      "oa": 20
+    },
+    {
+      "asignatura": "Matemática",
+      "nivel": "2º básico",
+      "archivo": "matematica-2-basico.json",
+      "oa": 22
+    },
+    {
+      "asignatura": "Matemática",
+      "nivel": "3º básico",
+      "archivo": "matematica-3-basico.json",
+      "oa": 26
+    },
+    {
+      "asignatura": "Matemática",
+      "nivel": "4º básico",
+      "archivo": "matematica-4-basico.json",
+      "oa": 27
+    },
+    {
+      "asignatura": "Matemática",
+      "nivel": "5º básico",
+      "archivo": "matematica-5-basico.json",
+      "oa": 27
+    },
+    {
+      "asignatura": "Matemática",
+      "nivel": "6º básico",
+      "archivo": "matematica-6-basico.json",
+      "oa": 24
+    },
+    {
+      "asignatura": "Idioma Extranjero Inglés",
+      "nivel": "5º básico",
+      "archivo": "idioma-extranjero-ingles-5-basico.json",
+      "oa": 16
+    },
+    {
+      "asignatura": "Idioma Extranjero Inglés",
+      "nivel": "6º básico",
+      "archivo": "idioma-extranjero-ingles-6-basico.json",
+      "oa": 16
+    },
+    {
+      "asignatura": "Lenguaje y Comunicación",
+      "nivel": "1º básico",
+      "archivo": "lenguaje-y-comunicacion-1-basico.json",
+      "oa": 26
+    },
+    {
+      "asignatura": "Lenguaje y Comunicación",
+      "nivel": "2º básico",
+      "archivo": "lenguaje-y-comunicacion-2-basico.json",
+      "oa": 30
+    },
+    {
+      "asignatura": "Lenguaje y Comunicación",
+      "nivel": "3º básico",
+      "archivo": "lenguaje-y-comunicacion-3-basico.json",
+      "oa": 31
+    },
+    {
+      "asignatura": "Lenguaje y Comunicación",
+      "nivel": "4º básico",
+      "archivo": "lenguaje-y-comunicacion-4-basico.json",
+      "oa": 30
+    },
+    {
+      "asignatura": "Lenguaje y Comunicación",
+      "nivel": "5º básico",
+      "archivo": "lenguaje-y-comunicacion-5-basico.json",
+      "oa": 30
+    },
+    {
+      "asignatura": "Lenguaje y Comunicación",
+      "nivel": "6º básico",
+      "archivo": "lenguaje-y-comunicacion-6-basico.json",
+      "oa": 31
+    },
+    {
+      "asignatura": "Música",
+      "nivel": "1º básico",
+      "archivo": "musica-1-basico.json",
+      "oa": 7
+    },
+    {
+      "asignatura": "Música",
+      "nivel": "2º básico",
+      "archivo": "musica-2-basico.json",
+      "oa": 7
+    },
+    {
+      "asignatura": "Música",
+      "nivel": "3º básico",
+      "archivo": "musica-3-basico.json",
+      "oa": 8
+    },
+    {
+      "asignatura": "Música",
+      "nivel": "4º básico",
+      "archivo": "musica-4-basico.json",
+      "oa": 8
+    },
+    {
+      "asignatura": "Música",
+      "nivel": "5º básico",
+      "archivo": "musica-5-basico.json",
+      "oa": 8
+    },
+    {
+      "asignatura": "Música",
+      "nivel": "6º básico",
+      "archivo": "musica-6-basico.json",
+      "oa": 8
+    },
+    {
+      "asignatura": "Orientación",
+      "nivel": "1º básico",
+      "archivo": "orientacion-1-basico.json",
+      "oa": 8
+    },
+    {
+      "asignatura": "Orientación",
+      "nivel": "2º básico",
+      "archivo": "orientacion-2-basico.json",
+      "oa": 8
+    },
+    {
+      "asignatura": "Orientación",
+      "nivel": "3º básico",
+      "archivo": "orientacion-3-basico.json",
+      "oa": 8
+    },
+    {
+      "asignatura": "Orientación",
+      "nivel": "4º básico",
+      "archivo": "orientacion-4-basico.json",
+      "oa": 9
+    },
+    {
+      "asignatura": "Orientación",
+      "nivel": "5º básico",
+      "archivo": "orientacion-5-basico.json",
+      "oa": 9
+    },
+    {
+      "asignatura": "Orientación",
+      "nivel": "6º básico",
+      "archivo": "orientacion-6-basico.json",
+      "oa": 9
+    }
+  ]
+}

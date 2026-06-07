@@ -1,0 +1,118 @@
+{
+  "asignatura": "Orientación",
+  "nivel": "5º básico",
+  "codigoAsignaturaNivel": "OR05",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Crecimiento personal",
+    "Relaciones interpersonales",
+    "Participación y pertenencia",
+    "Trabajo escolar"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "OR05 OA 01",
+      "numero": 1,
+      "eje": "Crecimiento personal",
+      "descripcion": "Demostrar una valoración positiva de sí mismo reconociendo habilidades, fortalezas y aspectos que requiera superar.",
+      "indicadores": []
+    },
+    {
+      "codigo": "OR05 OA 02",
+      "numero": 2,
+      "eje": "Crecimiento personal",
+      "descripcion": "Distinguir y describir emociones y reconocer y practicar formas apropiadas de expresarlas, considerando el posible impacto en sí mismo y en otros.",
+      "indicadores": []
+    },
+    {
+      "codigo": "OR05 OA 03",
+      "numero": 3,
+      "eje": "Crecimiento personal",
+      "descripcion": "Reconocer y valorar el proceso de desarrollo afectivo y sexual, que aprecia en sí mismo y en los demás, describiendo los cambios físicos, afectivos y sociales que ocurren en la pubertad, considerando la manifestación de estos en las motivaciones, formas de relacionarse y expresar afecto a los demás.",
+      "indicadores": []
+    },
+    {
+      "codigo": "OR05 OA 04",
+      "numero": 4,
+      "eje": "Crecimiento personal",
+      "descripcion": "Practicar en forma autónoma conductas protectoras y de autocuidado, como:",
+      "indicadores": [],
+      "detalle": [
+        "mantener una comunicación efectiva con la familia o adulto de su confianza",
+        "resguardar la intimidad (por ejemplo, evitar exponer información personal, fotos íntimas a través de redes sociales, protegerse de manifestaciones de índole sexual inapropiadas)",
+        "seleccionar y acudir a fuentes de información confiables (personas significativas, libros y páginas de internet especializadas)",
+        "realizar un uso seguro de redes sociales"
+      ]
+    },
+    {
+      "codigo": "OR05 OA 05",
+      "numero": 5,
+      "eje": "Crecimiento personal",
+      "descripcion": "Reconocer y describir causas y consecuencias del consumo de drogas (por ejemplo, tabaco, alcohol, marihuana), identificar factores que lo previenen y proponer estrategias para enfrentarlo, como mantener hábitos de vida saludable y aprender a manejar el stress.",
+      "indicadores": []
+    },
+    {
+      "codigo": "OR05 OA 06",
+      "numero": 6,
+      "eje": "Relaciones interpersonales",
+      "descripcion": "Manifestar actitudes de solidaridad y respeto, que favorezcan la convivencia, como:",
+      "indicadores": [],
+      "detalle": [
+        "actuar en forma empática (poniéndose en el lugar del otro)",
+        "utilizar un buen trato (por ejemplo, saludar, despedirse, pedir por favor)",
+        "evitar y rechazar toda forma de violencia y discriminación, ya sea por etnia, género, religión, nacionalidad, etc.",
+        "respetar el derecho de todos a expresar opiniones y ser diferente",
+        "prestar ayuda especialmente a quien lo necesite",
+        "respetar el ambiente de aprendizaje"
+      ]
+    },
+    {
+      "codigo": "OR05 OA 07",
+      "numero": 7,
+      "eje": "Relaciones interpersonales",
+      "descripcion": "Resolver conflictos de convivencia en forma autónoma, seleccionando y aplicando diversas estrategias de resolución de problemas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "OR05 OA 08",
+      "numero": 8,
+      "eje": "Participación y pertenencia",
+      "descripcion": "Participar activa y colaborativamente en la comunidad escolar y en la organización del curso:",
+      "indicadores": [],
+      "detalle": [
+        "planificando y evaluando actividades encaminadas a un objetivo",
+        "organizándose para resolver problemas cotidianos de la comunidad",
+        "asumiendo y cumpliendo responsabilidades",
+        "participando en las elecciones de curso y aceptando los resultados",
+        "respetando los derechos de los demás, sin discriminar en la distribución de roles y responsabilidades, entre otros",
+        "estableciendo acuerdos a través del diálogo y la toma de decisiones democráticas",
+        "evaluando el cumplimiento de los acuerdos de curso"
+      ]
+    },
+    {
+      "codigo": "OR05 OA 09",
+      "numero": 9,
+      "eje": "Trabajo escolar",
+      "descripcion": "Practicar en forma autónoma y perseverante, hábitos y actitudes orientadas a favorecer el aprendizaje y a desarrollar sus intereses, tales como:",
+      "indicadores": [],
+      "detalle": [
+        "establecer metas de aprendizaje",
+        "estudiar con anticipación, organizando su tiempo",
+        "trabajar en forma colaborativa",
+        "respetar el estudio y el trabajo de otros",
+        "evitar el plagio y la copia",
+        "preguntar y buscar información sobre temas de su interés",
+        "desarrollar actividades en relación a sus propios intereses"
+      ]
+    }
+  ]
+}

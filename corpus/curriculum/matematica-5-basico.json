@@ -1,0 +1,266 @@
+{
+  "asignatura": "Matemática",
+  "nivel": "5º básico",
+  "codigoAsignaturaNivel": "MA05",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "Matemática: validado vs corpus oráculo."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Números y operaciones",
+    "Patrones y álgebra",
+    "Geometría",
+    "Medición",
+    "Datos y probabilidades"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "MA05 OA 01",
+      "numero": 1,
+      "eje": "Números y operaciones",
+      "descripcion": "Representar y describir números naturales de hasta más de 6 dígitos y menores que 1.000 millones:",
+      "indicadores": [],
+      "detalle": [
+        "identificando el valor posicional de los dígitos",
+        "componiendo y descomponiendo números naturales en forma estándar y expandida aproximando cantidades",
+        "comparando y ordenando números naturales en este ámbito numérico",
+        "dando ejemplos de estos números naturales en contextos reales"
+      ]
+    },
+    {
+      "codigo": "MA05 OA 02",
+      "numero": 2,
+      "eje": "Números y operaciones",
+      "descripcion": "Aplicar estrategias de cálculo mental para la multiplicación:",
+      "indicadores": [],
+      "detalle": [
+        "anexar ceros cuando se multiplica por un múltiplo de 10",
+        "doblar y dividir por 2 en forma repetida",
+        "usando las propiedades conmutativa, asociativa y distributiva"
+      ]
+    },
+    {
+      "codigo": "MA05 OA 03",
+      "numero": 3,
+      "eje": "Números y operaciones",
+      "descripcion": "Demostrar que comprenden la multiplicación de números naturales de dos dígitos por números naturales de dos dígitos:",
+      "indicadores": [],
+      "detalle": [
+        "estimando productos",
+        "aplicando estrategias de cálculo mental",
+        "resolviendo problemas rutinarios y no rutinarios, aplicando el algoritmo"
+      ]
+    },
+    {
+      "codigo": "MA05 OA 04",
+      "numero": 4,
+      "eje": "Números y operaciones",
+      "descripcion": "Demostrar que comprenden la división con dividendos de tres dígitos y divisores de un dígito:",
+      "indicadores": [],
+      "detalle": [
+        "interpretando el resto",
+        "resolviendo problemas rutinarios y no rutinarios que impliquen divisiones"
+      ]
+    },
+    {
+      "codigo": "MA05 OA 05",
+      "numero": 5,
+      "eje": "Números y operaciones",
+      "descripcion": "Realizar cálculos que involucren las cuatro operaciones, aplicando las reglas relativas a paréntesis y la prevalencia de la multiplicación y la división por sobre la adición y la sustracción cuando corresponda.",
+      "indicadores": [],
+      "detalle": [
+        "usando la propiedad distributiva de la multiplicación respecto de la suma",
+        "aplicando el algoritmo de la multiplicación",
+        "resolviendo problemas rutinarios"
+      ]
+    },
+    {
+      "codigo": "MA05 OA 06",
+      "numero": 6,
+      "eje": "Números y operaciones",
+      "descripcion": "Resolver problemas rutinarios y no rutinarios que involucren las cuatro operaciones y combinaciones de ellas:",
+      "indicadores": [],
+      "detalle": [
+        "que incluyan situaciones con dinero",
+        "usando la calculadora y el computador en ámbitos numéricos superiores al 10.000"
+      ]
+    },
+    {
+      "codigo": "MA05 OA 07",
+      "numero": 7,
+      "eje": "Números y operaciones",
+      "descripcion": "Demostrar que comprenden las fracciones propias:",
+      "indicadores": [],
+      "detalle": [
+        "representándolas de manera concreta, pictórica y simbólica",
+        "creando grupos de fracciones equivalentes –simplificando y amplificando– de manera concreta, pictórica y simbólica, de forma manual y/o con software educativo",
+        "comparando fracciones propias con igual y distinto denominador de manera concreta, pictórica y simbólica"
+      ]
+    },
+    {
+      "codigo": "MA05 OA 08",
+      "numero": 8,
+      "eje": "Números y operaciones",
+      "descripcion": "Demostrar que comprenden las fracciones impropias de uso común de denominadores 2, 3, 4, 5, 6, 8, 10, 12 y los números mixtos asociados:",
+      "indicadores": [],
+      "detalle": [
+        "usando material concreto y pictórico para representarlas, de manera manual y/o con software educativo",
+        "identificando y determinando equivalencias entre fracciones impropias y números mixtos",
+        "representando estas fracciones y estos números mixtos en la recta numérica"
+      ]
+    },
+    {
+      "codigo": "MA05 OA 09",
+      "numero": 9,
+      "eje": "Números y operaciones",
+      "descripcion": "Resolver adiciones y sustracciones con fracciones propias con denominadores menores o iguales a 12:",
+      "indicadores": [],
+      "detalle": [
+        "de manera pictórica y simbólica",
+        "amplificando o simplificando"
+      ]
+    },
+    {
+      "codigo": "MA05 OA 10",
+      "numero": 10,
+      "eje": "Números y operaciones",
+      "descripcion": "Determinar el decimal que corresponde a fracciones con denominador 2, 4, 5 y 10.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA05 OA 11",
+      "numero": 11,
+      "eje": "Números y operaciones",
+      "descripcion": "Comparar y ordenar decimales hasta la milésima.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA05 OA 12",
+      "numero": 12,
+      "eje": "Números y operaciones",
+      "descripcion": "Resolver adiciones y sustracciones de decimales, empleando el valor posicional hasta la milésima.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA05 OA 13",
+      "numero": 13,
+      "eje": "Números y operaciones",
+      "descripcion": "Resolver problemas rutinarios y no rutinarios, aplicando adiciones y sustracciones de fracciones propias o decimales hasta la milésima.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA05 OA 14",
+      "numero": 14,
+      "eje": "Patrones y álgebra",
+      "descripcion": "Descubrir alguna regla que explique una sucesión dada y que permita hacer predicciones.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA05 OA 15",
+      "numero": 15,
+      "eje": "Patrones y álgebra",
+      "descripcion": "Resolver problemas, usando ecuaciones e inecuaciones de un paso, que involucren adiciones y sustracciones, en forma pictórica y simbólica.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA05 OA 16",
+      "numero": 16,
+      "eje": "Geometría",
+      "descripcion": "Identificar y dibujar puntos en el primer cuadrante del plano cartesiano, dadas sus coordenadas en números naturales.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA05 OA 17",
+      "numero": 17,
+      "eje": "Geometría",
+      "descripcion": "Describir y dar ejemplos de aristas y caras de figuras 3D y lados de figuras 2D:",
+      "indicadores": [],
+      "detalle": [
+        "que son paralelos",
+        "que se intersectan",
+        "que son perpendiculares"
+      ]
+    },
+    {
+      "codigo": "MA05 OA 18",
+      "numero": 18,
+      "eje": "Geometría",
+      "descripcion": "Demostrar que comprenden el concepto de congruencia, usando la traslación, la reflexión y la rotación en cuadrículas y mediante software geométrico.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA05 OA 19",
+      "numero": 19,
+      "eje": "Medición",
+      "descripcion": "Medir longitudes con unidades estandarizadas (m, cm, mm) en el contexto de la resolución de problemas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA05 OA 20",
+      "numero": 20,
+      "eje": "Medición",
+      "descripcion": "Realizar transformaciones entre unidades de medidas de longitud: km a m, a cm, cm a mm y viceversa, de manera manual y/o usando software educativo.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA05 OA 21",
+      "numero": 21,
+      "eje": "Medición",
+      "descripcion": "Diseñar y construir diferentes rectángulos, dados el perímetro, el área o ambos, y sacar conclusiones.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA05 OA 22",
+      "numero": 22,
+      "eje": "Medición",
+      "descripcion": "Calcular áreas de triángulos, de paralelogramos y de trapecios, y estimar áreas de figuras irregulares, aplicando las siguientes estrategias:",
+      "indicadores": [],
+      "detalle": [
+        "conteo de cuadrículas",
+        "comparación con el área de un rectángulo",
+        "completar figuras por traslación"
+      ]
+    },
+    {
+      "codigo": "MA05 OA 23",
+      "numero": 23,
+      "eje": "Datos y probabilidades",
+      "descripcion": "Calcular el promedio de datos e interpretarlo en su contexto.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA05 OA 24",
+      "numero": 24,
+      "eje": "Datos y probabilidades",
+      "descripcion": "Describir la posibilidad de ocurrencia de un evento por sobre la base de un experimento aleatorio, empleando los términos seguro posible poco posible imposible.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA05 OA 25",
+      "numero": 25,
+      "eje": "Datos y probabilidades",
+      "descripcion": "Comparar probabilidades de distintos eventos sin calcularlas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA05 OA 26",
+      "numero": 26,
+      "eje": "Datos y probabilidades",
+      "descripcion": "Leer, interpretar y completar tablas, gráficos de barra simple y gráficos de línea y comunicar sus conclusiones.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA05 OA 27",
+      "numero": 27,
+      "eje": "Datos y probabilidades",
+      "descripcion": "Utilizar diagramas de tallo y hojas para representar datos provenientes de muestras aleatorias.",
+      "indicadores": []
+    }
+  ]
+}

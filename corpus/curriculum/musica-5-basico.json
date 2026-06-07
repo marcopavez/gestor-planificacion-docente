@@ -1,0 +1,86 @@
+{
+  "asignatura": "Música",
+  "nivel": "5º básico",
+  "codigoAsignaturaNivel": "MU05",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Escuchar y apreciar",
+    "Interpretar y crear",
+    "Reflexionar y contextualizar"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "MU05 OA 01",
+      "numero": 1,
+      "eje": "Escuchar y apreciar",
+      "descripcion": "Describir la música escuchada e interpretada, basándose en los elementos del lenguaje musical (reiteraciones, contrastes, pulsos, acentos, patrones rítmicos y melódicos, diseños melódicos, variaciones, dinámica, tempo, secciones A-AB-ABA-otras, preguntas-respuestas y texturas) y su propósito expresivo.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MU05 OA 02",
+      "numero": 2,
+      "eje": "Escuchar y apreciar",
+      "descripcion": "Expresar, mostrando grados crecientes de elaboración y detalle, las sensaciones, emociones e ideas que les sugiere la música escuchada e interpretada, usando diversos medios expresivos (verbal, corporal, musical, visual).",
+      "indicadores": []
+    },
+    {
+      "codigo": "MU05 OA 03",
+      "numero": 3,
+      "eje": "Escuchar y apreciar",
+      "descripcion": "Escuchar música en forma abundante de diversos contextos y culturas, poniendo énfasis en: (Escuchar apreciativamente al menos 15 músicas variadas de corta y mediana duración).",
+      "indicadores": [],
+      "detalle": [
+        "Tradición escrita (docta)",
+        "música de compositores americanos y del mundo (por ejemplo, Cantos de México de C. Chávez, Malambo de C. Guastavino, Cinema de E. Satie)",
+        "Tradición oral (folclor, música de pueblos originarios)",
+        "música americana y sus orígenes (por ejemplo, música africana, huaynos, joropos)",
+        "Popular (jazz, rock, fusión, etc.)",
+        "música de América (por ejemplo: tangos, jazz, cumbias)"
+      ]
+    },
+    {
+      "codigo": "MU05 OA 04",
+      "numero": 4,
+      "eje": "Interpretar y crear",
+      "descripcion": "Cantar al unísono y a más voces y tocar instrumentos de percusión, melódicos (metalófono, flauta dulce u otros) y/o armónicos (guitarra, teclado, otros).",
+      "indicadores": []
+    },
+    {
+      "codigo": "MU05 OA 05",
+      "numero": 5,
+      "eje": "Interpretar y crear",
+      "descripcion": "Improvisar y crear ideas musicales con un propósito dado y con un adecuado dominio del lenguaje musical.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MU05 OA 06",
+      "numero": 6,
+      "eje": "Interpretar y crear",
+      "descripcion": "Presentar su trabajo musical al curso y la comunidad, en forma individual y grupal, con responsabilidad, dominio y musicalidad.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MU05 OA 07",
+      "numero": 7,
+      "eje": "Reflexionar y contextualizar",
+      "descripcion": "Explicar la relación entre las obras interpretadas y/o escuchadas, con elementos del contexto en que surgen.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MU05 OA 08",
+      "numero": 8,
+      "eje": "Reflexionar y contextualizar",
+      "descripcion": "Reflexionar sobre sus fortalezas y las áreas en que pueden mejorar la audición, la interpretación y la creación, propia y de los otros, con respeto y autocrítica.",
+      "indicadores": []
+    }
+  ]
+}

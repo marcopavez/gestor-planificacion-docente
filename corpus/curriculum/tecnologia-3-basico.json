@@ -1,0 +1,79 @@
+{
+  "asignatura": "Tecnología",
+  "nivel": "3º básico",
+  "codigoAsignaturaNivel": "TE03",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Diseñar, hacer y probar",
+    "Tecnologías de la información y la comunicación"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "TE03 OA 01",
+      "numero": 1,
+      "eje": "Diseñar, hacer y probar",
+      "descripcion": "Crear diseños de objetos o sistemas tecnológicos simples para resolver problemas:",
+      "indicadores": [],
+      "detalle": [
+        "desde diversos ámbitos tecnológicos y tópicos de otras asignaturas",
+        "representando sus ideas a través de dibujos a mano alzada, modelos concretos o usando TIC",
+        "explorando y combinando productos existentes"
+      ]
+    },
+    {
+      "codigo": "TE03 OA 02",
+      "numero": 2,
+      "eje": "Diseñar, hacer y probar",
+      "descripcion": "Planificar la elaboración de un objeto tecnológico, incorporando la secuencia de acciones, materiales, herramientas, técnicas y medidas de seguridad necesarias para lograr el resultado deseado.",
+      "indicadores": []
+    },
+    {
+      "codigo": "TE03 OA 03",
+      "numero": 3,
+      "eje": "Diseñar, hacer y probar",
+      "descripcion": "Elaborar un objeto tecnológico para resolver problemas, seleccionando y demostrando dominio de:",
+      "indicadores": [],
+      "detalle": [
+        "técnicas y herramientas para medir, marcar, cortar, plegar, unir, pegar, pintar, entre otras",
+        "materiales como papeles, cartones, fibras, plásticos, cerámicos, desechos, entre otros"
+      ]
+    },
+    {
+      "codigo": "TE03 OA 04",
+      "numero": 4,
+      "eje": "Diseñar, hacer y probar",
+      "descripcion": "Probar y evaluar la calidad de los trabajos propios o de otros, de forma individual o en equipos, aplicando criterios técnicos, medioambientales y de seguridad y dialogando sobre sus resultados e ideas de mejoramiento.",
+      "indicadores": []
+    },
+    {
+      "codigo": "TE03 OA 05",
+      "numero": 5,
+      "eje": "Tecnologías de la información y la comunicación",
+      "descripcion": "Usar software de presentación para organizar y comunicar ideas con diferentes propósitos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "TE03 OA 06",
+      "numero": 6,
+      "eje": "Tecnologías de la información y la comunicación",
+      "descripcion": "Usar procesador de textos para crear, editar, dar formato y guardar información.",
+      "indicadores": []
+    },
+    {
+      "codigo": "TE03 OA 07",
+      "numero": 7,
+      "eje": "Tecnologías de la información y la comunicación",
+      "descripcion": "Usar internet y buscadores para localizar, extraer y almacenar información, considerando la seguridad de la fuente.",
+      "indicadores": []
+    }
+  ]
+}

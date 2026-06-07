@@ -1,0 +1,111 @@
+{
+  "asignatura": "Educación Física y Salud",
+  "nivel": "4º básico",
+  "codigoAsignaturaNivel": "EF04",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Habilidades motrices",
+    "Vida activa y saludable",
+    "Seguridad, juego limpio y liderazgo"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "EF04 OA 01",
+      "numero": 1,
+      "eje": "Habilidades motrices",
+      "descripcion": "Demostrar control en la ejecución de las habilidades motrices básicas de locomoción, manipulación y estabilidad en diferentes direcciones, alturas y niveles, por ejemplo, atrapar un objeto con una mano a diferentes alturas, desplazarse boteando un objeto en zig-zag y saltar, caminar sobre una base a una pequeña altura y realizar un giro de 360° en un solo pie.",
+      "indicadores": []
+    },
+    {
+      "codigo": "EF04 OA 02",
+      "numero": 2,
+      "eje": "Habilidades motrices",
+      "descripcion": "Ejecutar juegos colectivos y crear estrategias con el apoyo del docente para resolver problemas en relación al tiempo, el espacio y el número de personas, por ejemplo, dar cinco pases sin que el equipo rival lo intercepte o sin que el objeto caiga.",
+      "indicadores": []
+    },
+    {
+      "codigo": "EF04 OA 03",
+      "numero": 3,
+      "eje": "Habilidades motrices",
+      "descripcion": "Practicar juegos pre-deportivos con reglas y espacios adaptados, aplicando los principios generales de juego, como acoplarse en ataque y replegarse en defensa, utilizar el campo de juego a lo largo y ancho o reconocer el espacio del adversario.",
+      "indicadores": []
+    },
+    {
+      "codigo": "EF04 OA 04",
+      "numero": 4,
+      "eje": "Habilidades motrices",
+      "descripcion": "Ejecutar actividades físicas y/o lúdicas en diferentes entornos, aplicando medidas para conservar limpios y ordenados los espacios, como:",
+      "indicadores": [],
+      "detalle": [
+        "jugar en plazas activas",
+        "jugar un partido en la plaza o la playa",
+        "realizar caminatas en el entorno natural",
+        "andar en bicicleta en un parque o en un camino rural"
+      ]
+    },
+    {
+      "codigo": "EF04 OA 05",
+      "numero": 5,
+      "eje": "Habilidades motrices",
+      "descripcion": "Ejecutar movimientos o elementos de danzas tradicionales de forma coordinada, utilizando actividades rítmicas y lúdicas de forma individual o grupal.",
+      "indicadores": []
+    },
+    {
+      "codigo": "EF04 OA 06",
+      "numero": 6,
+      "eje": "Vida activa y saludable",
+      "descripcion": "Ejecutar actividades físicas de intensidad moderada a vigorosa que desarrollen la condición física por medio de la práctica de ejercicios de resistencia cardiovascular, fuerza, flexibilidad y velocidad, mejorando sus resultados personales.",
+      "indicadores": []
+    },
+    {
+      "codigo": "EF04 OA 07",
+      "numero": 7,
+      "eje": "Vida activa y saludable",
+      "descripcion": "Practicar de manera regular y autónoma actividades físicas de intensidad moderada a vigorosa, como saltar la cuerda y caminar hasta el colegio.",
+      "indicadores": []
+    },
+    {
+      "codigo": "EF04 OA 08",
+      "numero": 8,
+      "eje": "Vida activa y saludable",
+      "descripcion": "Medir y registrar las respuestas corporales provocadas por la actividad física mediante el pulso o utilizando escalas de percepción de esfuerzo.",
+      "indicadores": []
+    },
+    {
+      "codigo": "EF04 OA 09",
+      "numero": 9,
+      "eje": "Vida activa y saludable",
+      "descripcion": "Practicar actividades físicas en forma segura, demostrando la adquisición de hábitos de higiene, posturales y de vida saludable, como utilizar protección solar, lavarse y cambiarse de ropa después de la clase, hidratarse con agua, comer una colación saludable después de la práctica de actividad física.",
+      "indicadores": []
+    },
+    {
+      "codigo": "EF04 OA 10",
+      "numero": 10,
+      "eje": "Seguridad, juego limpio y liderazgo",
+      "descripcion": "Practicar actividades físicas y /o juegos colectivos con responsabilidad y honestidad, cumpliendo las reglas y los roles asignados, respetando las decisiones de la autoridad y organizar equitativamente los equipos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "EF04 OA 11",
+      "numero": 11,
+      "eje": "Seguridad, juego limpio y liderazgo",
+      "descripcion": "Practicar actividades físicas, demostrando comportamientos seguros, como:",
+      "indicadores": [],
+      "detalle": [
+        "realizar un calentamiento en forma apropiada",
+        "utilizar de manera adecuada los materiales y las instalaciones para evitar el riesgo personal y de otros",
+        "escuchar y seguir instrucciones",
+        "asegurar que el espacio está libre de obstáculos"
+      ]
+    }
+  ]
+}

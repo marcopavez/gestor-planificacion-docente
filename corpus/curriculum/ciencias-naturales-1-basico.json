@@ -1,0 +1,106 @@
+{
+  "asignatura": "Ciencias Naturales",
+  "nivel": "1º básico",
+  "codigoAsignaturaNivel": "CN01",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Ciencias de la vida",
+    "Ciencias físicas y químicas",
+    "Ciencias de la tierra y el universo"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "CN01 OA 01",
+      "numero": 1,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Reconocer y observar, por medio de la exploración, que los seres vivos crecen, responden a estímulos del medio, se reproducen y necesitan agua, alimento y aire para vivir, comparándolos con las cosas no vivas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN01 OA 02",
+      "numero": 2,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Observar y comparar animales de acuerdo a características como tamaño, cubierta corporal, estructuras de desplazamiento y hábitat, entre otras.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN01 OA 03",
+      "numero": 3,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Observar e identificar, por medio de la exploración, las estructuras principales de las plantas: hojas, flores, tallos y raíces.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN01 OA 04",
+      "numero": 4,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Observar y clasificar semillas, frutos, flores y tallos a partir de criterios como tamaño, forma, textura y color, entre otros.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN01 OA 05",
+      "numero": 5,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Reconocer y comparar diversas plantas y animales de nuestro país, considerando las características observables y proponiendo medidas para su cuidado. CUERpo hUmANo Y sALUD",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN01 OA 06",
+      "numero": 6,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Identificar y describir la ubicación y la función de los sentidos, proponiendo medidas para protegerlos y para prevenir situaciones de riesgo.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN01 OA 07",
+      "numero": 7,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Describir, dar ejemplos y practicar hábitos de vida saludable para mantener el cuerpo sano y prevenir enfermedades (actividad física, aseo del cuerpo, lavado de alimentos y alimentación saludable, entre otros).",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN01 OA 08",
+      "numero": 8,
+      "eje": "Ciencias físicas y químicas",
+      "descripcion": "Explorar y describir los diferentes tipos de materiales en diversos objetos, clasificándolos según sus propiedades (goma-flexible, plástico-impermeable) e identificando su uso en la vida cotidiana.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN01 OA 09",
+      "numero": 9,
+      "eje": "Ciencias físicas y químicas",
+      "descripcion": "Observar y describir los cambios que se producen en los materiales al aplicarles fuerza, luz, calor y agua.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN01 OA 10",
+      "numero": 10,
+      "eje": "Ciencias físicas y químicas",
+      "descripcion": "Diseñar instrumentos tecnológicos simples, considerando diversos materiales y sus propiedades para resolver problemas cotidianos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN01 OA 11",
+      "numero": 11,
+      "eje": "Ciencias de la tierra y el universo",
+      "descripcion": "Describir y registrar el ciclo diario y las diferencias entre el día y la noche, a partir de la observación del Sol, la Luna, las estrellas y la luminosidad del cielo, entre otras, y sus efectos en los seres vivos y el ambiente.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN01 OA 12",
+      "numero": 12,
+      "eje": "Ciencias de la tierra y el universo",
+      "descripcion": "Describir y comunicar los cambios del ciclo de las estaciones y sus efectos en los seres vivos y el ambiente.",
+      "indicadores": []
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "asignatura": "Historia, Geografía y Ciencias Sociales",
+  "nivel": "3º básico",
+  "codigoAsignaturaNivel": "HI03",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Historia",
+    "Geografía",
+    "Formación ciudadana"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "HI03 OA 01",
+      "numero": 1,
+      "eje": "Historia",
+      "descripcion": "Reconocer aspectos de la vida cotidiana de la civilización griega de la Antigüedad e identificar algunos elementos de su legado a sociedades y culturas del presente; entre ellos, la organización democrática, el desarrollo de la historia, el teatro como forma de expresión, el arte y la escultura, la arquitectura, la mitología, la geometría y la filosofía, la creación del alfabeto y los juegos olímpicos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI03 OA 02",
+      "numero": 2,
+      "eje": "Historia",
+      "descripcion": "Reconocer aspectos de la vida cotidiana de la civilización romana de la Antigüedad e identificar algunos elementos de su legado a sociedades y culturas del presente; entre ellos, el idioma, el derecho y las leyes, el arte y las obras arquitectónicas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI03 OA 03",
+      "numero": 3,
+      "eje": "Historia",
+      "descripcion": "Explicar, con ejemplos concretos, cómo diferentes culturas y pueblos (como griegos y romanos de la Antigüedad) han enfrentado de distintas maneras el desafío de desarrollarse y satisfacer las necesidades comunes a todos los seres humanos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI03 OA 04",
+      "numero": 4,
+      "eje": "Historia",
+      "descripcion": "Comparar modos de vida de la Antigüedad con el propio, considerando costumbres, trabajos y oficios, creencias, vestimentas y características de las ciudades, entre otros.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI03 OA 05",
+      "numero": 5,
+      "eje": "Historia",
+      "descripcion": "Investigar sobre algún tema de su interés con relación a las civilizaciones estudiadas (como los héroes, los dioses, las ciudades, las viviendas, la vestimenta, las herramientas tecnológicas y la esclavitud, entre otros) por medio de diferentes fuentes (libros, fuentes gráficas, TICs) y comunicar lo aprendido.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI03 OA 06",
+      "numero": 6,
+      "eje": "Geografía",
+      "descripcion": "Ubicar personas, lugares y elementos en una cuadrícula, utilizando líneas de referencia y puntos cardinales.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI03 OA 07",
+      "numero": 7,
+      "eje": "Geografía",
+      "descripcion": "Distinguir hemisferios, círculo del Ecuador, trópicos, polos, continentes y océanos del planeta en mapas y globos terráqueos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI03 OA 08",
+      "numero": 8,
+      "eje": "Geografía",
+      "descripcion": "Identificar y ubicar en mapas las principales zonas climáticas del mundo, y dar ejemplos de distintos paisajes que pueden encontrarse en estas zonas y de cómo las personas han elaborado diferentes estrategias para habitarlos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI03 OA 09",
+      "numero": 9,
+      "eje": "Geografía",
+      "descripcion": "Caracterizar el entorno geográfico de las civilizaciones estudiadas, utilizando vocabulario geográfico adecuado (continente, valle, montaña, océano, río, archipiélago, mares, península, ciudad, construcciones y monumentos, entre otros).",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI03 OA 10",
+      "numero": 10,
+      "eje": "Geografía",
+      "descripcion": "Reconocer algunos factores geográficos que influyeron en el desarrollo de las civilizaciones estudiadas (ubicación, relieve y clima, recursos naturales disponibles, importancia del mar Egeo y sus islas para Grecia e importancia del mar Mediterráneo para Roma, entre otros).",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI03 OA 11",
+      "numero": 11,
+      "eje": "Formación ciudadana",
+      "descripcion": "Asumir sus deberes y responsabilidades como estudiante y en situaciones de la vida cotidiana, como cumplir con sus deberes escolares, colaborar en el orden y en la limpieza de los espacios que comparte con su familia, escuela y comunidad, cuidar sus pertenencias y las de los demás, preocuparse de su salud e higiene y ayudar en su casa.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI03 OA 12",
+      "numero": 12,
+      "eje": "Formación ciudadana",
+      "descripcion": "Mostrar actitudes y realizar acciones concretas en su entorno cercano (familia, escuela y comunidad) que reflejen valores y virtudes ciudadanas, como:",
+      "indicadores": [],
+      "detalle": [
+        "la tolerancia y el respeto al otro (ejemplos: respetar las opiniones distintas a las propias, mostrar disposición al diálogo, respetar expresiones de diversidad, como diferentes costumbres, creencias, origen étnico, nacionalidad, etc.)",
+        "la empatía (ejemplos: demostrar cortesía con los demás, escuchar al otro, ayudar a quien lo necesite, etc.)"
+      ]
+    },
+    {
+      "codigo": "HI03 OA 13",
+      "numero": 13,
+      "eje": "Formación ciudadana",
+      "descripcion": "Mantener una conducta honesta en la vida cotidiana, en los juegos y en el trabajo escolar, hablando con la verdad, respetando las reglas de los juegos sin hacer trampa y reconociendo sus errores y sus acciones, entre otros.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI03 OA 14",
+      "numero": 14,
+      "eje": "Formación ciudadana",
+      "descripcion": "Reconocer que los niños tienen derechos que les permiten recibir un cuidado especial por parte de la sociedad con el fin de que puedan aprender, crecer y desarrollarse, y dar ejemplos de cómo la sociedad les garantiza estos derechos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI03 OA 15",
+      "numero": 15,
+      "eje": "Formación ciudadana",
+      "descripcion": "Investigar y comunicar sus resultados sobre algunas instituciones públicas y privadas (como Junaeb, Sernac, SII, Banco Estado, instituciones de previsión y salud, universidades, Hogar de Cristo y fundaciones, entre otras), identificando el servicio que prestan en la comunidad y los diferentes trabajos que realizan las personas que se desempeñan en ellas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "HI03 OA 16",
+      "numero": 16,
+      "eje": "Formación ciudadana",
+      "descripcion": "Participar responsable y activamente en su hogar (encargos, celebraciones, cuidado de las cosas) y en la escuela (campañas solidarias, celebraciones, deportes y juegos), cumpliendo compromisos y responsabilidades adquiridos.",
+      "indicadores": []
+    }
+  ]
+}

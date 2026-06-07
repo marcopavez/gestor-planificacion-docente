@@ -1,38 +1,52 @@
-# Especificaciones de desarrollo (Spec-Driven Development) — Faro
+# Especificaciones de desarrollo (Spec-Driven Development) — Faro **v2**
 
-> **Qué es esto:** la capa de *spec-driven development* de Faro. Una especificación **por fase** del blueprint (`docs/arquitectura-faro.md` §11), pensada para **dirigir la implementación**: cada spec es lo bastante detallada para construirse sin re-derivar el diseño, pero **no** sustituye al blueprint.
+> **Qué es esto:** la capa de *spec-driven development* de Faro. Una especificación **por fase** pensada para **dirigir la implementación**: cada spec es lo bastante detallada para construirse sin re-derivar el diseño.
 >
-> **Fuente de verdad:** ante conflicto entre una spec y `docs/`, **mandan los `docs/`** (en especial `arquitectura-faro.md`, que es el documento técnico maestro). Si una spec contradice el blueprint, es un bug de la spec: señálalo, no lo resuelvas inventando.
+> **Fuente de verdad:** ante conflicto entre una spec y `docs/`, en lo que sigue **manda esta carpeta `specs/`** y el `CLAUDE.md` raíz, porque los `docs/` describen el alcance **v1 (normativo)** que el dueño **aparcó** (ver §0). Si una spec contradice una decisión registrada del dueño, es un bug de la spec: señálalo, no lo resuelvas inventando.
+
+---
+
+## 0. Cambio de alcance — de v1 (normativo) a v2 (planificaciones) · decisión del dueño, 2026-06-07
+
+Faro **v2** es **más simple y más enfocado** que el producto v1 documentado en `docs/`:
+
+**Qué es v2 (una frase):** un **generador de planificaciones docentes para básica chilena (1º–6º)** — dado **curso + asignatura + OA**, produce la planificación en el **formato real del colegio** (`.docx`/`.pdf`), y desde ella un **PPT infantil** y una **prueba formativa evaluable**. **Sin normativa. Sin RAG.**
+
+**Qué se aparca (fuera de alcance v2, mantenido como referencia):** todo el "foso normativo" de v1 — grafo normativo, **RAG/pgvector**, Decreto 67/83 como motor de validación, **M1 PME**, **M2 PACI/NEE**, **M3 asistente normativo**, gates legales/verificación de citas. No se borra: queda documentado en `docs/` y en [`01-nucleo-rag.md`](./01-nucleo-rag.md) con una nota de "fuera de alcance v2", por si esos módulos vuelven a futuro.
+
+**El único "conocimiento" de v2 son datos, no RAG:** el currículum nacional (OA) como JSON estructurado, consultado de forma **determinista** por `(asignatura, nivel)`. El currículum es estructurado: no necesita búsqueda semántica.
+
+**Por qué el pivote es barato:** el foso normativo **nunca se construyó** (Fase 0/1 se hicieron sin RAG ni pgvector). Lo que sí existe —monorepo hexagonal, persistencia, worker asíncrono, HIL, cascada de Aula, export `.pptx`— **se recicla casi entero**. El cambio real es: (a) modelar **dos formatos reales** de planificación, (b) export `.docx` + `.pdf` que **calcan las tablas**, (c) reorientar PPT y prueba a **público infantil**.
 
 ---
 
 ## 1. Cómo encaja con `docs/`
 
-| Capa | Archivo(s) | Rol |
+| Capa | Archivo(s) | Rol en v2 |
 |---|---|---|
-| **Visión** | `docs/solucion-educacion.md` | Producto, negocio, foso, pitch. *Por qué* existe Faro. |
-| **Arquitectura** | `docs/arquitectura-faro.md` + ADR 001–004 | *Cómo* se construye. Blueprint autoritativo. |
-| **Backlog** | `docs/plan-implementacion-faro.md` | Épicas A–G, estimaciones, plan semanal. |
-| **Specs (esta carpeta)** | `specs/NN-*.md` | *Qué construir en cada fase*, como contrato ejecutable: requisitos numerados, contratos concretos, criterios de aceptación, plan de pruebas. |
-
-Una spec **deriva** del blueprint §11 + las épicas del plan, y las **operacionaliza**: convierte la narrativa en requisitos verificables (RF-n), contratos copiables (puertos TS, Zod, DDL, API) y criterios de aceptación demostrables (CA-n). Es el artefacto que un implementador toma y ejecuta.
+| **Visión (v1, histórica)** | `docs/solucion-educacion.md` | Producto/negocio del Faro **normativo**. Útil como visión de largo plazo; **no** es el alcance de build v2. |
+| **Arquitectura** | `docs/arquitectura-faro.md` + ADR 002/003/004 | Hexagonal, persistencia, worker, corpus versionado: **vigentes**. Las partes de grafo normativo / RAG / gates legales: **aparcadas** (ver nota en el doc). ADR-001 (RAG): aparcado. |
+| **Backlog (v1)** | `docs/plan-implementacion-faro.md` | Épicas A–G del producto normativo. Referencia; el plan v2 vive en estas specs. |
+| **Specs v2 (esta carpeta)** | `specs/NN-*.md` | *Qué construir en cada fase de v2*, como contrato ejecutable. **Manda sobre los `docs/` v1.** |
 
 ---
 
-## 2. Mapa de fases
+## 2. Mapa de fases — v2
 
-Las fases siguen `docs/arquitectura-faro.md` §11 (construcción por *vertical slices* de producción). Cada fase entrega funcionalidad **vertical, íntegra y de calidad de producción** (no stubs).
+Cada fase entrega funcionalidad **vertical, íntegra y de calidad de producción** (no stubs).
 
-| Fase | Spec | Objetivo en una línea | Épicas | Módulo | Estado spec |
-|---|---|---|---|---|---|
-| **0** | [`00-cimientos.md`](./00-cimientos.md) | Cimientos de producción + primer *vertical slice* real (generador de pruebas de Aula sobre corpus OA mínimo real) | A (+ semillas B/E/G) | M0 (slice) | ✅ Escrita |
-| **1** | [`01-nucleo-rag.md`](./01-nucleo-rag.md) | El foso: ingesta real + grafo normativo/curricular + RAG robusto completo (ADR-001) | B | Núcleo | ✅ Escrita |
-| **2** | [`02-aula-cascada.md`](./02-aula-cascada.md) | M0 Aula: **cascada** Unidad→Clase→Prueba+`.pptx` con plantillas configurables por colegio (variante NEE/DUA deferida) | G | M0 | ✅ Escrita |
-| **3** | `03-normativo.md` | M3: asistente normativo con citas (síncrono+streaming) + auditoría reglamento Decreto 67 | C | M3 | ⬜ Pendiente |
-| **4** | `04-pme.md` | M1 parcial: borrador de la Fase Anual del PME con casillas de los 6 planes | D | M1 | ⬜ Pendiente |
-| **5** | `05-hardening.md` | Hardening de cumplimiento (DPA, RLS, retención) + piloto 1–2 colegios + observabilidad | E + F | Transversal | ⬜ Pendiente |
+| Fase | Spec | Objetivo en una línea | Estado |
+|---|---|---|---|
+| **0** | [`00-cimientos.md`](./00-cimientos.md) | Cimientos: monorepo hexagonal + persistencia + worker asíncrono + HIL + export base | ✅ **construido** (Fase 0/1 previas) |
+| **1** | [`01-curriculum-oa.md`](./01-curriculum-oa.md) | **Datos de currículum:** OA de 1º–6º básico, todas las asignaturas, como JSON versionado. Sin RAG. | ⬜ a construir |
+| **2** | [`02-planificacion.md`](./02-planificacion.md) | **Núcleo:** generar la planificación en **2 formatos reales** (A denso, B DUA), configurable, export **.docx + .pdf**. Generación **híbrida** (datos fijos + IA). | 🟡 parcial (cascada base existe) |
+| **3** | [`03-ppt-infantil.md`](./03-ppt-infantil.md) | Desde la planificación, un **PPT colorido e interactivo** para 6–12 años. | ⬜ *(espera referencias del dueño)* |
+| **4** | [`04-prueba-formativa.md`](./04-prueba-formativa.md) | Desde la planificación, una **prueba formativa evaluable apta para niños**. | ⬜ *(espera referencias del dueño)* |
+| **5** | `05-piloto.md` *(por escribir)* | Pulido + piloto en 1–2 colegios. | ⬜ |
 
-> **Dependencias entre fases:** 0 → 1 → {2, 3, 4} → 5. Las fases 2, 3 y 4 son módulos independientes que se apoyan sobre el núcleo de la Fase 1; pueden paralelizarse si hay equipo. La Fase 5 endurece todo lo anterior para el piloto. M2 (NEE completo) queda **fuera del MVP** (ver alcance global).
+> **Aparcada (no es fase v2):** [`01-nucleo-rag.md`](./01-nucleo-rag.md) — el RAG/grafo normativo del producto v1. Mantenida como referencia (ver nota al inicio del archivo).
+
+**Dependencias:** 0 → 1 → 2 → {3, 4} → 5. F3 y F4 dependen de F2 (consumen la planificación) y pueden paralelizarse.
 
 ---
 
@@ -54,67 +68,52 @@ Cada `specs/NN-*.md` sigue esta estructura fija:
 
 ## 4. Convenciones
 
-- **Numeración:** `RF-<fase>.<n>` para requisitos (ej. `RF-0.7`); `CA-<fase>.<n>` para criterios de aceptación; `H-<fase>.<n>` para historias. Estables: no se renumeran; lo obsoleto se marca *(retirado)*.
-- **Trazabilidad:** cada RF referencia su origen en `docs/` (`§` del blueprint, épica del plan, ADR). No se inventan requisitos (convención del dueño).
-- **Commits:** Conventional Commits. Cada historia mapea a uno o más commits con su *scope* de paquete (`feat(domain):`, `feat(infra-ai):`, …).
-- **`[VERIFICAR: ...]`:** dato local o externo sin confirmar. **No se inventa**: se marca y se traslada a §9 de la spec y a la tabla global de §6 de este índice.
-- **Anclajes `[E#]`/`[A#]`:** afirmaciones del contexto chileno verificadas en `docs/master-prompt-chile-govtech-startups.md`. Solo se citan anclajes que existan ahí.
-- **DoD heredado:** toda historia hereda el DoD global (abajo) **además** del DoD específico de su fase.
-- **Idioma:** especificaciones en español de Chile; términos técnicos en inglés donde es estándar (port, adapter, gate, retrieval).
+- **Numeración:** `RF-<fase>.<n>` para requisitos; `CA-<fase>.<n>` para criterios; `H-<fase>.<n>` para historias. Estables: no se renumeran; lo obsoleto se marca *(retirado)*.
+- **Trazabilidad:** cada RF referencia su origen (PDF de plantilla real, Bases Curriculares, decisión del dueño). **No se inventan requisitos** (convención del dueño).
+- **Commits:** Conventional Commits. Cada historia mapea a uno o más commits con su *scope* de paquete.
+- **`[VERIFICAR: ...]`:** dato local o externo sin confirmar. **No se inventa**: se marca y se traslada a §9 de la spec.
+- **Idioma:** specs en español de Chile; términos técnicos en inglés donde es estándar (port, adapter, template, render).
 
 ### DoD global (toda historia, todas las fases)
-Código + tests; `lint` y `typecheck` verdes; **sin `any`** injustificado; **sin `console.log`** en producción (logger estructurado). Si toca IA: **schema Zod validado + grounding verificado + `traza_ia` registrada**. CA cumplido y demostrable; PR revisado y mergeado con commit convencional. *(De `plan-implementacion-faro.md` §9 + `arquitectura-faro.md` §11.)*
+Código + tests; `lint` y `typecheck` verdes; **sin `any`** injustificado; **sin `console.log`** en producción (logger estructurado). Si toca IA: **schema Zod validado** + el contenido generado nace `borrador` para revisión del docente. CA cumplido y demostrable; PR revisado y mergeado con commit convencional.
 
 ---
 
-## 5. Invariantes transversales (el foso — aplican a TODAS las fases)
+## 5. Invariantes transversales (aplican a TODAS las fases v2)
 
-Estos invariantes son **criterios de aceptación globales**: ninguna fase puede violarlos. Son el foso expresado como arquitectura testeable (`arquitectura-faro.md` §0, §1.2, §9; CLAUDE.md §5).
+Son **criterios de aceptación globales**: ninguna fase puede violarlos. Versión v2 (sin el framing legal de v1).
 
-- **INV-1 · El dominio regulado se testea sin red.** Vigencias, validez de citas (existe + vigente), ítem→OA, una-sola-correcta, RRF: deterministas, en `packages/domain`, con tests **sin DB ni LLM**.
-- **INV-2 · El LLM nunca decide; propone borradores.** Todo lo que sale del LLM pasa por *gates* deterministas antes de poder cambiar de estado (Art. 8 bis, Ley 21.719 [E15]/[A13d]). El gate LLM solo *advierte/escala*, nunca *aprueba*.
-- **INV-3 · Cumplimiento by-design, no by-convention.** Todo documento **nace `borrador`** (forzado por tipo y por el `CHECK chk_aprobado_requiere_humano`). **No existe camino de código** que cree un documento `aprobado` sin `autor_humano` (HIL obligatorio).
-- **INV-4 · Corpus versionado = reproducibilidad legal.** `corpus_version` inmutable al publicar; cada `traza_ia` referencia la `corpus_version` exacta que vio la generación (ADR-004).
-- **INV-5 · Regla de dependencia.** Los `import` apuntan **siempre hacia el dominio**. `infra`/`apps` dependen de `application`/`domain`; nunca al revés. Enforzado por ESLint boundaries + fronteras físicas de paquete (ADR-002).
-- **INV-6 · Proveedores externos son adapters reemplazables.** Voyage, reranker, OCR, export `.pptx` viven tras puertos. Cambiar de proveedor = cambiar un adapter (+ reindexar si toca embeddings), no tocar la lógica de negocio.
-
-Cada spec, en su §8, indica **cómo** materializa los invariantes que toca (p. ej. el `CHECK` de DB, el lint de boundaries, el `borrador` inicial).
+- **INV-1 · El dominio se testea sin red.** Validación de schema, "el OA existe en el corpus", "los campos requeridos de la plantilla están presentes", ítem→OA, "una sola alternativa correcta": deterministas, en `packages/domain`, con tests **sin DB ni LLM**.
+- **INV-2 · La IA propone; el docente decide.** Lo que sale del LLM (experiencias/actividades, indicadores, ítems) es **borrador**; pasa por validaciones deterministas y por **revisión humana (HIL)** antes de darse por bueno. La IA nunca "aprueba" un documento.
+- **INV-3 · Borrador by-design.** Todo documento **nace `borrador`** (forzado por el `CHECK chk_aprobado_requiere_humano`). **No existe camino de código** que cree un documento `aprobado` sin `autor_humano`. *(Es el tagline del producto: "listo para revisar".)*
+- **INV-4 · Currículum versionado.** `corpus_version` inmutable: cada generación referencia la versión exacta del currículum OA que vio (ADR-004), para reproducibilidad.
+- **INV-5 · Regla de dependencia.** Los `import` apuntan **siempre hacia el dominio**. `infra`/`apps` dependen de `application`/`domain`; nunca al revés (ESLint boundaries + fronteras de paquete, ADR-002).
+- **INV-6 · Proveedores externos = adapters reemplazables.** El LLM y los exportadores (`.docx`, `.pdf`, `.pptx`) viven tras puertos. Cambiar de motor de render o de proveedor de IA = cambiar un adapter, no la lógica de negocio.
 
 ---
 
-## 6. Preguntas abiertas globales (el dueño debe responder antes de construir)
+## 6. Datos y preguntas abiertas — v2
 
-De `arquitectura-faro.md` §13. Se listan aquí con la **fase que bloquean** y su **estado**. No se inventan respuestas.
-
-| # | Pregunta | Bloquea | Estado |
+| # | Tema | Bloquea | Estado |
 |---|---|---|---|
-| 1 | `voyage-law-2`: ¿se confirma el modelo y su **dimensión exacta**? ¿Hay API key para Fase 1? | Fase 1 (fija `corpus_version.embedding_dim` y `vector(N)`) | Fase 0 resuelta: arranca con `FakeEmbeddings`. Voyage real **pendiente** `[VERIFICAR]`. |
-| 2 | Reranker: ¿Cohere Rerank o pase barato de Haiku? | Fases 0–1 | Resuelta para arranque: **Haiku** (sin dependencia nueva). Cohere = opción Fase 1. |
-| 3 | OCR/Document AI: ¿qué proveedor se compra? | Fase 3/5 (ingesta de reglamentos/diagnósticos) | **Pendiente** (build-vs-buy decidido: comprar; falta proveedor concreto → `OcrAdapter` + DPA). |
-| 4 | Despliegue: ¿Vercel (serverless) o Node server propio? | Fase 0/5 (cómo se hostea `apps/worker`) | Resuelta para arranque: **Node server local + worker**. Prod **pendiente**. |
-| 5 | Object storage: ¿qué S3-compatible para `.pptx`/`.docx`/`.pdf`? | Fase 2 | **Pendiente** (subprocesador + retención). |
-| 6 | Corpus inicial real: ¿qué asignatura/curso y qué subset de OA? | Fase 0/1 | 🟡 Parcial: **Matemática 1° básico** curado (`corpus/curriculum/`) + **Decreto 67 art. 18** curado, pendiente validación (`corpus/normativa/`). Falta el **reglamento de evaluación real** (lo aporta el dueño). |
-| 7 | `effort` por costo: ¿Opus `high` en razonamiento normativo o capar a `medium`? | Fase 3/4 (unit economics) | **Pendiente** (presupuesto piloto). |
-| 8 | Multi-tenancy día-1: ¿el piloto incluye un SLEP (multi-establecimiento)? | Decide si RLS entra en Fase 0 o Fase 5 | Resuelta para arranque: RLS a **Fase 5**. |
-| 9 | APDP / regulación operativa previa al 1-dic-2026 (Ley 21.719): ¿guía operativa a reflejar en transparencia/DPA? | Fase 5 | **Pendiente** `[VERIFICAR]`. |
-| 10 | Horas ahorradas (baseline): ¿medimos baseline propio en el piloto? | Fase 5 (métrica de pitch) | **Pendiente** `[VERIFICAR]` (no hay estudio chileno verificable). |
+| 1 | **Corpus OA 1º–6º, todas las asignaturas:** extraer de `docs/bases-curriculares-primera-a-sexto-basico.pdf` (python + pdfplumber). | Fase 1 (es su entregable) | 🟡 Hoy solo existe `corpus/curriculum/matematica-1-basico.json`. |
+| 2 | **Indicadores de evaluación:** viven en los *Programas de Estudio* (no en las Bases). | Fase 2 (campo "indicadores") | Resuelto por decisión **híbrida**: la IA los redacta como `ia_borrador`. Si el dueño aporta el Programa de Estudio, se usan los oficiales. |
+| 3 | **Referencias de estilo del PPT infantil y de la prueba.** | Fases 3 y 4 | ⬜ El dueño las comparte. |
+| 4 | **Lista exacta de asignaturas del MVP** (Lenguaje, Matemática, Cs. Naturales, Historia, Artes, Música, Tecnología, Orientación, Ed. Física, Inglés…). | Fase 1 | `[VERIFICAR]` con el dueño qué asignaturas entran al MVP. |
+| 5 | **Theming visual del export** (logo/colores del colegio en el `.docx`/`.pdf`). | Fase 2 (iteración) | v2 entrega la estructura de tablas fiel; el theming fino es iteración posterior. |
 
 ---
 
-## 7. Alcance global del MVP (recordatorio)
+## 7. Alcance del MVP — v2
 
-**Entra** (`solucion-educacion.md` §6, `arquitectura-faro.md` §11): núcleo (6 planes + Decreto 67/83 subset + corpus OA), **M0 Aula** (pruebas con variante NEE/DUA + clases `.pptx`), **M3** (asistente normativo + auditoría de reglamento), **M1 parcial** (Fase Anual del PME), evals + HIL + DPA.
+**Entra:** datos de currículum OA (1º–6º, todas las asignaturas); generador de planificación en **2 formatos reales** configurables; export **.docx + .pdf**; generación **híbrida** (OA/listas = datos fijos, experiencias/indicadores = IA borrador); **PPT infantil**; **prueba formativa** apta para niños; HIL (revisión docente).
 
-**NO entra (v1):** integración API directa con plataformas MINEDUC `[VERIFICAR]`; **M2 NEE completo**; multi-establecimiento SLEP; **personalización/evaluación adaptativa por alumno** (perfilamiento → fase posterior con consentimiento [E15]).
+**NO entra (v2):** normativa de cualquier tipo (RAG, Decreto 67/83 como motor, citas legales); PME (M1); PACI/NEE (M2); asistente normativo (M3); multi-establecimiento SLEP; personalización por alumno; integración API con plataformas MINEDUC.
 
 ---
 
 ## 8. Estado y próximos pasos
 
-- ✅ **Escritas:** Fase 0 (`00-cimientos.md`), Fase 1 (`01-nucleo-rag.md`), Fase 2 (`02-aula-cascada.md`).
-- ⬜ **Pendientes:** Fases 3–5. Se redactan con la misma plantilla cuando el dueño lo indique (orden sugerido: 3 → 4 → 5).
-- 🔁 **Re-secuenciación (dueño, 2026-06-06):** tras **cerrar el demo de Aula**, la siguiente fase de construcción es **productizar M0 Aula** (persistencia + HIL + worker asíncrono + **línea de tiempo / Planificación Anual**), **no** el RAG. El foso RAG (`01-nucleo-rag.md`) y todo `pgvector` se **posponen a M3** (el currículum es estructurado: OA por `(asignatura, nivel)` = consulta determinista, no búsqueda semántica). Plan aprobado: [`../docs/plan-fase-1-productizacion-aula.md`](../docs/plan-fase-1-productizacion-aula.md). Este índice se actualizará al promover ese plan a spec numerada.
-
-> **Nota (sesión 2026-06-06):** la Fase 2 se expandió por decisión del dueño de "pruebas + clases" a la **cascada completa de planificación** (Unidad → Clase → Prueba + `.pptx`) con plantillas configurables por colegio; ver `02-aula-cascada.md` §1.3.
-
-> Para arrancar la construcción, el punto de entrada es [`00-cimientos.md`](./00-cimientos.md). Antes de codear, resolver las preguntas abiertas que bloquean la fase (tabla §6) — en particular la **entrega del corpus mínimo real** (#6).
+- ✅ **Construido:** Fase 0 (cimientos) y la productización previa (persistencia + worker + HIL + cascada de Aula + export `.pptx`).
+- ▶️ **Siguiente:** **Fase 1** (corpus OA 1º–6º) y **Fase 2** (núcleo de planificación, 2 formatos, `.docx`/`.pdf`). Punto de entrada: [`02-planificacion.md`](./02-planificacion.md).
+- ⏸️ **En espera del dueño:** referencias de estilo para **Fase 3** (PPT) y **Fase 4** (prueba).

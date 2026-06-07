@@ -1,0 +1,252 @@
+{
+  "asignatura": "Matemática",
+  "nivel": "3º básico",
+  "codigoAsignaturaNivel": "MA03",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "Matemática: validado vs corpus oráculo."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Números y operaciones",
+    "Patrones y álgebra",
+    "Geometría",
+    "Medición",
+    "Datos y probabilidades"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "MA03 OA 01",
+      "numero": 1,
+      "eje": "Números y operaciones",
+      "descripcion": "Contar números del 0 al 1 000 de 5 en 5, de 10 en 10, de 100 en 100:",
+      "indicadores": [],
+      "detalle": [
+        "empezando por cualquier número natural menor que 1.000",
+        "de 3 en 3, de 4 en 4..., empezando por cualquier múltiplo del número correspondiente"
+      ]
+    },
+    {
+      "codigo": "MA03 OA 02",
+      "numero": 2,
+      "eje": "Números y operaciones",
+      "descripcion": "Leer números hasta 1.000 y representarlos en forma concreta, pictórica y simbólica.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA03 OA 03",
+      "numero": 3,
+      "eje": "Números y operaciones",
+      "descripcion": "Comparar y ordenar números naturales hasta 1.000, utilizando la recta numérica o la tabla posicional de manera manual y/o por medio de software educativo.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA03 OA 04",
+      "numero": 4,
+      "eje": "Números y operaciones",
+      "descripcion": "Describir y aplicar estrategias de cálculo mental para las adiciones y las sustracciones hasta 100:",
+      "indicadores": [],
+      "detalle": [
+        "por descomposición",
+        "completar hasta la decena más cercana",
+        "usar dobles",
+        "sumar en vez de restar",
+        "aplicar la asociatividad"
+      ]
+    },
+    {
+      "codigo": "MA03 OA 05",
+      "numero": 5,
+      "eje": "Números y operaciones",
+      "descripcion": "Identificar y describir las unidades, las decenas y las centenas en números del 0 al 1.000, representando las cantidades de acuerdo a su valor posicional, con material concreto, pictórico y simbólico.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA03 OA 06",
+      "numero": 6,
+      "eje": "Números y operaciones",
+      "descripcion": "Demostrar que comprenden la adición y la sustracción de números del 0 al 1.000:",
+      "indicadores": [],
+      "detalle": [
+        "usando estrategias personales con y sin material concreto",
+        "creando y resolviendo problemas de adición y sustracción que involucren operaciones combinadas, en forma concreta, pictórica y simbólica, de manera manual y/o por medio de software educativo",
+        "aplicando los algoritmos con y sin reserva, progresivamente, en la adición de hasta cuatro sumandos y en la sustracción de hasta un sustraendo"
+      ]
+    },
+    {
+      "codigo": "MA03 OA 07",
+      "numero": 7,
+      "eje": "Números y operaciones",
+      "descripcion": "Demostrar que comprenden la relación entre la adición y la sustracción, usando la “familia de operaciones” en cálculos aritméticos y en la resolución de problemas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA03 OA 08",
+      "numero": 8,
+      "eje": "Números y operaciones",
+      "descripcion": "aplicando los resultados de las tablas de multiplicación hasta 10 10, sin realizar cálculos resolviendo problemas que involucren las tablas aprendidas hasta el 10 Demostrar que comprenden las tablas de multiplicar hasta el 10 de manera progresiva:",
+      "indicadores": [],
+      "detalle": [
+        "usando representaciones concretas y pictóricas",
+        "expresando una multiplicación como una adición de sumandos iguales",
+        "usando la distributividad como estrategia para construir las tablas hasta el 10"
+      ],
+      "revision": "[VERIFICAR: extracción dudosa; revisar contra el PDF]"
+    },
+    {
+      "codigo": "MA03 OA 09",
+      "numero": 9,
+      "eje": "Números y operaciones",
+      "descripcion": "Demostrar que comprenden la división en el contexto de las tablas7 de hasta 10 10:",
+      "indicadores": [],
+      "detalle": [
+        "representando y explicando la división como repartición y agrupación en partes iguales, con material concreto y pictórico",
+        "creando y resolviendo problemas en contextos que incluyan la repartición y la agrupación",
+        "expresando la división como una sustracción repetida",
+        "describiendo y aplicando la relación inversa entre la división y la multiplicación"
+      ]
+    },
+    {
+      "codigo": "MA03 OA 10",
+      "numero": 10,
+      "eje": "Números y operaciones",
+      "descripcion": "10, sin realizar cálculos 10 Resolver problemas rutinarios en contextos cotidianos, que incluyan dinero e involucren las cuatro operaciones (no combinadas).",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA03 OA 11",
+      "numero": 11,
+      "eje": "Números y operaciones",
+      "descripcion": "1 1 1 2 3 Demostrar que comprenden las fracciones de uso común: 4 3 2 3 4 explicando que una fracción representa la parte de un todo8, de manera concreta, pictórica, simbólica, de forma manual y/o con software educativo describiendo situaciones en las cuales se puede usar fracciones comparando fracciones de un mismo todo, de igual denominador",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA03 OA 12",
+      "numero": 12,
+      "eje": "Patrones y álgebra",
+      "descripcion": "Generar, describir y registrar patrones numéricos, usando una variedad de estrategias en tablas del 100, de manera manual y/o con software educativo.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA03 OA 13",
+      "numero": 13,
+      "eje": "Patrones y álgebra",
+      "descripcion": "Resolver ecuaciones de un paso que involucren adiciones y sustracciones y un símbolo geométrico que represente un número desconocido, en forma pictórica y simbólica del 0 al 100.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA03 OA 14",
+      "numero": 14,
+      "eje": "Geometría",
+      "descripcion": "Describir la localización de un objeto en un mapa simple o en una cuadrícula.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA03 OA 15",
+      "numero": 15,
+      "eje": "Geometría",
+      "descripcion": "Demostrar que comprenden la relación que existe entre figuras 3D y figuras 2D:",
+      "indicadores": [],
+      "detalle": [
+        "construyendo una figura 3D a partir de una red (plantilla)",
+        "desplegando la figura 3D"
+      ]
+    },
+    {
+      "codigo": "MA03 OA 16",
+      "numero": 16,
+      "eje": "Geometría",
+      "descripcion": "Describir cubos, paralelepípedos, esferas, conos, cilindros y pirámides de acuerdo a la forma de sus caras y el número de aristas y vértices.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA03 OA 17",
+      "numero": 17,
+      "eje": "Geometría",
+      "descripcion": "Reconocer en el entorno figuras 2D que están trasladadas, reflejadas y rotadas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA03 OA 18",
+      "numero": 18,
+      "eje": "Geometría",
+      "descripcion": "Demostrar que comprenden el concepto de ángulo:",
+      "indicadores": [],
+      "detalle": [
+        "identificando ejemplos de ángulos en el entorno",
+        "estimando la medida de ángulos, usando como referente ángulos de 45º y de 90o"
+      ]
+    },
+    {
+      "codigo": "MA03 OA 19",
+      "numero": 19,
+      "eje": "Medición",
+      "descripcion": "Leer e interpretar líneas de tiempo y calendarios.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA03 OA 20",
+      "numero": 20,
+      "eje": "Medición",
+      "descripcion": "Leer y registrar el tiempo en horas, medias horas, cuartos de hora y minutos en relojes análogos y digitales.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA03 OA 21",
+      "numero": 21,
+      "eje": "Medición",
+      "descripcion": "Demostrar que comprenden el perímetro de una figura regular e irregular:",
+      "indicadores": [],
+      "detalle": [
+        "midiendo y registrando el perímetro de figuras del entorno en el contexto de la resolución de problemas",
+        "determinando el perímetro de un cuadrado y de un rectángulo"
+      ]
+    },
+    {
+      "codigo": "MA03 OA 22",
+      "numero": 22,
+      "eje": "Medición",
+      "descripcion": "Demostrar que comprende la medición del peso (g y kg):",
+      "indicadores": [],
+      "detalle": [
+        "comparando y ordenando dos o más objetos a partir de su peso de manera informal",
+        "usando modelos para explicar la relación que existe entre gramos y kilogramos",
+        "estimando el peso de objetos de uso cotidiano, usando referentes",
+        "midiendo y registrando el peso de objetos en números y en fracciones de uso común, en el contexto de la resolución de problemas"
+      ]
+    },
+    {
+      "codigo": "MA03 OA 23",
+      "numero": 23,
+      "eje": "Datos y probabilidades",
+      "descripcion": "Realizar encuestas, clasificar y organizar los datos obtenidos en tablas y visualizarlos en gráficos de barra.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA03 OA 24",
+      "numero": 24,
+      "eje": "Datos y probabilidades",
+      "descripcion": "Registrar y ordenar datos obtenidos de juegos aleatorios con dados y monedas, encontrando el menor, el mayor y estimando el punto medio entre ambos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA03 OA 25",
+      "numero": 25,
+      "eje": "Datos y probabilidades",
+      "descripcion": "Construir, leer e interpretar pictogramas y gráficos de barra simple con escala, de acuerdo a información recolectada o dada.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA03 OA 26",
+      "numero": 26,
+      "eje": "Datos y probabilidades",
+      "descripcion": "Representar datos usando diagramas de puntos.",
+      "indicadores": []
+    }
+  ]
+}

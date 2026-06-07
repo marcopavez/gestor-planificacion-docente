@@ -1,0 +1,219 @@
+{
+  "asignatura": "Idioma Extranjero Inglés",
+  "nivel": "6º básico",
+  "codigoAsignaturaNivel": "IN06",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Comprensión auditiva",
+    "Comprensión de lectura",
+    "Expresión oral",
+    "Expresión escrita"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "IN06 OA 01",
+      "numero": 1,
+      "eje": null,
+      "descripcion": "Escuchar y demostrar comprensión de información explícita en textos adaptados y auténticos simples, tanto no literarios (textos expositivos, diálogos) como literarios (rimas, poemas, canciones, cuentos) que estén enunciados en forma clara, tengan repetición de palabras y apoyo visual y gestual, y estén relacionados con las funciones del año y los siguientes temas:",
+      "indicadores": [],
+      "detalle": [
+        "la comida y la bebida, la salud, lugares de la ciudad, ocupaciones, el mundo natural, viajes y medios de transporte",
+        "temas relacionados con el contexto inmediato de los estudiantes, como experiencias personales pasadas, sentimientos, historias ficticias e información de interés relativa a eventos y aspectos de su entorno y de nuestro país",
+        "temas de otras asignaturas: hábitos de limpieza e higiene, beneficios de actividad física, alimentación saludable (Ciencias Naturales); características geográficas como relieve y clima de Chile (Geografía)",
+        "temas de actualidad e interés global, como cultura de otros países, cuidado del medioambiente, avances tecnológicos (redes sociales, medios de comunicación)"
+      ]
+    },
+    {
+      "codigo": "IN06 OA 02",
+      "numero": 2,
+      "eje": "Comprensión auditiva",
+      "descripcion": "Identificar en los textos escuchados:",
+      "indicadores": [],
+      "detalle": [
+        "tema e ideas generales",
+        "información específica asociada a personas, lugares, tiempo y acciones",
+        "palabras, familias de palabras, expresiones de uso frecuente y vocabulario temático",
+        "repetición de sonidos y sonidos propios del idioma inglés que interfieren con la comunicación, como los sonidos ch/sh en palabras como chip/ship; b/v en palabras como boat/vote"
+      ]
+    },
+    {
+      "codigo": "IN06 OA 03",
+      "numero": 3,
+      "eje": "Comprensión auditiva",
+      "descripcion": "Escuchar textos orales en diversos formatos audiovisuales, usando las siguientes estrategias para apoyar la comprensión:",
+      "indicadores": [],
+      "detalle": [
+        "hacer predicciones, basándose en conocimientos previos",
+        "usar claves contextuales (tema, hablantes, lugar, tiempo, imágenes)",
+        "focalizar la atención en palabras claves",
+        "visualizar diferentes aspectos del texto",
+        "usar apoyo visual"
+      ]
+    },
+    {
+      "codigo": "IN06 OA 04",
+      "numero": 4,
+      "eje": "Comprensión auditiva",
+      "descripcion": "Reaccionar a los textos escuchados, expresando opiniones y sentimientos o haciendo conexiones con experiencias personales, en forma oral o escrita.",
+      "indicadores": []
+    },
+    {
+      "codigo": "IN06 OA 05",
+      "numero": 5,
+      "eje": "Comprensión de lectura",
+      "descripcion": "Leer y demostrar comprensión de textos adaptados y auténticos simples, no literarios, que contengan palabras de uso frecuente, familias de palabras y repetición de frases, y estén acompañados de apoyo visual y relacionados con los temas y las siguientes funciones del año:",
+      "indicadores": [],
+      "detalle": [
+        "expresar habilidad e inhabilidad",
+        "dar direcciones e indicar posición",
+        "solicitar y contrastar información",
+        "decir y preguntar la hora",
+        "referirse a acciones cotidianas que ocurren al momento de hablar y en el pasado",
+        "describir personas y acciones y cómo estas se realizan",
+        "expresar cantidades, necesidad y posesiones"
+      ]
+    },
+    {
+      "codigo": "IN06 OA 06",
+      "numero": 6,
+      "eje": "Comprensión de lectura",
+      "descripcion": "Leer comprensivamente textos no literarios, como notas, postales, invitaciones, tarjetas de saludo, menús, recetas, instrucciones, avisos publicitarios, emails, diálogos o textos expositivos, identificando:",
+      "indicadores": [],
+      "detalle": [
+        "propósito del texto",
+        "ideas generales",
+        "información explícita",
+        "palabras clave, expresiones de uso común asociadas a las funciones del nivel (por ejemplo: have lunch, catch a cold) y vocabulario temático"
+      ]
+    },
+    {
+      "codigo": "IN06 OA 07",
+      "numero": 7,
+      "eje": "Comprensión de lectura",
+      "descripcion": "Leer comprensivamente textos literarios adaptados y auténticos simples, como rimas, poemas, tiras cómicas y cuentos, que contengan palabras de uso frecuente, familias de palabras, repetición de frases y estén acompañados de apoyo visual, identificando:",
+      "indicadores": [],
+      "detalle": [
+        "tema general del texto",
+        "personajes, lugares, tiempo y acciones",
+        "secuencia de eventos (beginning middle end)",
+        "vocabulario temático y expresiones de uso común"
+      ]
+    },
+    {
+      "codigo": "IN06 OA 08",
+      "numero": 8,
+      "eje": "Comprensión de lectura",
+      "descripcion": "Reaccionar a los textos leídos, expresando opiniones y sentimientos o haciendo conexiones con experiencias personales, en forma oral o escrita.",
+      "indicadores": []
+    },
+    {
+      "codigo": "IN06 OA 09",
+      "numero": 9,
+      "eje": "Comprensión de lectura",
+      "descripcion": "Usar las siguientes estrategias para apoyar la comprensión de los textos leídos, tanto en formato digital como impreso:",
+      "indicadores": [],
+      "detalle": [
+        "prelectura: hacer predicciones, basándose en conocimientos previos, elementos visuales y contextuales",
+        "lectura: usar organizadores, como títulos, subtítulos, ilustraciones, imágenes y notas",
+        "poslectura: organizar información en diagramas, releer, usar el texto leído como modelo para la expresión escrita"
+      ]
+    },
+    {
+      "codigo": "IN06 OA 10",
+      "numero": 10,
+      "eje": "Expresión oral",
+      "descripcion": "Reproducir y producir textos orales, como monólogos, canciones, poemas, adivinanzas y diálogos, para identificar y familiarizarse con los sonidos propios del idioma, como, ch/sh en palabras como chip/ship; b/v en palabras como boat/ vote.",
+      "indicadores": []
+    },
+    {
+      "codigo": "IN06 OA 11",
+      "numero": 11,
+      "eje": "Expresión oral",
+      "descripcion": "Expresarse oralmente, ya sea en diálogos, presentaciones o actividades grupales, con apoyo visual y/o digital, en torno a los temas del año.",
+      "indicadores": []
+    },
+    {
+      "codigo": "IN06 OA 12",
+      "numero": 12,
+      "eje": "Expresión oral",
+      "descripcion": "Participar en diálogos con pares y profesores al realizar las siguientes funciones:",
+      "indicadores": [],
+      "detalle": [
+        "expresar habilidad e inhabilidad; por ejemplo: I can/can’t",
+        "describir posición y dar indicaciones de dirección y su secuencia; por ejemplo: The zoo is in front of the park; turn right/left, then go straight",
+        "describir personas en cuanto a personalidad o estado; por ejemplo: he is quiet/friendly; I feel sad/angry/tired",
+        "contrastar información; por ejemplo: it can run but it can’t jump; there is cheese but there isn’t bread",
+        "expresar necesidad; por ejemplo: I have to...",
+        "pedir y decir la hora; por ejemplo: What time is it? It’s 4 o’clock",
+        "describir y preguntar por acciones que ocurren al momento de hablar; por ejemplo: He is/isn’t reading; Is he reading? Yes, he is/No, he isn’t; Are they playing? Yes, they are/No, they aren’t",
+        "expresar cantidad y números hasta el 50; por ejemplo: there is/are a/many/a lot of...child/children; there are 30 cars",
+        "describir acciones que ocurren en el pasado; por ejemplo: I was/made/did/ felt...",
+        "describir acciones y cómo se realizan; por ejemplo: he reads fast/very slowly",
+        "expresar posesión; por ejemplo: it is his/her/our car; this is Pedro’s pet",
+        "formular y responder preguntas; por ejemplo: Who...?/How much/many...?/ Can...?/ Where...?",
+        "dar información general sobre un tema conocido; por ejemplo: the/he/they... is/are/have/eat/read",
+        "re-contar cuentos con apoyo de ilustraciones; por ejemplo: the...run/play/ have...; there is/are..."
+      ]
+    },
+    {
+      "codigo": "IN06 OA 13",
+      "numero": 13,
+      "eje": "Expresión oral",
+      "descripcion": "Demostrar conocimiento y uso del vocabulario aprendido:",
+      "indicadores": [],
+      "detalle": [
+        "vocabulario temático",
+        "palabras de uso frecuente",
+        "expresiones de uso común asociadas a las funciones del nivel (por ejemplo: have lunch, catch a cold)"
+      ]
+    },
+    {
+      "codigo": "IN06 OA 14",
+      "numero": 14,
+      "eje": "Expresión escrita",
+      "descripcion": "Escribir, de acuerdo a un modelo y con apoyo de lenguaje visual, textos no literarios (como email, postal, agenda, invitación) y textos literarios (como cuentos, rimas, tiras cómicas) con el propósito de compartir información en torno a los temas del año.",
+      "indicadores": []
+    },
+    {
+      "codigo": "IN06 OA 15",
+      "numero": 15,
+      "eje": "Expresión escrita",
+      "descripcion": "Escribir para realizar las siguientes funciones:",
+      "indicadores": [],
+      "detalle": [
+        "indicar posición; por ejemplo: The zoo is in front of the park",
+        "describir personas en cuanto a personalidad o estado; por ejemplo: he is quiet/friendly; I feel sad/happy/angry",
+        "contrastar información; por ejemplo: it can fly but it can’t swim",
+        "expresar necesidad; por ejemplo: I have to...",
+        "describir y preguntar por acciones que ocurren al momento de hablar; por ejemplo: He is/isn’t reading; Is he reading? Yes, he is/No, he isn’t; Are they playing? Yes, they are/No, they aren’t",
+        "expresar cantidad e identificar sustantivos plurales irregulares; por ejemplo: there is/are a/many/a lot of...child/children",
+        "describir acciones que ocurren en el pasado; por ejemplo: I was/made/did/ felt...",
+        "describir acciones y cómo estas se realizan; por ejemplo: he reads fast/very slowly",
+        "expresar posesión; por ejemplo: it is his/her/our car; this is Pedro’s pet",
+        "expresar cantidad numérica hasta el 20",
+        "formular y responder preguntas; por ejemplo: Who...?/How much/many...?/ Can...?/ Where...?"
+      ]
+    },
+    {
+      "codigo": "IN06 OA 16",
+      "numero": 16,
+      "eje": "Expresión escrita",
+      "descripcion": "Utilizar los pasos del proceso de escritura (organización de ideas, escritura, corrección y publicación), recurriendo a herramientas como diccionario en línea y procesador de texto para:",
+      "indicadores": [],
+      "detalle": [
+        "crear sus propias oraciones y párrafos breves o diálogos con la ayuda del docente",
+        "utilizar los elementos ortográficos del nivel: mayúscula (en pronombre I) y signos de interrogación",
+        "demostrar conocimiento y uso del vocabulario temático, palabras de uso frecuente y expresiones de uso común asociadas a las funciones del nivel (por ejemplo: have lunch, catch a cold)"
+      ]
+    }
+  ]
+}

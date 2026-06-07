@@ -1,0 +1,67 @@
+{
+  "asignatura": "Tecnología",
+  "nivel": "1º básico",
+  "codigoAsignaturaNivel": "TE01",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Diseñar, hacer y probar",
+    "Tecnologías de la información y la comunicación"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "TE01 OA 01",
+      "numero": 1,
+      "eje": "Diseñar, hacer y probar",
+      "descripcion": "Crear diseños de objetos tecnológicos, representando sus ideas a través de dibujos a mano alzada o modelos concretos, desde sus propias experiencias y tópicos de otras asignaturas, con orientación del profesor.",
+      "indicadores": []
+    },
+    {
+      "codigo": "TE01 OA 02",
+      "numero": 2,
+      "eje": "Diseñar, hacer y probar",
+      "descripcion": "Distinguir las tareas para elaborar un objeto tecnológico, identificando los materiales y las herramientas necesarias en cada una de ellas para lograr el resultado deseado.",
+      "indicadores": []
+    },
+    {
+      "codigo": "TE01 OA 03",
+      "numero": 3,
+      "eje": "Diseñar, hacer y probar",
+      "descripcion": "Elaborar un objeto tecnológico según las indicaciones del profesor, seleccionando y experimentando con:",
+      "indicadores": [],
+      "detalle": [
+        "técnicas y herramientas para medir, cortar, plegar, unir, pegar, pintar, entre otras",
+        "materiales como papeles, fibras, plásticos, desechos, entre otros"
+      ]
+    },
+    {
+      "codigo": "TE01 OA 04",
+      "numero": 4,
+      "eje": "Diseñar, hacer y probar",
+      "descripcion": "Probar y explicar los resultados de los trabajos propios y de otros, de forma individual o en equipos, dialogando sobre sus ideas e identificando lo que podría hacerse de otra manera.",
+      "indicadores": []
+    },
+    {
+      "codigo": "TE01 OA 05",
+      "numero": 5,
+      "eje": "Tecnologías de la información y la comunicación",
+      "descripcion": "Usar software de dibujo para crear y representar ideas por medio de imágenes, guiados por el docente.",
+      "indicadores": []
+    },
+    {
+      "codigo": "TE01 OA 06",
+      "numero": 6,
+      "eje": "Tecnologías de la información y la comunicación",
+      "descripcion": "Explorar y usar una variedad de software educativos (simuladores, libros digitales, interactivos y creativos, entre otros) para lograr aprendizajes significativos y una interacción apropiada con las TIC.",
+      "indicadores": []
+    }
+  ]
+}

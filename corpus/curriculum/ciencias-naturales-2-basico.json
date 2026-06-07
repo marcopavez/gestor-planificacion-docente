@@ -1,0 +1,126 @@
+{
+  "asignatura": "Ciencias Naturales",
+  "nivel": "2º básico",
+  "codigoAsignaturaNivel": "CN02",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Ciencias de la vida",
+    "Ciencias físicas y químicas",
+    "Ciencias de la tierra y el universo"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "CN02 OA 01",
+      "numero": 1,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Observar, describir y clasificar los vertebrados en mamíferos, aves, reptiles, anfibios y peces, a partir de características como cubierta corporal, presencia de mamas y estructuras para la respiración, entre otras.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN02 OA 02",
+      "numero": 2,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Observar, describir y clasificar, por medio de la exploración, las características de los animales sin columna vertebral, como insectos, arácnidos, crustáceos, entre otros, y compararlos con los vertebrados.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN02 OA 03",
+      "numero": 3,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Observar y comparar las características de las etapas del ciclo de vida de distintos animales (mamíferos, aves, insectos y anfibios), relacionándolas con su hábitat.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN02 OA 04",
+      "numero": 4,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Observar y comparar las características de distintos hábitat, identificando la luminosidad, la humedad y la temperatura necesarias para la supervivencia de los animales que habitan en él.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN02 OA 05",
+      "numero": 5,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Observar e identificar algunos animales nativos que se encuentran en peligro de extinción, así como el deterioro de su hábitat, proponiendo medidas para protegerlos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN02 OA 06",
+      "numero": 6,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Identificar y comunicar los efectos de la actividad humana sobre los animales y su hábitat. CUERpo hUmANo Y sALUD",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN02 OA 07",
+      "numero": 7,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Identificar la ubicación y explicar la función de algunas partes del cuerpo que son fundamentales para vivir: corazón, pulmones, estómago, esqueleto y músculos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN02 OA 08",
+      "numero": 8,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Explicar la importancia de la actividad física para el desarrollo de los músculos y el fortalecimiento del corazón, proponiendo formas de ejercitarla e incorporarla en sus hábitos diarios.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN02 OA 09",
+      "numero": 9,
+      "eje": "Ciencias físicas y químicas",
+      "descripcion": "ser transparente e inodora evaporarse y congelarse con los cambios de temperatura Observar y describir, por medio de la investigación experimental, algunas características del agua, como:",
+      "indicadores": [],
+      "detalle": [
+        "escurrir",
+        "adaptarse a la forma del recipiente",
+        "disolver algunos sólidos, como el azúcar y la sal"
+      ],
+      "revision": "[VERIFICAR: extracción dudosa; revisar contra el PDF]"
+    },
+    {
+      "codigo": "CN02 OA 10",
+      "numero": 10,
+      "eje": "Ciencias físicas y químicas",
+      "descripcion": "Identificar y comparar, por medio de la exploración, los estados sólido, líquido y gaseoso del agua.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN02 OA 11",
+      "numero": 11,
+      "eje": "Ciencias físicas y químicas",
+      "descripcion": "Describir el ciclo del agua en la naturaleza, reconociendo que el agua es un recurso preciado y proponiendo acciones cotidianas para su cuidado.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN02 OA 12",
+      "numero": 12,
+      "eje": "Ciencias de la tierra y el universo",
+      "descripcion": "Reconocer y describir algunas características del tiempo atmosférico, como precipitaciones (lluvia, granizo, nieve), viento y temperatura ambiente, entre otras, y sus cambios a lo largo del año.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN02 OA 13",
+      "numero": 13,
+      "eje": "Ciencias de la tierra y el universo",
+      "descripcion": "Medir algunas características del tiempo atmosférico, construyendo y/o usando algunos instrumentos tecnológicos útiles para su localidad, como termómetro, pluviómetro o veleta.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN02 OA 14",
+      "numero": 14,
+      "eje": "Ciencias de la tierra y el universo",
+      "descripcion": "Describir la relación de los cambios del tiempo atmosférico con las estaciones del año y sus efectos sobre los seres vivos y el ambiente.",
+      "indicadores": []
+    }
+  ]
+}

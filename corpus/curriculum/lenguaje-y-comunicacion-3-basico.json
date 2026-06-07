@@ -1,0 +1,345 @@
+{
+  "asignatura": "Lenguaje y Comunicación",
+  "nivel": "3º básico",
+  "codigoAsignaturaNivel": "LE03",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Lectura",
+    "Escritura",
+    "Comunicación oral"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "LE03 OA 01",
+      "numero": 1,
+      "eje": "Lectura",
+      "descripcion": "Leer en voz alta de manera fluida variados textos apropiados a su edad:",
+      "indicadores": [],
+      "detalle": [
+        "pronunciando cada palabra con precisión",
+        "respetando la coma, el punto y los signos de exclamación e interrogación",
+        "leyendo con velocidad adecuada para el nivel"
+      ]
+    },
+    {
+      "codigo": "LE03 OA 02",
+      "numero": 2,
+      "eje": "Lectura",
+      "descripcion": "Comprender textos, aplicando estrategias de comprensión lectora; por ejemplo:",
+      "indicadores": [],
+      "detalle": [
+        "relacionar la información del texto con sus experiencias y conocimientos",
+        "releer lo que no fue comprendido",
+        "visualizar lo que describe el texto",
+        "recapitular",
+        "formular preguntas sobre lo leído y responderlas",
+        "subrayar información relevante en un texto"
+      ]
+    },
+    {
+      "codigo": "LE03 OA 03",
+      "numero": 3,
+      "eje": "Lectura",
+      "descripcion": "Leer y familiarizarse con un amplio repertorio de literatura para aumentar su conocimiento del mundo y desarrollar su imaginación; por ejemplo:",
+      "indicadores": [],
+      "detalle": [
+        "poemas",
+        "cuentos folclóricos y de autor",
+        "fábulas",
+        "leyendas",
+        "mitos",
+        "novelas",
+        "historietas",
+        "otros"
+      ]
+    },
+    {
+      "codigo": "LE03 OA 04",
+      "numero": 4,
+      "eje": "Lectura",
+      "descripcion": "Profundizar su comprensión de las narraciones leídas:",
+      "indicadores": [],
+      "detalle": [
+        "extrayendo información explícita e implícita",
+        "reconstruyendo la secuencia de las acciones en la historia",
+        "describiendo a los personajes",
+        "describiendo el ambiente en que ocurre la acción",
+        "expresando opiniones fundamentadas sobre hechos y situaciones del texto",
+        "emitiendo una opinión sobre los personajes"
+      ]
+    },
+    {
+      "codigo": "LE03 OA 05",
+      "numero": 5,
+      "eje": "Lectura",
+      "descripcion": "Comprender poemas adecuados al nivel e interpretar el lenguaje figurado presente en ellos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE03 OA 06",
+      "numero": 6,
+      "eje": "Lectura",
+      "descripcion": "Leer independientemente y comprender textos no literarios (cartas, biografías, relatos históricos, instrucciones, libros y artículos informativos, noticias, etc.) para ampliar su conocimiento del mundo y formarse una opinión:",
+      "indicadores": [],
+      "detalle": [
+        "extrayendo información explícita e implícita",
+        "utilizando los organizadores de textos expositivos (títulos, subtítulos, índice y glosario) para encontrar información específica",
+        "comprendiendo la información que aportan las ilustraciones, los símbolos y los pictogramas a un texto",
+        "formulando una opinión sobre algún aspecto de la lectura",
+        "fundamentando su opinión con información del texto o sus conocimientos previos"
+      ]
+    },
+    {
+      "codigo": "LE03 OA 07",
+      "numero": 7,
+      "eje": "Lectura",
+      "descripcion": "Desarrollar el gusto por la lectura, leyendo habitualmente diversos textos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE03 OA 08",
+      "numero": 8,
+      "eje": "Lectura",
+      "descripcion": "Asistir habitualmente a la biblioteca para satisfacer diversos propósitos (encontrar información, elegir libros, estudiar o trabajar), cuidando el material en favor del uso común.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE03 OA 09",
+      "numero": 9,
+      "eje": "Lectura",
+      "descripcion": "Buscar información sobre un tema en libros, internet, diarios, revistas, enciclopedias, atlas, etc., para llevar a cabo una investigación.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE03 OA 10",
+      "numero": 10,
+      "eje": "Lectura",
+      "descripcion": "Determinar el significado de palabras desconocidas, usando claves contextuales o el conocimiento de raíces (morfemas de base), prefijos y sufijos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE03 OA 11",
+      "numero": 11,
+      "eje": "Lectura",
+      "descripcion": "Determinar el significado de palabras desconocidas, usando el orden alfabético para encontrarlas en un diccionario infantil o ilustrado.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE03 OA 12",
+      "numero": 12,
+      "eje": "Escritura",
+      "descripcion": "Escribir frecuentemente, para desarrollar la creatividad y expresar sus ideas, textos como poemas, diarios de vida, cuentos, anécdotas, cartas, comentarios sobre sus lecturas, etc.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE03 OA 13",
+      "numero": 13,
+      "eje": "Escritura",
+      "descripcion": "Escribir creativamente narraciones (experiencias personales, relatos de hechos, cuentos, etc.) que incluyan:",
+      "indicadores": [],
+      "detalle": [
+        "una secuencia lógica de eventos",
+        "inicio, desarrollo y desenlace",
+        "conectores adecuados"
+      ]
+    },
+    {
+      "codigo": "LE03 OA 14",
+      "numero": 14,
+      "eje": "Escritura",
+      "descripcion": "Escribir artículos informativos para comunicar información sobre un tema:",
+      "indicadores": [],
+      "detalle": [
+        "organizando las ideas en párrafos",
+        "desarrollando las ideas mediante información que explica el tema"
+      ]
+    },
+    {
+      "codigo": "LE03 OA 15",
+      "numero": 15,
+      "eje": "Escritura",
+      "descripcion": "Escribir cartas, instrucciones, afiches, reportes de una experiencia, entre otros, para lograr diferentes propósitos:",
+      "indicadores": [],
+      "detalle": [
+        "usando un formato adecuado",
+        "transmitiendo el mensaje con claridad"
+      ]
+    },
+    {
+      "codigo": "LE03 OA 16",
+      "numero": 16,
+      "eje": "Escritura",
+      "descripcion": "Escribir con letra clara para que pueda ser leída por otros con facilidad.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE03 OA 17",
+      "numero": 17,
+      "eje": "Escritura",
+      "descripcion": "Planificar la escritura:",
+      "indicadores": [],
+      "detalle": [
+        "estableciendo propósito y destinatario",
+        "generando ideas a partir de conversaciones, investigaciones, lluvia de ideas u otra estrategia"
+      ]
+    },
+    {
+      "codigo": "LE03 OA 18",
+      "numero": 18,
+      "eje": "Escritura",
+      "descripcion": "Escribir, revisar y editar sus textos para satisfacer un propósito y transmitir sus ideas con claridad. Durante este proceso:",
+      "indicadores": [],
+      "detalle": [
+        "organizan las ideas en párrafos separados con punto aparte",
+        "utilizan conectores apropiados",
+        "utilizan un vocabulario variado",
+        "mejoran la redacción del texto a partir de sugerencias de los pares y el docente",
+        "corrigen la ortografía y la presentación"
+      ]
+    },
+    {
+      "codigo": "LE03 OA 19",
+      "numero": 19,
+      "eje": "Escritura",
+      "descripcion": "Incorporar de manera pertinente en la escritura el vocabulario nuevo extraído de textos escuchados o leídos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE03 OA 20",
+      "numero": 20,
+      "eje": "Escritura",
+      "descripcion": "Comprender la función de los artículos, sustantivos y adjetivos en textos orales y escritos, y reemplazarlos o combinarlos de diversas maneras para enriquecer o precisar sus producciones.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE03 OA 21",
+      "numero": 21,
+      "eje": "Escritura",
+      "descripcion": "Comprender la función de los pronombres en textos orales y escritos, y usarlos para ampliar las posibilidades de referirse a un sustantivo en sus producciones.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE03 OA 22",
+      "numero": 22,
+      "eje": "Escritura",
+      "descripcion": "Escribir correctamente para facilitar la comprensión por parte del lector, aplicando lo aprendido en años anteriores y usando de manera apropiada:",
+      "indicadores": [],
+      "detalle": [
+        "mayúsculas al iniciar una oración y al escribir sustantivos propios",
+        "punto al finalizar una oración y punto aparte al finalizar un párrafo",
+        "plurales de palabras terminadas en",
+        "palabras con ge-gi, je-ji",
+        "palabras terminadas en cito-cita",
+        "coma en enumeración"
+      ]
+    },
+    {
+      "codigo": "LE03 OA 23",
+      "numero": 23,
+      "eje": "Comunicación oral",
+      "descripcion": "Comprender y disfrutar versiones completas de obras de la literatura, narradas o leídas por un adulto, como:",
+      "indicadores": [],
+      "detalle": [
+        "cuentos folclóricos y de autor",
+        "poemas",
+        "fábulas",
+        "mitos y leyendas"
+      ]
+    },
+    {
+      "codigo": "LE03 OA 24",
+      "numero": 24,
+      "eje": "Comunicación oral",
+      "descripcion": "Comprender textos orales (explicaciones, instrucciones, noticias, documentales, películas, relatos, anécdotas, etc.) para obtener información y desarrollar su curiosidad por el mundo:",
+      "indicadores": [],
+      "detalle": [
+        "estableciendo conexiones con sus propias experiencias",
+        "identificando el propósito",
+        "formulando preguntas para obtener información adicional, aclarar dudas y profundizar la comprensión",
+        "estableciendo relaciones entre distintos textos",
+        "respondiendo preguntas sobre información explícita e implícita",
+        "formulando una opinión sobre lo escuchado"
+      ]
+    },
+    {
+      "codigo": "LE03 OA 25",
+      "numero": 25,
+      "eje": "Comunicación oral",
+      "descripcion": "Disfrutar de la experiencia de asistir a obras de teatro infantiles o representaciones para ampliar sus posibilidades de expresión, desarrollar su creatividad y familiarizarse con el género.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE03 OA 26",
+      "numero": 26,
+      "eje": "Comunicación oral",
+      "descripcion": "Participar activamente en conversaciones grupales sobre textos leídos o escuchados en clases o temas de su interés:",
+      "indicadores": [],
+      "detalle": [
+        "manteniendo el foco de la conversación",
+        "expresando sus ideas u opiniones",
+        "formulando preguntas para aclarar dudas",
+        "demostrando interés ante lo escuchado",
+        "mostrando empatía frente a situaciones expresadas por otros",
+        "respetando turnos"
+      ]
+    },
+    {
+      "codigo": "LE03 OA 27",
+      "numero": 27,
+      "eje": "Comunicación oral",
+      "descripcion": "Interactuar de acuerdo con las convenciones sociales en diferentes situaciones:",
+      "indicadores": [],
+      "detalle": [
+        "presentarse a sí mismo y a otros",
+        "saludar",
+        "preguntar",
+        "expresar opiniones, sentimientos e ideas",
+        "situaciones que requieren el uso de fórmulas de cortesía, como por favor, gracias, perdón, permiso"
+      ]
+    },
+    {
+      "codigo": "LE03 OA 28",
+      "numero": 28,
+      "eje": "Comunicación oral",
+      "descripcion": "usando gestos y posturas acordes a la situación usando material de apoyo (power point, papelógrafo, objetos, etc.) si es pertinente Expresarse de manera coherente y articulada sobre temas de su interés:",
+      "indicadores": [],
+      "detalle": [
+        "organizando las ideas en introducción y desarrollo",
+        "incorporando descripciones y ejemplos que ilustren las ideas",
+        "utilizando un vocabulario variado",
+        "reemplazando los pronombres por construcciones sintácticas que expliciten o describan al referente"
+      ],
+      "revision": "[VERIFICAR: extracción dudosa; revisar contra el PDF]"
+    },
+    {
+      "codigo": "LE03 OA 29",
+      "numero": 29,
+      "eje": "Comunicación oral",
+      "descripcion": "Incorporar de manera pertinente en sus intervenciones orales el vocabulario nuevo extraído de textos escuchados o leídos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE03 OA 30",
+      "numero": 30,
+      "eje": "Comunicación oral",
+      "descripcion": "Caracterizar distintos personajes para desarrollar su lenguaje y autoestima, y aprender a trabajar en equipo.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE03 OA 31",
+      "numero": 31,
+      "eje": "Comunicación oral",
+      "descripcion": "Recitar poemas con entonación y expresión para fortalecer la confianza en sí mismos, aumentar el vocabulario y desarrollar su capacidad expresiva.",
+      "indicadores": []
+    }
+  ]
+}

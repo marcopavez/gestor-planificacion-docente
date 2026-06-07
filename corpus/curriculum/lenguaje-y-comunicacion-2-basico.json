@@ -1,0 +1,314 @@
+{
+  "asignatura": "Lenguaje y Comunicación",
+  "nivel": "2º básico",
+  "codigoAsignaturaNivel": "LE02",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Lectura",
+    "Escritura",
+    "Comunicación oral"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "LE02 OA 01",
+      "numero": 1,
+      "eje": "Lectura",
+      "descripcion": "Leer textos significativos que incluyan palabras con hiatos y diptongos, con grupos consonánticos y con combinación ce-ci, que-qui, ge-gi, gue-gui, güegüi.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE02 OA 02",
+      "numero": 2,
+      "eje": "Lectura",
+      "descripcion": "Leer en voz alta para adquirir fluidez:",
+      "indicadores": [],
+      "detalle": [
+        "pronunciando cada palabra con precisión, aunque se autocorrijan en contadas ocasiones",
+        "respetando el punto seguido y el punto aparte",
+        "sin detenerse en cada palabra"
+      ]
+    },
+    {
+      "codigo": "LE02 OA 03",
+      "numero": 3,
+      "eje": "Lectura",
+      "descripcion": "Comprender textos, aplicando estrategias de comprensión lectora; por ejemplo:",
+      "indicadores": [],
+      "detalle": [
+        "relacionar la información del texto con sus experiencias y conocimientos",
+        "visualizar lo que describe el texto",
+        "hacer preguntas mientras se lee"
+      ]
+    },
+    {
+      "codigo": "LE02 OA 04",
+      "numero": 4,
+      "eje": "Lectura",
+      "descripcion": "Leer independientemente y familiarizarse con un amplio repertorio de literatura para aumentar su conocimiento del mundo y desarrollar su imaginación; por ejemplo:",
+      "indicadores": [],
+      "detalle": [
+        "poemas",
+        "cuentos folclóricos y de autor",
+        "fábulas",
+        "leyendas",
+        "otros"
+      ]
+    },
+    {
+      "codigo": "LE02 OA 05",
+      "numero": 5,
+      "eje": "Lectura",
+      "descripcion": "Demostrar comprensión de las narraciones leídas:",
+      "indicadores": [],
+      "detalle": [
+        "extrayendo información explícita e implícita",
+        "reconstruyendo la secuencia de las acciones en la historia",
+        "identificando y describiendo las características físicas y los sentimientos de los distintos personajes",
+        "recreando, por medio de distintas expresiones (dibujos, modelos tridimensionales u otras), el ambiente en el que ocurre la acción",
+        "estableciendo relaciones entre el texto y sus propias experiencias",
+        "emitiendo una opinión sobre un aspecto de la lectura"
+      ]
+    },
+    {
+      "codigo": "LE02 OA 06",
+      "numero": 6,
+      "eje": "Lectura",
+      "descripcion": "Leer habitualmente y disfrutar los mejores poemas de autor y de la tradición oral adecuados a su edad.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE02 OA 07",
+      "numero": 7,
+      "eje": "Lectura",
+      "descripcion": "Leer independientemente y comprender textos no literarios (cartas, notas, instrucciones y artículos informativos) para entretenerse y ampliar su conocimiento del mundo:",
+      "indicadores": [],
+      "detalle": [
+        "extrayendo información explícita e implícita",
+        "comprendiendo la información que aportan las ilustraciones y los símbolos a un texto",
+        "formulando una opinión sobre algún aspecto de la lectura"
+      ]
+    },
+    {
+      "codigo": "LE02 OA 08",
+      "numero": 8,
+      "eje": "Lectura",
+      "descripcion": "Desarrollar el gusto por la lectura, leyendo habitualmente diversos textos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE02 OA 09",
+      "numero": 9,
+      "eje": "Lectura",
+      "descripcion": "Asistir habitualmente a la biblioteca para encontrar información y elegir libros, cuidando el material en favor del uso común.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE02 OA 10",
+      "numero": 10,
+      "eje": "Lectura",
+      "descripcion": "Buscar información sobre un tema en una fuente dada por el docente (página de internet, sección del diario, capítulo de un libro, etc.), para llevar a cabo una investigación.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE02 OA 11",
+      "numero": 11,
+      "eje": "Lectura",
+      "descripcion": "Desarrollar la curiosidad por las palabras o expresiones que desconocen y adquirir el hábito de averiguar su significado.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE02 OA 12",
+      "numero": 12,
+      "eje": "Escritura",
+      "descripcion": "Escribir frecuentemente, para desarrollar la creatividad y expresar sus ideas, textos como poemas, diarios de vida, anécdotas, cartas, recados, etc.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE02 OA 13",
+      "numero": 13,
+      "eje": "Escritura",
+      "descripcion": "Escribir creativamente narraciones (experiencias personales, relatos de hechos, cuentos, etc.) que tengan inicio, desarrollo y desenlace.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE02 OA 14",
+      "numero": 14,
+      "eje": "Escritura",
+      "descripcion": "Escribir artículos informativos para comunicar información sobre un tema.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE02 OA 15",
+      "numero": 15,
+      "eje": "Escritura",
+      "descripcion": "Escribir con letra clara, separando las palabras con un espacio para que puedan ser leídas por otros con facilidad.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE02 OA 16",
+      "numero": 16,
+      "eje": "Escritura",
+      "descripcion": "Planificar la escritura, generando ideas a partir de:",
+      "indicadores": [],
+      "detalle": [
+        "observación de imágenes",
+        "conversaciones con sus pares o el docente sobre experiencias personales y otros temas"
+      ]
+    },
+    {
+      "codigo": "LE02 OA 17",
+      "numero": 17,
+      "eje": "Escritura",
+      "descripcion": "Escribir, revisar y editar sus textos para satisfacer un propósito y transmitir sus ideas con claridad. Durante este proceso:",
+      "indicadores": [],
+      "detalle": [
+        "organizan las ideas en oraciones que comienzan con mayúscula y terminan con punto",
+        "utilizan un vocabulario variado",
+        "mejoran la redacción del texto a partir de sugerencias de los pares y el docente",
+        "corrigen la concordancia de género y número, la ortografía y la presentación"
+      ]
+    },
+    {
+      "codigo": "LE02 OA 18",
+      "numero": 18,
+      "eje": "Escritura",
+      "descripcion": "Incorporar de manera pertinente en la escritura el vocabulario nuevo extraído de textos escuchados o leídos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE02 OA 19",
+      "numero": 19,
+      "eje": "Escritura",
+      "descripcion": "Comprender la función de los artículos, sustantivos y adjetivos en textos orales y escritos, y reemplazarlos o combinarlos de diversas maneras para enriquecer o precisar sus producciones.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE02 OA 20",
+      "numero": 20,
+      "eje": "Escritura",
+      "descripcion": "Identificar el género y el número de las palabras para asegurar la concordancia en sus escritos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE02 OA 21",
+      "numero": 21,
+      "eje": "Escritura",
+      "descripcion": "Escribir correctamente para facilitar la comprensión por parte del lector, usando de manera apropiada:",
+      "indicadores": [],
+      "detalle": [
+        "combinaciones ce-ci, que-qui, ge-gi, gue-gui, güe-güi",
+        "r-rr-nr",
+        "mayúsculas al iniciar una oración y al escribir sustantivos propios",
+        "punto al finalizar una oración",
+        "signos de interrogación y exclamación al inicio y al final de preguntas y exclamaciones"
+      ]
+    },
+    {
+      "codigo": "LE02 OA 22",
+      "numero": 22,
+      "eje": "Comunicación oral",
+      "descripcion": "Comprender y disfrutar versiones completas de obras de la literatura, narradas o leídas por un adulto, como:",
+      "indicadores": [],
+      "detalle": [
+        "cuentos folclóricos y de autor",
+        "poemas",
+        "fábulas",
+        "leyendas"
+      ]
+    },
+    {
+      "codigo": "LE02 OA 23",
+      "numero": 23,
+      "eje": "Comunicación oral",
+      "descripcion": "Comprender textos orales (explicaciones, instrucciones, relatos, anécdotas, etc.) para obtener información y desarrollar su curiosidad por el mundo:",
+      "indicadores": [],
+      "detalle": [
+        "estableciendo conexiones con sus propias experiencias",
+        "identificando el propósito",
+        "formulando preguntas para obtener información adicional y aclarar dudas",
+        "respondiendo preguntas sobre información explícita e implícita",
+        "formulando una opinión sobre lo escuchado"
+      ]
+    },
+    {
+      "codigo": "LE02 OA 24",
+      "numero": 24,
+      "eje": "Comunicación oral",
+      "descripcion": "Disfrutar de la experiencia de asistir a obras de teatro infantiles o representaciones para ampliar sus posibilidades de expresión, desarrollar su creatividad y familiarizarse con el género.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE02 OA 25",
+      "numero": 25,
+      "eje": "Comunicación oral",
+      "descripcion": "Participar activamente en conversaciones grupales sobre textos leídos o escuchados en clases o temas de su interés:",
+      "indicadores": [],
+      "detalle": [
+        "manteniendo el foco de la conversación",
+        "expresando sus ideas u opiniones",
+        "formulando preguntas para aclarar dudas",
+        "demostrando interés ante lo escuchado",
+        "mostrando empatía frente a situaciones expresadas por otros",
+        "respetando turnos"
+      ]
+    },
+    {
+      "codigo": "LE02 OA 26",
+      "numero": 26,
+      "eje": "Comunicación oral",
+      "descripcion": "Interactuar de acuerdo con las convenciones sociales en diferentes situaciones:",
+      "indicadores": [],
+      "detalle": [
+        "presentarse a sí mismo y a otros",
+        "saludar",
+        "preguntar",
+        "expresar opiniones, sentimientos e ideas",
+        "situaciones que requieren el uso de fórmulas de cortesía, como por favor, gracias, perdón, permiso"
+      ]
+    },
+    {
+      "codigo": "LE02 OA 27",
+      "numero": 27,
+      "eje": "Comunicación oral",
+      "descripcion": "Expresarse de manera coherente y articulada sobre temas de su interés:",
+      "indicadores": [],
+      "detalle": [
+        "presentando información o narrando un evento relacionado con el tema",
+        "incorporando frases descriptivas que ilustren lo dicho",
+        "utilizando un vocabulario variado",
+        "pronunciando adecuadamente y usando un volumen audible",
+        "manteniendo una postura adecuada"
+      ]
+    },
+    {
+      "codigo": "LE02 OA 28",
+      "numero": 28,
+      "eje": "Comunicación oral",
+      "descripcion": "Incorporar de manera pertinente en sus intervenciones orales el vocabulario nuevo extraído de textos escuchados o leídos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE02 OA 29",
+      "numero": 29,
+      "eje": "Comunicación oral",
+      "descripcion": "Desempeñar diferentes roles para desarrollar su lenguaje y autoestima, y aprender a trabajar en equipo.",
+      "indicadores": []
+    },
+    {
+      "codigo": "LE02 OA 30",
+      "numero": 30,
+      "eje": "Comunicación oral",
+      "descripcion": "Recitar con entonación y expresión poemas, rimas, canciones, trabalenguas y adivinanzas para fortalecer la confianza en sí mismos, aumentar el vocabulario y desarrollar su capacidad expresiva.",
+      "indicadores": []
+    }
+  ]
+}

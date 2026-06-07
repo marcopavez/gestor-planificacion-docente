@@ -2,6 +2,8 @@
 
 > **Interpretación del encargo:** una **única solución sólida** que integra los 3 pilares recomendados (Módulo PME, Módulo NEE/Decreto 67·83, y Asistente normativo + auditoría de reglamento como cuña) sobre **un núcleo común** que es el foso de la empresa. Documento de build + negocio + pitch, a profundidad. Español de Chile. Anclajes verificados `[E#]`/`[A#]`; `[VERIFICAR]` = confirmar antes del pitch real.
 >
+> **⚠️ Nota v2 (2026-06-07):** este documento es la **visión v1 (copiloto normativo)**. El build actual es **Faro v2**, más acotado: un **generador de planificaciones docentes** (curso + asignatura + OA → `.docx`/`.pdf`) + PPT infantil + prueba formativa, **sin normativa ni RAG**. Esta visión queda como horizonte de largo plazo. Alcance v2 en `specs/README.md` §0.
+>
 > **Nombre de trabajo:** **"Faro"** (alternativas: *Norma*, *Brújula*, *Bitácora Escolar*). Tagline: *"El copiloto que convierte la normativa en documentos listos para revisar."*
 
 ---

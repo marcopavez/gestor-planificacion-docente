@@ -1,0 +1,71 @@
+{
+  "asignatura": "Artes Visuales",
+  "nivel": "4º básico",
+  "codigoAsignaturaNivel": "AR04",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Expresar y crear visualmente",
+    "Apreciar y responder frente al arte"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "AR04 OA 01",
+      "numero": 1,
+      "eje": "Expresar y crear visualmente",
+      "descripcion": "Crear trabajos de arte con un propósito expresivo personal y basados en la observación del:",
+      "indicadores": [],
+      "detalle": [
+        "entorno natural: naturaleza y paisaje americano",
+        "entorno cultural: América y sus tradiciones (cultura precolombina, tradiciones y artesanía americana)",
+        "entorno artístico: arte precolombino y de movimientos artísticos como muralismo mexicano, naif y surrealismo en Chile, Latinoamérica y en el resto del mundo"
+      ]
+    },
+    {
+      "codigo": "AR04 OA 02",
+      "numero": 2,
+      "eje": "Expresar y crear visualmente",
+      "descripcion": "Aplicar elementos del lenguaje visual (incluidos los de niveles anteriores) en sus trabajos de arte, con diversos propósitos expresivos y creativos:",
+      "indicadores": [],
+      "detalle": [
+        "líneas de contorno",
+        "color (tono y matiz)",
+        "forma (figurativa y no figurativa)"
+      ]
+    },
+    {
+      "codigo": "AR04 OA 03",
+      "numero": 3,
+      "eje": "Expresar y crear visualmente",
+      "descripcion": "Crear trabajos de arte a partir de experiencias, intereses y temas del entorno natural, cultural y artístico, demostrando manejo de:",
+      "indicadores": [],
+      "detalle": [
+        "materiales de modelado, de reciclaje, naturales, papeles, cartones, pegamentos, lápices, pinturas, textiles e imágenes digitales",
+        "herramientas para dibujar, pintar, cortar, unir, modelar y tecnológicas (pincel, tijera, mirete, computador, cámara fotográfica, entre otras)",
+        "procedimientos de dibujo, pintura, grabado, escultura, técnicas mixtas, artesanía, fotografía, entre otros"
+      ]
+    },
+    {
+      "codigo": "AR04 OA 04",
+      "numero": 4,
+      "eje": "Apreciar y responder frente al arte",
+      "descripcion": "Describir sus observaciones de obras de arte y objetos, usando elementos del lenguaje visual y expresando lo que sienten y piensan. (Observar anualmente al menos 15 obras de arte y artesanía local y chilena, 15 de arte latinoamericano y 15 de arte universal).",
+      "indicadores": []
+    },
+    {
+      "codigo": "AR04 OA 05",
+      "numero": 5,
+      "eje": "Apreciar y responder frente al arte",
+      "descripcion": "Describir fortalezas y aspectos a mejorar en el trabajo de arte personal y de sus pares, aplicando criterios de uso de materiales, procedimientos técnicos y propósito expresivo.",
+      "indicadores": []
+    }
+  ]
+}

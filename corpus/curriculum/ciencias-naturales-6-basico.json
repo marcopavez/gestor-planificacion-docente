@@ -1,0 +1,151 @@
+{
+  "asignatura": "Ciencias Naturales",
+  "nivel": "6º básico",
+  "codigoAsignaturaNivel": "CN06",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "verificado": "[VERIFICAR] prefijo de código según convención curriculumnacional.cl; texto del OA tomado del PDF."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases."
+  },
+  "ejes": [
+    "Ciencias de la vida",
+    "Ciencias físicas y químicas",
+    "Ciencias de la tierra y el universo"
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "CN06 OA 01",
+      "numero": 1,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Explicar, a partir de una investigación experimental, los requerimientos de agua, dióxido de carbono y energía lumínica para la producción de azúcar y la liberación de oxígeno en la fotosíntesis, comunicando sus resultados y los aportes de científicos en este campo a lo largo del tiempo.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN06 OA 02",
+      "numero": 2,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Representar, por medio de modelos, la transferencia de energía y materia desde los organismos fotosintéticos a otros seres vivos por medio de cadenas y redes alimentarias en diferentes ecosistemas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN06 OA 03",
+      "numero": 3,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Analizar los efectos de la actividad humana sobre las redes alimentarias. CUERpo hUmANo Y sALUD",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN06 OA 04",
+      "numero": 4,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Identificar y describir las funciones de las principales estructuras del sistema reproductor humano femenino y masculino.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN06 OA 05",
+      "numero": 5,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Describir y comparar los cambios que se producen en la pubertad en mujeres y hombres, reconociéndola como una etapa del desarrollo humano.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN06 OA 06",
+      "numero": 6,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Reconocer los beneficios de realizar actividad física en forma regular y de cuidar la higiene corporal en el período de la pubertad.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN06 OA 07",
+      "numero": 7,
+      "eje": "Ciencias de la vida",
+      "descripcion": "Investigar y comunicar los efectos nocivos de algunas drogas para la salud, proponiendo conductas de protección.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN06 OA 08",
+      "numero": 8,
+      "eje": "Ciencias físicas y químicas",
+      "descripcion": "Explicar que la energía es necesaria para que los objetos cambien y los seres vivos realicen sus procesos vitales, y que la mayoría de los recursos energéticos proviene directa o indirectamente del Sol, dando ejemplos de ello.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN06 OA 09",
+      "numero": 9,
+      "eje": "Ciencias físicas y químicas",
+      "descripcion": "Investigar en forma experimental la transformación de la energía de una forma a otra, dando ejemplos y comunicando sus conclusiones.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN06 OA 10",
+      "numero": 10,
+      "eje": "Ciencias físicas y químicas",
+      "descripcion": "Demostrar, por medio de la investigación experimental, que el calor fluye de un objeto caliente a uno frío hasta que ambos alcanzan la misma temperatura.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN06 OA 11",
+      "numero": 11,
+      "eje": "Ciencias físicas y químicas",
+      "descripcion": "Clasificar los recursos naturales energéticos en no renovables y renovables y proponer medidas para el uso responsable de la energía.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN06 OA 12",
+      "numero": 12,
+      "eje": "Ciencias físicas y químicas",
+      "descripcion": "Explicar, a partir de modelos, que la materia está formada por partículas en movimiento en sus estados sólido, líquido y gaseoso.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN06 OA 13",
+      "numero": 13,
+      "eje": "Ciencias físicas y químicas",
+      "descripcion": "Demostrar, mediante la investigación experimental, los cambios de estado de la materia, como fusión, evaporación, ebullición, condensación, solidificación y sublimación.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN06 OA 14",
+      "numero": 14,
+      "eje": "Ciencias físicas y químicas",
+      "descripcion": "Diferenciar entre calor y temperatura, considerando que el calor es una forma de energía y la temperatura es la medida de lo caliente de un objeto.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN06 OA 15",
+      "numero": 15,
+      "eje": "Ciencias físicas y químicas",
+      "descripcion": "Medir e interpretar la información obtenida al calentar y enfriar el agua, considerando las transformaciones de un estado a otro.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN06 OA 16",
+      "numero": 16,
+      "eje": "Ciencias de la tierra y el universo",
+      "descripcion": "Describir las características de las capas de la Tierra (atmósfera, litósfera e hidrósfera) que posibilitan el desarrollo de la vida y proveen recursos para el ser humano, y proponer medidas de protección de dichas capas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN06 OA 17",
+      "numero": 17,
+      "eje": "Ciencias de la tierra y el universo",
+      "descripcion": "Investigar experimentalmente la formación del suelo, sus propiedades (como color, textura y capacidad de retención de agua) y la importancia de protegerlo de la contaminación, comunicando sus resultados.",
+      "indicadores": []
+    },
+    {
+      "codigo": "CN06 OA 18",
+      "numero": 18,
+      "eje": "Ciencias de la tierra y el universo",
+      "descripcion": "Explicar las consecuencias de la erosión sobre la superficie de la Tierra, identificando los agentes que la provocan, como el viento, el agua y las actividades humanas.",
+      "indicadores": [],
+      "detalle": [
+        "dulaS"
+      ]
+    }
+  ]
+}
