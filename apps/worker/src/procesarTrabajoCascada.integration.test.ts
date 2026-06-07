@@ -13,7 +13,7 @@ import { drizzle } from 'drizzle-orm/pglite';
 import { sql } from 'drizzle-orm';
 import { describe, it, expect } from 'vitest';
 import type { ClockPort, LlmPort } from '@faro/domain';
-import { CascadaAulaUseCase, ProcesarTrabajoCascadaUseCase } from '@faro/application';
+import { CascadaAulaUseCase, ProcesarTrabajoCascadaUseCase, RevisarDocumentoUseCase } from '@faro/application';
 import { crearSamplesLlm } from '@faro/infra-ai';
 import { PptxExportAdapter } from '@faro/infra-export';
 import { crearLoggerHijo } from '@faro/observability';
@@ -25,6 +25,7 @@ import {
   planificacionAnual,
   trazaIa,
   unidadPlanificada,
+  DocumentoRepositoryDrizzle,
   JobRepositoryDrizzle,
   OaRepositoryDrizzle,
   PlanificacionAnualRepositoryDrizzle,
@@ -238,6 +239,62 @@ describe('CA-PA.4 — worker cascada end-to-end (pglite + samples + pptx real)',
     const useCase = construirUseCase(db, crearSamplesLlm(SAMPLES_DIR), dirSalida);
     const r = await useCase.ejecutarSiguiente('worker-01');
     expect(r.tipo).toBe('sin_trabajo');
+    rmSync(dirSalida, { recursive: true, force: true });
+  }, T);
+
+  it('HIL: enviar→aprobar exige autorHumano; el CHECK bloquea aprobado sin humano', async () => {
+    const db = await crearDbPglite();
+    const { unidadId } = await prepararFixture(db);
+    const dirSalida = mkdtempSync(join(tmpdir(), 'faro-pptx-'));
+
+    // Corre la cascada para persistir los 4 borradores reales (como el test end-to-end).
+    const jobs = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
+    await jobs.encolarCascadaUnidad(unidadId);
+    const useCase = construirUseCase(db, crearSamplesLlm(SAMPLES_DIR), dirSalida);
+    const r = await useCase.ejecutarSiguiente('worker-01');
+    expect(r.tipo).toBe('hecho');
+
+    const docs = await db.select().from(documentoGenerado);
+    const unidadDoc = docs.find((d) => d.tipo === 'planificacion_unidad'); // la unidad es la raíz de la cascada
+    const otroDoc = docs.find((d) => d.tipo === 'prueba'); // un doc aún en borrador para probar el CHECK
+    if (!unidadDoc || !otroDoc) throw new Error('esperaba unidad raíz y un doc no-raíz');
+
+    const revisar = new RevisarDocumentoUseCase(new DocumentoRepositoryDrizzle(db as unknown as DrizzleDb));
+
+    // 1) enviar: borrador → en_revision.
+    const r1 = await revisar.enviarARevision(unidadDoc.id);
+    expect(r1.ok).toBe(true);
+    let row = (await db.select().from(documentoGenerado).where(sql`id = ${unidadDoc.id}`))[0];
+    expect(row?.estadoRevision).toBe('en_revision');
+
+    // 2) aprobar SIN humano: la máquina lo rechaza y NO se persiste.
+    const r2 = await revisar.aprobar(unidadDoc.id, '');
+    expect(r2.ok).toBe(false);
+    if (r2.ok) throw new Error('esperaba que aprobar sin humano fallara');
+    expect(r2.razon).toBe('transicion_invalida');
+    if (r2.razon !== 'transicion_invalida') throw new Error('esperaba transicion_invalida');
+    expect(r2.regla).toBe('aprobacion_sin_humano');
+    row = (await db.select().from(documentoGenerado).where(sql`id = ${unidadDoc.id}`))[0];
+    expect(row?.estadoRevision).toBe('en_revision'); // sigue en revisión: la aprobación no se persistió
+    expect(row?.autorHumano).toBeNull();
+
+    // 3) aprobar CON humano: en_revision → aprobado, con autor_humano persistido.
+    const r3 = await revisar.aprobar(unidadDoc.id, 'docente@colegio.cl');
+    expect(r3.ok).toBe(true);
+    if (!r3.ok) throw new Error('esperaba aprobación con humano');
+    expect(r3.documento.estadoRevision).toBe('aprobado');
+    expect(r3.documento.autorHumano).toBe('docente@colegio.cl');
+    row = (await db.select().from(documentoGenerado).where(sql`id = ${unidadDoc.id}`))[0];
+    expect(row?.estadoRevision).toBe('aprobado');
+    expect(row?.autorHumano).toBe('docente@colegio.cl');
+
+    // 4) El CHECK como última red: saltarse la máquina con SQL directo (aprobado sin humano) falla.
+    await expect(
+      db.execute(
+        sql`UPDATE documento_generado SET estado_revision='aprobado', autor_humano=NULL WHERE id=${otroDoc.id}`,
+      ),
+    ).rejects.toThrow();
+
     rmSync(dirSalida, { recursive: true, force: true });
   }, T);
 });

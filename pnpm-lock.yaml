@@ -90,6 +90,9 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3
     devDependencies:
+      '@electric-sql/pglite':
+        specifier: ^0.5.1
+        version: 0.5.1
       '@types/node':
         specifier: ^22.0.0
         version: 22.19.20
@@ -99,6 +102,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.0.0
         version: 19.2.3(@types/react@19.2.17)
+      drizzle-orm:
+        specifier: ^0.45.2
+        version: 0.45.2(@electric-sql/pglite@0.5.1)(@types/pg@8.20.0)(pg@8.21.0)
 
   apps/worker:
     dependencies:
