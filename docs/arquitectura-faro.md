@@ -1,5 +1,7 @@
 # Blueprint de Arquitectura de Producción — Faro
 
+> **⚠️ Alcance vigente v2 (2026-06-07):** este blueprint describe el producto **v1 (normativo)**. En Faro **v2**, lo **vigente** es: monorepo hexagonal, persistencia, **worker asíncrono** (ADR-003), **corpus versionado** (ADR-004), export y HIL. Está **aparcado** (fuera de alcance v2): grafo normativo, **RAG/pgvector** (ADR-001), reranker, Decreto 67/83 como motor, gates legales y los módulos PME/PACI/normativo. La fuente de verdad del build v2 es `specs/` + `CLAUDE.md`. Ver `specs/README.md` §0.
+>
 > **Estado:** Propuesta para revisión de comité técnico · **Versión:** 1.0 · **Fecha:** 2026-06-05
 > **Filosofía rectora:** Ports & Adapters (arquitectura hexagonal). El dominio —grafo normativo, currículum/OA, generación, verificación— es independiente de frameworks; las integraciones externas (Voyage, reranker, OCR, export `.pptx`/`.docx`) son adaptadores reemplazables tras interfaces estables, **no** placeholders desechables.
 > **Construcción:** por *vertical slices* de calidad de producción. La "Fase 0" es *cimientos de producción + primer slice real end-to-end* (generador de pruebas de Aula con corpus OA mínimo real), no un esqueleto con stubs.

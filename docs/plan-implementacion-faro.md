@@ -1,5 +1,7 @@
 # Plan de implementación ejecutable — Faro (MVP 8–10 semanas)
 
+> **⚠️ Nota v2 (2026-06-07):** este backlog es del producto **v1 (normativo)** y está **aparcado**. El plan de build vigente vive en `specs/` (ver `specs/README.md` §0). Se conserva como referencia.
+>
 > **Arquitectura autoritativa:** ver `arquitectura-faro.md` (blueprint del arquitecto, Opus 4.8). Este doc es el backlog operativo; ante diferencias manda el blueprint, que ajusta el plan con: monorepo de dominio (ports & adapters), **generación asíncrona** (worker/cola, no en el request HTTP), y **corpus versionado** (`corpus_version`). Construcción por fases (§11 del blueprint).
 
 > Plan operativo para construir el MVP de **Faro** (ver `solucion-educacion.md`). Backlog accionable con épicas → historias → tareas, estimaciones, criterios de aceptación, esquema de datos, JSON Schemas, pipeline de IA, evals, cumplimiento y plan semanal. Pensado para un equipo de 2–4 personas. Convenciones: Conventional Commits, TypeScript sin `any`, comentario de 1 línea para decisiones no obvias.

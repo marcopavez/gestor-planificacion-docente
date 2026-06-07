@@ -1,7 +1,8 @@
 # Fase 0 — Cimientos de producción + primer *vertical slice* real
 
 > **Spec de desarrollo** · Deriva de `docs/arquitectura-faro.md` §11 (Fase 0), `docs/prompt-scaffolding-faro.md`, épicas A (+ semillas de B/E/G) de `docs/plan-implementacion-faro.md`.
-> **Estado:** lista para construir una vez entregado el corpus mínimo real (pregunta abierta global #6).
+> **⚠️ Nota v2 (2026-06-07):** los cimientos (monorepo hexagonal, persistencia, worker, HIL, export) **siguen vigentes** en Faro v2. Lo que esta spec menciona de **normativa, RAG/pgvector y Decreto 67/83 está aparcado** (ver [`README.md`](./README.md) §0); ignóralo al construir v2.
+> **Estado:** cimientos construidos (Fase 0 + productización previas).
 > **Lee primero:** [`README.md`](./README.md) (invariantes transversales INV-1…INV-6, DoD global, convenciones).
 
 ---

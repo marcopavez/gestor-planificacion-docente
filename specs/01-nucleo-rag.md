@@ -1,5 +1,7 @@
 # Fase 1 — Núcleo del foso: ingesta real + RAG robusto completo
 
+> **⚠️ FUERA DE ALCANCE v2 (mantenida como referencia).** El dueño aparcó el RAG/normativa el 2026-06-07: el currículum es estructurado y se consulta de forma determinista (ver [`01-curriculum-oa.md`](./01-curriculum-oa.md) y [`README.md`](./README.md) §0). Esta spec describe el producto **v1 (normativo)** y **no se construye en v2**; se conserva por si esos módulos vuelven.
+>
 > **Spec de desarrollo** · Deriva de `docs/arquitectura-faro.md` §11 (Fase 1) + §6, `docs/adr-001-recuperacion-rag.md`, `docs/adr-004-corpus-versionado.md`, épica B de `docs/plan-implementacion-faro.md`.
 > **Estado:** se construye sobre la Fase 0. Bloqueada por preguntas abiertas #1 (Voyage), #6 (corpus real) y la selección del golden set por experto de dominio.
 > **Lee primero:** [`README.md`](./README.md) (invariantes INV-1…INV-6) y [`00-cimientos.md`](./00-cimientos.md) (la base que esta fase completa).

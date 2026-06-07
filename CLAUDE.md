@@ -1,109 +1,107 @@
-# CLAUDE.md — gestor-planificacion-docente ("Faro")
+# CLAUDE.md — gestor-planificacion-docente ("Faro") · **v2**
 
-> Este archivo es el punto de entrada para cualquier instancia de Claude Code que trabaje en este repo. Léelo entero antes de actuar. Las **fuentes de verdad** detalladas están en `docs/` (índice al final).
+> Punto de entrada para cualquier instancia de Claude Code en este repo. Léelo entero antes de actuar. El **plan de build vigente** vive en `specs/` (empieza por `specs/README.md`). Los `docs/` describen la **visión v1 (normativa)**, hoy **aparcada** (ver §9).
 
-## 1. Qué es este proyecto
+## 1. Qué es este proyecto (v2)
 
-**Faro** es un **copiloto de cumplimiento y documentación pedagógica para colegios chilenos (K-12)**. Convierte la normativa MINEDUC y el currículum nacional en **documentos regulados listos para revisar**: pruebas y clases alineadas a Objetivos de Aprendizaje (OA) y al reglamento de evaluación (Decreto 67), el Plan de Mejoramiento Educativo (PME) que consolida 6 planes obligatorios, informes per-alumno (Decreto 67) y PACI (Decreto 83), y un asistente normativo con citas.
+**Faro v2** es un **generador de planificaciones docentes para educación básica chilena (1º–6º)**. Dado **curso + asignatura + Objetivos de Aprendizaje (OA)**, produce la **planificación con el formato real del colegio** (`.docx` y `.pdf`, calcando sus tablas), y desde ella un **PPT infantil interactivo** y una **prueba formativa evaluable** aptos para niños de 6–12 años.
 
-**Tagline:** *"El copiloto que convierte la normativa en documentos listos para revisar."*
+**Una frase técnica:** una app que toma datos **estructurados** del currículum nacional (OA por asignatura/nivel) y, de forma **híbrida** (datos fijos + redacción de IA), llena **plantillas de planificación configurables** que se exportan a documentos fieles a los formatos reales de los colegios. **Sin normativa. Sin RAG.**
 
-**Una frase técnica:** Faro es un **encargado de tratamiento** que produce documentos pedagógicos y de cumplimiento con **corrección de nivel legal**, donde el foso **no es el LLM** sino dos *knowledge graphs* curados (normativa MINEDUC con vigencias; currículum nacional / OA) más la lógica de workflow regulado.
+**Cambio de rumbo (2026-06-07):** el dueño simplificó el producto. Se **eliminó** todo el "foso normativo" de v1 (grafo normativo, RAG, Decreto 67/83, PME, PACI, asistente normativo). El detalle del pivote está en `specs/README.md` §0.
 
 ## 2. Estado del proyecto
 
-- **Fase:** pre-construcción. La documentación de producto y arquitectura está **madura y revisada**; el código aún **no existe**.
-- **Lo que hay:** visión de producto y negocio (`docs/solucion-educacion.md`), blueprint de arquitectura de producción (`docs/arquitectura-faro.md`), plan de implementación por épicas (`docs/plan-implementacion-faro.md`), 4 ADRs, y un prompt de scaffolding.
-- **Lo siguiente:** materializar la Fase 0 (cimientos de producción + primer *vertical slice* real del Módulo Aula), según `docs/arquitectura-faro.md` §11.
+- **Construido (Fase 0 + productización previa):** monorepo hexagonal (pnpm), persistencia (Postgres + Drizzle), worker asíncrono (cola), HIL (`borrador→revisado`), cascada de Aula y export `.pptx`. Suite verde en `main`.
+- **Lo siguiente (v2):** **Fase 1** (corpus OA 1º–6º, todas las asignaturas) y **Fase 2** (núcleo: planificación en 2 formatos, export `.docx`/`.pdf`). Ver `specs/`.
+- **En espera del dueño:** referencias de estilo para **Fase 3** (PPT infantil) y **Fase 4** (prueba formativa).
 
-## 3. Objetivos y alcance
+## 3. Objetivo y alcance (v2)
 
 ### Objetivo
-Devolverle horas al docente y a la dirección escolar generando el papeleo regulado como **borradores citados a la norma vigente**, con revisión humana obligatoria, posicionado como **gestión curricular/pedagógica** (clave para elegibilidad SEP).
+Devolverle horas al docente generando su **planificación** (y, desde ella, PPT y prueba) como **borradores listos para revisar**, fieles al formato de su colegio.
 
-### Alcance del MVP (entra) — ver `docs/arquitectura-faro.md` §11 y `docs/solucion-educacion.md` §6
-- **Núcleo (el foso):** grafo normativo (6 planes + Decreto 67/83) + corpus de currículum/OA, con grounding y vigencias.
-- **M0 Aula** (cuña de uso diario): generador de **pruebas** (alineadas a OA + Decreto 67, con variante NEE/DUA) y **clases** (export `.pptx`).
-- **M3:** asistente normativo con citas + auditoría del reglamento de evaluación.
-- **M1 (parcial):** borrador de la **Fase Anual del PME** con casillas de los 6 planes.
-- Evals (fidelidad normativa, recall@k, alineación a OA) + human-in-the-loop + DPA.
+### Entra (MVP v2)
+- **Datos de currículum:** OA de 1º–6º básico, **todas las asignaturas** de la malla, como JSON versionado (extraído de las Bases Curriculares). *(Fase 1)*
+- **Núcleo de planificación:** **2 formatos reales** configurables (A denso, B DUA), generación **híbrida**, export **`.docx` + `.pdf`** que calcan las tablas. *(Fase 2)*
+- **PPT infantil** colorido/interactivo (6–12 años) desde la planificación. *(Fase 3)*
+- **Prueba formativa** evaluable apta para niños. *(Fase 4)*
+- **HIL** (revisión docente) transversal.
 
-### Fuera de alcance (v1)
-Integración API directa con plataformas MINEDUC `[VERIFICAR]`; M2 NEE completo; multi-establecimiento SLEP; **personalización/evaluación adaptativa por alumno** (perfilamiento → fase posterior, requiere consentimiento, ver [E15]).
+### Fuera de alcance (v2)
+Normativa de cualquier tipo (RAG, Decreto 67/83 como motor, citas legales); **PME** (M1), **PACI/NEE** (M2), **asistente normativo** (M3); multi-establecimiento SLEP; personalización por alumno; integración API con plataformas MINEDUC. *(Todo esto era v1 — aparcado, no borrado; §9.)*
 
-## 4. Los cuatro módulos (un núcleo, land → expand)
+## 4. Las dos features (un núcleo: la planificación)
 
-| Módulo | Hace | Usuario | Comprador |
-|---|---|---|---|
-| **M0 Aula** | Pruebas + clases alineadas a OA y Decreto 67 (con versión NEE/DUA), export `.pptx`/`.docx` | Docente | Colegio (SEP, pedagógico) |
-| **M3 Normativo** | Responde normativa con citas; audita el reglamento de evaluación | Docente / directivo | Colegio (freemium → pago) |
-| **M1 PME** | Borrador del PME (Fase Estratégica/Anual) y consolida los 6 planes | Jefe UTP / dirección | **Sostenedor / SLEP** |
-| **M2 NEE** | Borrador de PACI (Decreto 83) e informes per-alumno (Decreto 67) | Docente / coord. PIE | Colegio (SEP/PIE) |
+1. **Planificación → documento.** Curso + asignatura + OA → planificación en **el formato del colegio** (`.docx`/`.pdf`). Dos formatos reales soportados, seleccionables:
+   - **Formato A — "Planificación de Unidad"** (denso): portada + Propósito + Habilidades S.XXI + Diversificación de la enseñanza (5 columnas) + OA (basal/complementario/transversal) + Experiencias + Evaluación (indicadores, instrumentos, recursos).
+   - **Formato B — "Bloque de Actividades"** (DUA, compacto): encabezado + Principios DUA + tabla de 4 columnas por OA (OA priorizado · Habilidades · Experiencias · Evaluación).
+2. **Desde la planificación → material de aula:** un **PPT infantil** y una **prueba formativa**, ambos aptos para 6–12 años.
 
-**Movimiento comercial:** M0 (gancho de uso diario, SEP-elegible) → M3 (complemento "riesgo limitado") → M1 (alto valor, comprador SLEP) → M2 (foso e impacto, dolor del coordinador PIE).
+> **Generación híbrida:** los **OA** (texto oficial) y las **listas de checkboxes** son **datos fijos** (currículum/catálogos); la **IA** solo redacta `proposito`, `experiencias/actividades` e `indicadores`, y sugiere qué checkboxes marcar. Todo nace `borrador` y lo revisa el docente.
 
-## 5. Arquitectura (resumen — la verdad está en `docs/arquitectura-faro.md`)
+## 5. Arquitectura (resumen — detalle en `specs/` y en las partes vigentes de `docs/arquitectura-faro.md`)
 
-**Filosofía:** Ports & Adapters (hexagonal). El dominio regulado (grafo normativo, OA, generación, verificación) es **independiente de frameworks**; los proveedores externos (Voyage, reranker, OCR, export) son adaptadores reemplazables.
+**Filosofía:** Ports & Adapters (hexagonal). El dominio (currículum/OA, plantillas, generación, validación) es **independiente de frameworks**; los proveedores externos (LLM, export `.docx`/`.pdf`/`.pptx`) son **adaptadores reemplazables**.
 
-**Regla de dependencia (la única que importa):** los `import` apuntan **siempre hacia el dominio**. `infra` y `apps` dependen de `application` y `domain`; nunca al revés.
+**Regla de dependencia (la única que importa):** los `import` apuntan **siempre hacia el dominio**. `infra` y `apps` dependen de `application`/`domain`; nunca al revés.
 
-**Invariantes de arquitectura (el foso, testeable):**
-1. **El dominio regulado se testea sin red.** Vigencias, validez de citas, ítem→OA: deterministas, en `domain`, sin DB ni LLM.
-2. **El LLM nunca decide; propone borradores.** Todo lo que sale del LLM pasa por *gates* deterministas antes de cambiar de estado (Art. 8 bis Ley 21.719).
-3. **Cumplimiento by-design, no by-convention.** `borrador` es el estado inicial forzado por tipo y por constraint de DB; no hay camino de código que cree un documento `aprobado` sin revisor humano.
-4. **Corpus versionado** (`corpus_version` inmutable) + `traza_ia.corpus_version_id` = reproducibilidad legal.
+**Invariantes v2 (testeable — en `specs/README.md` §5):**
+1. El dominio se testea **sin red** (validación de schema, "el OA existe", campos requeridos, ítem→OA).
+2. La **IA propone; el docente decide** (HIL); la IA nunca aprueba un documento.
+3. **Borrador by-design:** todo documento nace `borrador` (`CHECK chk_aprobado_requiere_humano`); `aprobado` exige `autor_humano`.
+4. **Currículum versionado** (`corpus_version` inmutable) para reproducibilidad.
 
-**Stack no negociable:** monorepo pnpm; Next.js App Router + React + TS `strict`; Postgres + pgvector + tsvector; Drizzle; SDK Anthropic (routing Opus/Sonnet/Haiku); Zod + `zodOutputFormat`; Vitest; generación asíncrona vía cola + worker. Detalle y ADRs en `docs/`.
+**Stack:** monorepo pnpm; Next.js App Router + React + TS `strict`; Postgres + Drizzle; SDK Anthropic / Claude Code; Zod; Vitest; generación asíncrona vía cola + worker. **Sin pgvector / sin RAG en v2.**
 
-> **IMPORTANTE sobre el stack de IA:** antes de fijar IDs de modelo, precios, mínimos de caching o límites de tokens, **consulta la skill `claude-api`** — no respondas de memoria. Los IDs vigentes son `claude-opus-4-8`, `claude-sonnet-4-6`, `claude-haiku-4-5`.
+> **IMPORTANTE sobre el stack de IA:** antes de fijar IDs de modelo, precios o límites de tokens, **consulta la skill `claude-api`** — no respondas de memoria. IDs vigentes: `claude-opus-4-8`, `claude-sonnet-4-6`, `claude-haiku-4-5`.
 
-## 6. Cumplimiento (es parte del producto, no un anexo)
+## 6. Convenciones (heredan del CLAUDE.md global del usuario)
 
-- **Rol legal:** Faro = encargado de tratamiento; el colegio/sostenedor = responsable → **DPA por establecimiento**.
-- **Datos de menores (Ley 21.719, Art. 16 quáter):** base de licitud por dato (mandato legal vs consentimiento parental). En el MVP se opera **a nivel curso/contenido, no individualizado por alumno** (bajo riesgo).
-- **Decisiones automatizadas (Art. 8 bis):** human-in-the-loop obligatorio; `traza_ia` da "información significativa sobre la lógica".
-- **Elegibilidad SEP:** posicionar como gestión curricular/calidad escrita en el PME; **nunca** como contabilidad/rendición (prohibido financiar con SEP).
-- **Clase de riesgo IA (proyecto de ley):** apoyo a gestión + chatbot normativo = "riesgo limitado".
-
-## 7. Convenciones (heredan del CLAUDE.md global del usuario + principios de este repo)
-
-- **Idioma:** entregables de cara a usuario/jurado en **español de Chile**; términos técnicos en inglés donde es estándar.
-- **Código:** claridad sobre cleverness. **Sin `any`** en TypeScript salvo justificación. **Sin `console.log`** en producción (usar el logger estructurado de `observability`).
-- **Comentarios:** documenta el *por qué* de decisiones no obvias en 1 línea, no el *qué*.
+- **Idioma:** entregables de cara a usuario en **español de Chile**; términos técnicos en inglés donde es estándar.
+- **Código:** claridad sobre cleverness. **Sin `any`** salvo justificación. **Sin `console.log`** en producción (logger estructurado de `observability`).
+- **Comentarios:** el *por qué* de decisiones no obvias en 1 línea, no el *qué*.
 - **Commits:** Conventional Commits (`feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `chore:`).
-- **No inventes requisitos.** Si algo es ambiguo o falta un dato local, **pregunta** o márcalo `[VERIFICAR: ...]`. No inventes hechos chilenos (normas, cifras, plazos).
-- **DoD (cuando haya código):** código + tests, lint/typecheck verdes, sin `any`, y —si toca IA— schema validado + grounding + `traza_ia`, más CA demostrable y PR revisado. Ver `docs/arquitectura-faro.md` §11.
+- **No inventes requisitos ni hechos chilenos.** Si algo es ambiguo o falta un dato local, **pregunta** o márcalo `[VERIFICAR: ...]`. Para las plantillas: **no inventes estructuras** que no estén en los PDF reales.
+- **DoD:** código + tests, lint/typecheck verdes, sin `any`; si toca IA: schema validado + el contenido nace `borrador` para revisión. Ver `specs/README.md` §4.
 
-## 8. Cómo trabajar en este repo
+## 7. Cómo trabajar en este repo
 
 - **Antes de actuar, clasifica la tarea y delega** según el routing del CLAUDE.md global (explorer/researcher/implementer/tester/reviewer/architect/debugger). Excepción: tareas triviales (1 archivo, <20 líneas, cambio obvio) hazlas directo.
 - **Para features:** architect produce plan → revisión con el dueño → implementer → tester → reviewer → commit.
-- **Fuentes de verdad:** ante conflicto entre este `CLAUDE.md` y los `docs/`, **los `docs/` mandan** en el detalle técnico; este archivo es el mapa. Si detectas contradicción, señálala, no la resuelvas inventando.
-- **Anclajes:** las afirmaciones de contexto chileno se referencian con `[E#]` (educación) y `[A#]` (GovTech) — definidos en `docs/master-prompt-chile-govtech-startups.md`. No cites un anclaje sin que exista ahí.
+- **Fuentes de verdad (v2):** **mandan `specs/` y este `CLAUDE.md`.** Ante conflicto con `docs/`, recuerda que los `docs/` son v1 (normativo, aparcado). Si detectas contradicción, señálala, no la resuelvas inventando.
 
-## 9. Índice de documentos (`docs/`)
+## 8. Índice de documentos
 
+**Vigente (v2):**
 | Documento | Qué contiene |
 |---|---|
-| `solucion-educacion.md` | **Visión de producto, negocio y pitch.** Tesis, foso, 4 módulos, GTM, unit economics, riesgos. |
-| `arquitectura-faro.md` | **Blueprint de arquitectura de producción.** Ports & adapters, modelo de datos, gates, pipeline RAG, plan por fases. *(El documento técnico maestro.)* |
-| `plan-implementacion-faro.md` | Plan de implementación por épicas A–G y DoD. |
-| `adr-001-recuperacion-rag.md` | Decisión: recuperación RAG híbrida + grafo + rerank + verificación. |
-| `adr-002-monorepo-dominio.md` | Decisión: monorepo pnpm con paquetes de dominio puros. |
-| `adr-003-generacion-asincrona.md` | Decisión: generación vía cola + worker (no en el request HTTP). |
-| `adr-004-corpus-versionado.md` | Decisión: `corpus_version` inmutable para reproducibilidad legal. |
-| `prompt-scaffolding-faro.md` | Prompt de arranque para scaffolding del repo. |
-| `educacion-proyectos-run.md` | Notas de ejecución del vertical educación. |
-| `master-prompt-chile-govtech-startups.md` | **Knowledge pack verificado** del contexto chileno (anclajes `[E#]`/`[A#]`). |
+| `specs/README.md` | **Mapa de fases v2** + invariantes + alcance. *Punto de entrada del build.* |
+| `specs/00-cimientos.md` | Cimientos (construidos). |
+| `specs/01-curriculum-oa.md` | **Fase 1:** datos de currículum OA 1º–6º, sin RAG. |
+| `specs/02-planificacion.md` | **Fase 2:** núcleo — 2 formatos, híbrido, `.docx`/`.pdf`. |
+| `specs/03-ppt-infantil.md` | **Fase 3:** PPT infantil *(stub, espera referencias)*. |
+| `specs/04-prueba-formativa.md` | **Fase 4:** prueba formativa *(stub, espera referencias)*. |
 
-## 10. Glosario mínimo de dominio
+**Referencia / vigente parcial:**
+| Documento | Estado |
+|---|---|
+| `docs/arquitectura-faro.md` + ADR-002/003/004 | Hexagonal, persistencia, worker, corpus versionado: **vigentes**. Resto: aparcado. |
+| `docs/planificaciones-primera-unidad-{primero,tercero}-basico.pdf` | **Las plantillas reales** (Formato A y B). Fuente de verdad de la estructura de tablas. |
+| `docs/bases-curriculares-primera-a-sexto-basico.pdf` | Fuente de los OA (Fase 1). |
 
-- **PME** — Plan de Mejoramiento Educativo: instrumento MINEDUC que consolida los 6 planes obligatorios; base de cumplimiento SEP y rendición.
-- **OA** — Objetivo de Aprendizaje (Bases Curriculares): unidad citable del currículum nacional.
-- **Decreto 67/2018** — evaluación, calificación y promoción; obliga reglamento de evaluación (≥16 ítems) subido a SIGE.
-- **Decreto 83/2015** — NEE; obliga PACI (Plan de Adecuaciones Curriculares Individualizado) por estudiante.
-- **SEP** — Subvención Escolar Preferencial (Ley 20.248): financia software solo si es pedagógico y está en el PME.
-- **SLEP** — Servicio Local de Educación Pública (Ley 21.040): nuevo sostenedor/comprador público que reemplaza a los DAEM.
-- **PIE** — Programa de Integración Escolar (apoyo NEE).
-- **HIL** — human-in-the-loop: revisión humana obligatoria antes de aprobar un documento.
+**Aparcado (v1 normativo — referencia, no se construye):** `docs/solucion-educacion.md`, `docs/plan-implementacion-faro.md`, `docs/adr-001-recuperacion-rag.md`, `specs/01-nucleo-rag.md`.
+
+## 9. Qué era v1 (aparcado, por si vuelve)
+
+Faro v1 era un **copiloto de cumplimiento normativo** cuyo "foso" eran dos *knowledge graphs* curados (normativa MINEDUC con vigencias; currículum) + RAG + workflow regulado, con 4 módulos: **M0 Aula**, **M3 Normativo** (asistente con citas + auditoría Decreto 67), **M1 PME** (Plan de Mejoramiento Educativo, comprador SLEP/sostenedor), **M2 NEE** (PACI Decreto 83, datos individualizados de menores). v2 conserva solo la cuña de aula (planificación), sin la capa normativa. La documentación v1 queda íntegra en `docs/` (con notas de "aparcado") por si esos módulos se retoman.
+
+## 10. Glosario mínimo (v2)
+
+- **OA** — Objetivo de Aprendizaje (Bases Curriculares): unidad citable del currículum nacional; el **único piso fijo** (lo demás —formato, indicadores— varía por colegio).
+- **Básica** — educación básica chilena; el MVP cubre **1º a 6º**.
+- **Planificación de Unidad / Bloque** — los dos instrumentos reales que Faro replica (Formato A / Formato B).
+- **DUA** — Diseño Universal para el Aprendizaje (3 principios: Representación, Acción y Expresión, Implicación); estructura el Formato B.
+- **Indicadores de evaluación** — evidencias observables por OA; viven en los Programas de Estudio (no en las Bases) → en v2 los redacta la IA como borrador.
+- **HIL** — human-in-the-loop: revisión docente obligatoria antes de aprobar un documento.
+- **Híbrido** — generación que combina **datos fijos** (OA, catálogos) con **redacción de IA** (experiencias, indicadores).

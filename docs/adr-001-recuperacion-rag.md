@@ -1,6 +1,6 @@
 # ADR-001 — Estrategia de recuperación: RAG híbrido sobre grafo (GraphRAG legal) con verificación de citas
 
-- **Estado:** Aceptado
+- **Estado:** Aceptado (v1) — **APARCADO en v2 (2026-06-07):** el dueño eliminó RAG/normativa; el currículum se consulta de forma determinista (ver `specs/01-curriculum-oa.md`). Se conserva como referencia.
 - **Contexto:** Faro (copiloto de cumplimiento/documentación para colegios chilenos). Ver `solucion-educacion.md` y `plan-implementacion-faro.md`.
 - **Decisión en una línea:** Implementar **RAG, pero robusto**: recuperación híbrida (vector + léxico) sobre un grafo normativo curado con vigencias, reranking, recuperación de documento padre, y un **gate de verificación de citas** obligatorio. No RAG ingenuo; no "solo contexto".
 
