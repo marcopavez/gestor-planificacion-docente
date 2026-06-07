@@ -53,7 +53,9 @@ export async function GET(
         unidad: porTipo(cascada, 'planificacion_unidad'),
         clase: porTipo(cascada, 'planificacion_clase'),
         prueba: porTipo(cascada, 'prueba'),
-        deck: porTipo(cascada, 'clase_deck'),
+        // El clase_deck persiste su payload como { deck: ClaseDeck, pptx }; la UI de producción
+        // espera el ClaseDeck plano (.slides/.titulo), así que lo desempaquetamos aquí.
+        deck: (porTipo(cascada, 'clase_deck') as { deck?: unknown } | null)?.deck ?? null,
       },
       // id del documento clase_deck para construir la URL de descarga del .pptx.
       deckDocId: deckDoc?.id ?? null,
