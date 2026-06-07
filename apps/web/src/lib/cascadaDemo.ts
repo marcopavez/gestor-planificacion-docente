@@ -8,7 +8,7 @@ import { basename, join } from 'node:path';
 import { CascadaAulaUseCase } from '@faro/application';
 import type { ContextoCascada, OaCorpus, ResultadoCascada } from '@faro/application';
 import type { LlmPort } from '@faro/domain';
-import { AnthropicLlmAdapter, crearSamplesLlm } from '@faro/infra-ai';
+import { AnthropicLlmAdapter, ClaudeCodeLlmAdapter, crearSamplesLlm } from '@faro/infra-ai';
 import { PptxExportAdapter } from '@faro/infra-export';
 import { crearLoggerHijo } from '@faro/observability';
 import { cargarCorpus } from './corpus';
@@ -39,6 +39,12 @@ export interface EntradaCascadaDemo {
 }
 
 function construirLlm(samplesDir: string): { llm: LlmPort; modo: ModoCascada } {
+  // Costura claude-code disponible (RF-PA.14): si está el token de suscripción, generación en vivo.
+  // No cambia el comportamiento por defecto del demo: sin token ni API key sigue en samples ('demo').
+  const token = process.env['CLAUDE_CODE_OAUTH_TOKEN'];
+  if (token) {
+    return { llm: ClaudeCodeLlmAdapter.desdeToken(token, crearLoggerHijo('infra-ai')), modo: 'live' };
+  }
   const apiKey = process.env['ANTHROPIC_API_KEY'];
   if (apiKey) {
     return { llm: AnthropicLlmAdapter.desdeApiKey(apiKey, crearLoggerHijo('infra-ai')), modo: 'live' };

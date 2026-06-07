@@ -3,14 +3,14 @@
 // Es el ÚNICO lugar que conoce los adapters concretos (INV-5). La orquestación vive en
 // ProcesarTrabajoCascadaUseCase (@faro/application), que depende solo de puertos.
 //
-// LLM: en esta fase se usa el adapter de samples (la plomería se prueba con samples — plan §1.3).
-// La selección `samples | claude-code` queda como costura para H-PA.7 (no implementada aquí).
+// LLM: selección de proveedor vía crearLlm (RF-PA.14): claude-code si hay CLAUDE_CODE_OAUTH_TOKEN,
+// anthropic-api si hay ANTHROPIC_API_KEY, si no samples (plomería gratis/determinista — plan §1.3).
 
 import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { CascadaAulaUseCase, ProcesarTrabajoCascadaUseCase } from '@faro/application';
 import type { ClockPort } from '@faro/domain';
-import { crearSamplesLlm } from '@faro/infra-ai';
+import { crearLlm } from '@faro/infra-ai';
 import {
   crearDb,
   JobRepositoryDrizzle,
@@ -54,10 +54,19 @@ async function main(): Promise<void> {
 
   const { db, pool } = crearDb({ DATABASE_URL: databaseUrl });
 
-  // Adapters concretos (composition root). LLM de samples: prueba la plomería sin API key.
+  // Adapters concretos (composition root). LLM elegido por entorno (claude-code | anthropic-api | samples).
   // LIMITACIÓN demo: samples sirve UNA materia; el dir se resuelve por env (default: matemática 1º básico).
   const samplesDir =
     process.env['WORKER_SAMPLES_DIR'] ?? join(raizRepo(), 'samples', 'aula-matematica-1b');
+
+  const { llm, modo } = crearLlm(
+    {
+      CLAUDE_CODE_OAUTH_TOKEN: process.env['CLAUDE_CODE_OAUTH_TOKEN'],
+      ANTHROPIC_API_KEY: process.env['ANTHROPIC_API_KEY'],
+      samplesDir,
+    },
+    crearLoggerHijo('infra-ai'),
+  );
 
   const useCase = new ProcesarTrabajoCascadaUseCase({
     // jobs top-level: tomarSiguiente/reintentar/marcarFallido corren fuera de la unidad de trabajo.
@@ -67,7 +76,7 @@ async function main(): Promise<void> {
     // uow: persiste los 4 documentos + 4 trazas + marcarHecho en UNA transacción (atomicidad).
     uow: new UnidadDeTrabajoDrizzle(db),
     export: new PptxExportAdapter(join(raizRepo(), 'generated'), crearLoggerHijo('infra-export')),
-    cascada: new CascadaAulaUseCase(crearSamplesLlm(samplesDir)),
+    cascada: new CascadaAulaUseCase(llm),
     clock: relojSistema,
   });
 
@@ -80,7 +89,7 @@ async function main(): Promise<void> {
   process.on('SIGTERM', () => apagar('SIGTERM'));
   process.on('SIGINT', () => apagar('SIGINT'));
 
-  log.info({ workerId, samplesDir }, 'worker: iniciado (H-PA.8)');
+  log.info({ workerId, modo, samplesDir }, 'worker: iniciado (H-PA.8)');
 
   // Loop principal: procesa jobs hasta recibir señal de apagado.
   while (corriendo) {
