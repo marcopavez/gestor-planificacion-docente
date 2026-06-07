@@ -35,7 +35,6 @@ coverage/
 *.pptx
 *.docx
 *.pdf
-!docs/**/*.pdf
 
 # OS / editores
 .DS_Store
@@ -43,3 +42,10 @@ Thumbs.db
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# Área de trabajo temporal (no commitear)
+.scratch/
+
+# Claude Code (artefactos de runtime locales)
+.claude/scheduled_tasks.lock
+

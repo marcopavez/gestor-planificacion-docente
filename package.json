@@ -1,0 +1,25 @@
+{
+  "name": "faro",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.9",
+  "scripts": {
+    "build": "pnpm -r --filter \"@faro/*\" build",
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "tsc --build tsconfig.json && pnpm --filter @faro/web typecheck",
+    "test": "vitest run",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.60.1",
+    "@typescript-eslint/parser": "^8.60.1",
+    "eslint": "^9.39.4",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.6",
+    "vite-tsconfig-paths": "^5.1.4",
+    "@vitest/coverage-v8": "^3.2.6"
+  }
+}

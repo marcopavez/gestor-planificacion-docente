@@ -1,0 +1,40 @@
+{
+  "tipo": "decreto",
+  "norma": "Decreto 67/2018",
+  "titulo": "Aprueba normas mínimas nacionales sobre evaluación, calificación y promoción y deroga los decretos que indica",
+  "organismo": "Ministerio de Educación (MINEDUC), Subsecretaría de Educación",
+  "articulo": 18,
+  "referencia": "Decreto 67/2018 art. 18",
+  "encabezado": "El Reglamento de cada establecimiento educacional deberá contener, a lo menos:",
+  "estado_vigencia": "vigente",
+  "vigencia": {
+    "fecha_norma_bcn": "2018-12-31",
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] fecha exacta de entrada en vigencia (el Decreto 67 tuvo aplicación gradual). Validar el texto completo contra BCN antes de fijar como fuente de citas."
+  },
+  "fuente": {
+    "bcn_leychile": "https://www.bcn.cl/leychile/navegar?idNorma=1127255",
+    "idNorma": "1127255",
+    "pdf_mineduc": "https://especial.mineduc.cl/wp-content/uploads/sites/31/2020/08/Decreto-67_31-DIC-2018.pdf",
+    "extraccion": "Texto extraído verbatim del PDF oficial con pdfplumber; encabezado de página BCN removido del literal e). PENDIENTE de validación del dueño (CLAUDE.md: no inventar normas chilenas)."
+  },
+  "literales": [
+    { "letra": "a", "referencia": "Decreto 67/2018 art. 18 lit. a", "texto": "El período escolar semestral o trimestral adoptado;" },
+    { "letra": "b", "referencia": "Decreto 67/2018 art. 18 lit. b", "texto": "Las disposiciones respecto de la manera en que se promoverá que los alumnos conozcan y comprendan las formas y criterios con que serán evaluados;" },
+    { "letra": "c", "referencia": "Decreto 67/2018 art. 18 lit. c", "texto": "Las disposiciones respecto de la manera en que se informará a los padres, madres y apoderados de las formas y criterios con que serán evaluados los alumnos;" },
+    { "letra": "d", "referencia": "Decreto 67/2018 art. 18 lit. d", "texto": "Respecto de las actividades de evaluación que pudieran llevar o no calificación, incluyendo las tareas que se envían para realizar fuera de la jornada escolar, se deberán establecer los lineamientos para cautelar que exista la retroalimentación de las mismas, las estrategias para el seguimiento de su calidad y pertinencia, y la forma en que se coordinarán los equipos docentes, en el marco de su autonomía profesional, para definir su frecuencia, en función de evitar la sobrecarga y resguardar los espacios de vida personal, social y familiar de los alumnos." },
+    { "letra": "e", "referencia": "Decreto 67/2018 art. 18 lit. e", "texto": "Disposiciones que definan espacios para que los profesionales de la educación puedan discutir y acordar criterios de evaluación y tipos de evidencia centrales en cada asignatura, y fomentar un trabajo colaborativo para promover la mejora continua de la calidad de sus prácticas evaluativas y de enseñanza, de conformidad con lo dispuesto en los artículos 6°, 69 y 80 del decreto con fuerza de ley N° 1 de 1996, del Ministerio de Educación;" },
+    { "letra": "f", "referencia": "Decreto 67/2018 art. 18 lit. f", "texto": "Disposiciones que expliciten las estrategias que se utilizarán para potenciar la evaluación formativa;" },
+    { "letra": "g", "referencia": "Decreto 67/2018 art. 18 lit. g", "texto": "Disposiciones que establezcan lineamientos para diversificar la evaluación en orden a atender de mejor manera a la diversidad de los alumnos;" },
+    { "letra": "h", "referencia": "Decreto 67/2018 art. 18 lit. h", "texto": "Los lineamientos respecto de la forma en que se resguardará que la calificación final anual de los alumnos en las asignaturas y módulos sea coherente con la planificación que para dicha asignatura o módulo realice el profesional de la educación, incluyendo la determinación de si se realizará o no una evaluación final y en qué asignaturas o módulos. En caso de que la calificación final de la asignatura o módulo corresponda a un promedio ponderado, la ponderación máxima de esta evaluación final no podrá ser superior a un 30%;" },
+    { "letra": "i", "referencia": "Decreto 67/2018 art. 18 lit. i", "texto": "Las disposiciones sobre la eximición de determinadas evaluaciones que conlleven calificación, sus requisitos y los plazos para las evaluaciones recuperativas;" },
+    { "letra": "j", "referencia": "Decreto 67/2018 art. 18 lit. j", "texto": "La definición del sistema de registro de las calificaciones para todas las asignaturas o módulos del plan de estudio;" },
+    { "letra": "k", "referencia": "Decreto 67/2018 art. 18 lit. k", "texto": "Los criterios para la promoción de los alumnos con menos de 85% de asistencia a clases incluyendo los requisitos y modos de operar para promover a los alumnos;" },
+    { "letra": "l", "referencia": "Decreto 67/2018 art. 18 lit. l", "texto": "Los criterios para la resolución de situaciones especiales de evaluación y promoción durante el año escolar, tales como ingreso tardío a clases; ausencias a clases por períodos prolongados; suspensiones de clases por tiempos prolongados; finalización anticipada del año escolar respecto de uno o varios alumnos individualizados; situaciones de embarazo; servicio militar; certámenes nacionales o internacionales en el área del deporte, la literatura, las ciencias y las artes; becas u otros;" },
+    { "letra": "m", "referencia": "Decreto 67/2018 art. 18 lit. m", "texto": "Disposiciones sobre la forma y los tiempos para la comunicación sobre el proceso, progreso y logros de aprendizaje a los alumnos, padres, madres y apoderados;" },
+    { "letra": "n", "referencia": "Decreto 67/2018 art. 18 lit. n", "texto": "Disposiciones respecto del desarrollo de instancias mínimas de comunicación, reflexión y toma de decisiones entre los diversos integrantes de la comunidad educativa centradas en el proceso, el progreso y los logros de aprendizaje de alumnos;" },
+    { "letra": "o", "referencia": "Decreto 67/2018 art. 18 lit. o", "texto": "Disposiciones sobre los criterios, el procedimiento de análisis, toma de decisiones de promoción y las medidas necesarias para proveer el acompañamiento pedagógico, señaladas en el artículo 12 de este reglamento;" },
+    { "letra": "p", "referencia": "Decreto 67/2018 art. 18 lit. p", "texto": "Las medidas que deberán ser consideradas para obtener evidencia fidedigna sobre el aprendizaje en casos de plagio o copia. Sin perjuicio de lo anterior, las sanciones que se establezcan en estos casos, deberán encontrarse reguladas en el Reglamento Interno." }
+  ]
+}

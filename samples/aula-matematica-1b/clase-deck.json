@@ -1,0 +1,57 @@
+{
+  "titulo": "Clase 1 · Leer y representar números hasta el 20",
+  "asignatura": "Matemática",
+  "nivel": "1º básico",
+  "oa": ["MA01 OA 03"],
+  "slides": [
+    {
+      "momento": "inicio",
+      "titulo": "¿Cuántos hay?",
+      "contenido": ["Contemos juntos del 0 al 20 con palmas.", "¿Dónde vemos números en la sala?"],
+      "notas_docente": "Rutina de conteo colectivo (2–3 min). Recoger ejemplos de números del entorno para activar conocimientos previos.",
+      "sugerencia_imagen": "Niños y niñas contando con los dedos; números grandes y coloridos del 0 al 20."
+    },
+    {
+      "momento": "inicio",
+      "titulo": "Hoy aprenderemos…",
+      "contenido": ["A leer números del 0 al 20.", "A representarlos con material, con dibujos y con el número."],
+      "notas_docente": "Presentar el objetivo en lenguaje sencillo. Pedir que repitan el objetivo con sus palabras.",
+      "sugerencia_imagen": "Ícono de meta/objetivo amigable para niños."
+    },
+    {
+      "momento": "desarrollo",
+      "titulo": "Tres maneras de mostrar un número",
+      "contenido": ["Concreta: con tapitas.", "Pictórica: con dibujos (círculos).", "Simbólica: con el número."],
+      "notas_docente": "Modelar con el 7: 7 tapitas → 7 círculos → '7'. Enfatizar que es el mismo número de tres formas.",
+      "sugerencia_imagen": "El número 7 mostrado como 7 tapitas, 7 círculos y el símbolo 7."
+    },
+    {
+      "momento": "desarrollo",
+      "titulo": "Ahora tú",
+      "contenido": ["Recibe un número.", "Muéstralo con tapitas.", "Dibújalo con círculos.", "Escríbelo en tu cuaderno."],
+      "notas_docente": "Trabajo individual con apoyo entre pares (cooperativo). Circular y registrar en la lista de cotejo.",
+      "sugerencia_imagen": "Manos de un niño ordenando tapitas junto a un cuaderno."
+    },
+    {
+      "momento": "desarrollo",
+      "titulo": "Revisemos juntos",
+      "contenido": ["Tres compañeros muestran su número.", "¿Está representado de las tres formas?"],
+      "notas_docente": "Puesta en común breve. Reforzar el vocabulario concreta/pictórica/simbólica.",
+      "sugerencia_imagen": "Pizarra con tres representaciones de un mismo número."
+    },
+    {
+      "momento": "cierre",
+      "titulo": "¿Qué aprendimos hoy?",
+      "contenido": ["Podemos mostrar un número de tres maneras.", "Leímos y representamos números hasta el 20."],
+      "notas_docente": "Cierre metacognitivo (2–3 min): preguntar qué les resultó fácil y qué difícil.",
+      "sugerencia_imagen": "Ícono de bombilla/idea; niños levantando la mano."
+    },
+    {
+      "momento": "cierre",
+      "titulo": "Ticket de salida",
+      "contenido": ["Dibuja y escribe el número que diga la profesora."],
+      "notas_docente": "Evaluación formativa de salida. Dictar un número del 0 al 20; recoger los tickets como evidencia.",
+      "sugerencia_imagen": "Tarjeta tipo 'ticket' con un recuadro para dibujar y otro para escribir."
+    }
+  ]
+}

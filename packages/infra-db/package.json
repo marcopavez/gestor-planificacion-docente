@@ -1,0 +1,26 @@
+{
+  "name": "@faro/infra-db",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@faro/domain": "workspace:*",
+    "drizzle-orm": "^0.45.2",
+    "pg": "^8.21.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.20.0"
+  }
+}

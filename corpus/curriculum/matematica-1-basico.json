@@ -1,0 +1,186 @@
+{
+  "asignatura": "Matemática",
+  "nivel": "1º básico",
+  "codigoAsignaturaNivel": "MA01",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "paginasPdf": "229-230 (numeración interna del documento: pp. 226-228)",
+    "web": "https://www.curriculumnacional.cl/curriculum/1o-6o-basico/matematica/1-basico",
+    "verificado": "Texto autoritativo del PDF; códigos según curriculumnacional.cl. Cross-check OA 1-20 OK."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases Curriculares antes de fijar vigencia_desde."
+  },
+  "ejes": [
+    "Números y operaciones",
+    "Patrones y álgebra",
+    "Geometría",
+    "Medición",
+    "Datos y probabilidades"
+  ],
+  "habilidades": [
+    { "letra": "a", "categoria": "Resolver problemas", "descripcion": "Emplear diversas estrategias para resolver problemas." },
+    { "letra": "b", "categoria": "Resolver problemas", "descripcion": "Comprobar enunciados, usando material concreto y gráfico." },
+    { "letra": "c", "categoria": "Resolver problemas", "descripcion": "Expresar un problema con sus propias palabras." },
+    { "letra": "d", "categoria": "Argumentar y comunicar", "descripcion": "Describir situaciones del entorno con lenguaje matemático." },
+    { "letra": "e", "categoria": "Argumentar y comunicar", "descripcion": "Comunicar el resultado de descubrimientos de relaciones, patrones y reglas, entre otros, empleando expresiones matemáticas." },
+    { "letra": "f", "categoria": "Argumentar y comunicar", "descripcion": "Explicar las soluciones propias y los procedimientos utilizados." },
+    { "letra": "g", "categoria": "Modelar", "descripcion": "Aplicar modelos que involucren sumas, restas y orden de cantidades." },
+    { "letra": "h", "categoria": "Modelar", "descripcion": "Expresar, a partir de representaciones pictóricas y explicaciones dadas, acciones y situaciones cotidianas en lenguaje matemático." },
+    { "letra": "i", "categoria": "Representar", "descripcion": "Elegir y utilizar representaciones concretas, pictóricas y simbólicas para representar enunciados." },
+    { "letra": "j", "categoria": "Representar", "descripcion": "Crear un relato basado en una expresión matemática simple." }
+  ],
+  "objetivos_aprendizaje": [
+    {
+      "codigo": "MA01 OA 01",
+      "numero": 1,
+      "eje": "Números y operaciones",
+      "descripcion": "Contar números del 0 al 100 de 1 en 1, de 2 en 2, de 5 en 5 y de 10 en 10, hacia adelante y hacia atrás, empezando por cualquier número menor que 100.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA01 OA 02",
+      "numero": 2,
+      "eje": "Números y operaciones",
+      "descripcion": "Identificar el orden de los elementos de una serie, utilizando números ordinales del primero (1º) al décimo (10º).",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA01 OA 03",
+      "numero": 3,
+      "eje": "Números y operaciones",
+      "descripcion": "Leer números del 0 al 20 y representarlos en forma concreta, pictórica y simbólica.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA01 OA 04",
+      "numero": 4,
+      "eje": "Números y operaciones",
+      "descripcion": "Comparar y ordenar números del 0 al 20 de menor a mayor y/o viceversa, utilizando material concreto y/o usando software educativo.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA01 OA 05",
+      "numero": 5,
+      "eje": "Números y operaciones",
+      "descripcion": "Estimar cantidades hasta 20 en situaciones concretas, usando un referente.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA01 OA 06",
+      "numero": 6,
+      "eje": "Números y operaciones",
+      "descripcion": "Componer y descomponer números del 0 a 20 de manera aditiva, en forma concreta, pictórica y simbólica.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA01 OA 07",
+      "numero": 7,
+      "eje": "Números y operaciones",
+      "descripcion": "Describir y aplicar estrategias de cálculo mental para las adiciones y las sustracciones hasta 20:",
+      "detalle": ["conteo hacia adelante y atrás", "completar 10", "dobles"],
+      "indicadores": []
+    },
+    {
+      "codigo": "MA01 OA 08",
+      "numero": 8,
+      "eje": "Números y operaciones",
+      "descripcion": "Determinar las unidades y decenas en números del 0 al 20, agrupando de a 10, de manera concreta, pictórica y simbólica.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA01 OA 09",
+      "numero": 9,
+      "eje": "Números y operaciones",
+      "descripcion": "Demostrar que comprenden la adición y la sustracción de números del 0 al 20 progresivamente, de 0 a 5, de 6 a 10, de 11 a 20 con dos sumandos:",
+      "detalle": [
+        "usando un lenguaje cotidiano para describir acciones desde su propia experiencia",
+        "representando adiciones y sustracciones con material concreto y pictórico, de manera manual y/o usando software educativo",
+        "representando el proceso en forma simbólica",
+        "resolviendo problemas en contextos familiares",
+        "creando problemas matemáticos y resolviéndolos"
+      ],
+      "indicadores": []
+    },
+    {
+      "codigo": "MA01 OA 10",
+      "numero": 10,
+      "eje": "Números y operaciones",
+      "descripcion": "Demostrar que la adición y la sustracción son operaciones inversas, de manera concreta, pictórica y simbólica.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA01 OA 11",
+      "numero": 11,
+      "eje": "Patrones y álgebra",
+      "descripcion": "Reconocer, describir, crear y continuar patrones repetitivos (sonidos, figuras, ritmos...) y patrones numéricos hasta el 20, crecientes y decrecientes, usando material concreto, pictórico y simbólico, de manera manual y/o por medio de software educativo.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA01 OA 12",
+      "numero": 12,
+      "eje": "Patrones y álgebra",
+      "descripcion": "Describir y registrar la igualdad y la desigualdad como equilibrio y desequilibrio, usando una balanza en forma concreta, pictórica y simbólica del 0 al 20, usando el símbolo igual (=).",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA01 OA 13",
+      "numero": 13,
+      "eje": "Geometría",
+      "descripcion": "Describir la posición de objetos y personas con relación a sí mismos y a otros objetos y personas, usando un lenguaje común (como derecha e izquierda).",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA01 OA 14",
+      "numero": 14,
+      "eje": "Geometría",
+      "descripcion": "Identificar en el entorno figuras 3D y figuras 2D y relacionarlas, usando material concreto.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA01 OA 15",
+      "numero": 15,
+      "eje": "Geometría",
+      "descripcion": "Identificar y dibujar líneas rectas y curvas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA01 OA 16",
+      "numero": 16,
+      "eje": "Medición",
+      "descripcion": "Usar unidades no estandarizadas de tiempo para comparar la duración de eventos cotidianos.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA01 OA 17",
+      "numero": 17,
+      "eje": "Medición",
+      "descripcion": "Usar un lenguaje cotidiano para secuenciar eventos en el tiempo: días de la semana, meses del año y algunas fechas significativas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA01 OA 18",
+      "numero": 18,
+      "eje": "Medición",
+      "descripcion": "Identificar y comparar la longitud de objetos, usando palabras como largo y corto.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA01 OA 19",
+      "numero": 19,
+      "eje": "Datos y probabilidades",
+      "descripcion": "Recolectar y registrar datos para responder preguntas estadísticas sobre sí mismo y el entorno, usando bloques, tablas de conteo y pictogramas.",
+      "indicadores": []
+    },
+    {
+      "codigo": "MA01 OA 20",
+      "numero": 20,
+      "eje": "Datos y probabilidades",
+      "descripcion": "Construir, leer e interpretar pictogramas.",
+      "indicadores": []
+    }
+  ]
+}

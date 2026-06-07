@@ -1,0 +1,16 @@
+{
+  // Solución TypeScript raíz — solo paquetes compilables (composite:true).
+  // apps/web usa Next.js con moduleResolution:bundler y noEmit:true,
+  // por lo que se excluye de la solución y se typechequea por separado (ver script typecheck).
+  "files": [],
+  "references": [
+    { "path": "./packages/config" },
+    { "path": "./packages/observability" },
+    { "path": "./packages/domain" },
+    { "path": "./packages/application" },
+    { "path": "./packages/infra-db" },
+    { "path": "./packages/infra-ai" },
+    { "path": "./packages/infra-export" },
+    { "path": "./apps/worker" }
+  ]
+}

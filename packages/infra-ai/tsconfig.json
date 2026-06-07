@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "paths": {
+      "@faro/domain": ["../domain/src/index.ts"],
+      "@faro/observability": ["../observability/src/index.ts"]
+    }
+  },
+  "references": [
+    { "path": "../domain" },
+    { "path": "../observability" }
+  ],
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

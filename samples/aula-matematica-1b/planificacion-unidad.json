@@ -1,0 +1,69 @@
+{
+  "establecimiento": "Escuela General José Alejandro Bernales D-114",
+  "asignatura": "Matemática",
+  "nivel": "1º básico",
+  "unidad": "Unidad 1: Exploremos los números hasta el 20",
+  "proposito": "Introducir a las y los estudiantes de Primero Básico en el ámbito numérico del 0 al 20, desarrollando la lectura, representación, comparación, composición y descomposición de cantidades, junto con el reconocimiento de patrones, mediante experiencias concretas, pictóricas y simbólicas que les permitan dar sentido a los números en su vida cotidiana.",
+  "duracion_semanas": 7,
+  "horas_pedagogicas": 42,
+  "oa": [
+    { "codigo": "MA01 OA 03", "categoria": "basal", "descripcion": "Leer números del 0 al 20 y representarlos en forma concreta, pictórica y simbólica." },
+    { "codigo": "MA01 OA 04", "categoria": "basal", "descripcion": "Comparar y ordenar números del 0 al 20 de menor a mayor y/o viceversa, utilizando material concreto y/o usando software educativo." },
+    { "codigo": "MA01 OA 06", "categoria": "basal", "descripcion": "Componer y descomponer números del 0 a 20 de manera aditiva, en forma concreta, pictórica y simbólica." },
+    { "codigo": "MA01 OA 08", "categoria": "basal", "descripcion": "Determinar las unidades y decenas en números del 0 al 20, agrupando de a 10, de manera concreta, pictórica y simbólica." },
+    { "codigo": "MA01 OA 11", "categoria": "basal", "descripcion": "Reconocer, describir, crear y continuar patrones repetitivos (sonidos, figuras, ritmos…) y patrones numéricos hasta el 20, crecientes y decrecientes, usando material concreto, pictórico y simbólico, de manera manual y/o por medio de software educativo." },
+    { "codigo": "MA01 OA 01", "categoria": "complementario", "descripcion": "Contar números del 0 al 100 de 1 en 1, de 2 en 2, de 5 en 5 y de 10 en 10, hacia adelante y hacia atrás, empezando por cualquier número menor que 100." },
+    { "codigo": "MA01 OA 02", "categoria": "complementario", "descripcion": "Identificar el orden de los elementos de una serie, utilizando números ordinales del primero (1º) al décimo (10º)." },
+    { "codigo": "OAT 9", "categoria": "transversal", "descripcion": "Resolver problemas de manera reflexiva en el ámbito escolar, familiar y social, tanto utilizando modelos y rutinas como aplicando de manera creativa conceptos y criterios. [VERIFICAR numeración OAT oficial — texto tomado de la plantilla del colegio]" },
+    { "codigo": "OAT 25", "categoria": "transversal", "descripcion": "Trabajar en equipo de manera responsable, construyendo relaciones basadas en la confianza mutua. [VERIFICAR numeración OAT oficial — texto tomado de la plantilla del colegio]" }
+  ],
+  "habilidades": ["Resolver problemas", "Argumentar y comunicar", "Modelar", "Representar"],
+  "indicadores_evaluacion": [
+    { "oa": "MA01 OA 03", "texto": "Leen en voz alta números del 0 al 20.", "fuente": "ia_borrador" },
+    { "oa": "MA01 OA 03", "texto": "Representan un número dado del 0 al 20 en forma concreta, pictórica y simbólica.", "fuente": "ia_borrador" },
+    { "oa": "MA01 OA 04", "texto": "Comparan dos cantidades hasta 20 usando las expresiones 'mayor que' y 'menor que'.", "fuente": "ia_borrador" },
+    { "oa": "MA01 OA 04", "texto": "Ordenan hasta tres números del 0 al 20 de menor a mayor y viceversa.", "fuente": "ia_borrador" },
+    { "oa": "MA01 OA 06", "texto": "Componen un número hasta 20 a partir de dos sumandos, con material concreto.", "fuente": "ia_borrador" },
+    { "oa": "MA01 OA 06", "texto": "Descomponen un número hasta 20 de más de una manera.", "fuente": "ia_borrador" },
+    { "oa": "MA01 OA 08", "texto": "Agrupan una colección de a 10 e identifican la decena y las unidades sueltas.", "fuente": "ia_borrador" },
+    { "oa": "MA01 OA 11", "texto": "Identifican el elemento que falta o que sigue en un patrón repetitivo.", "fuente": "ia_borrador" }
+  ],
+  "contenidos": {
+    "conceptuales": [
+      "Números del 0 al 20: lectura y representación (concreta, pictórica y simbólica)",
+      "Comparación y orden de cantidades hasta 20",
+      "Composición y descomposición aditiva hasta 20",
+      "Unidades y decenas: agrupación de a 10",
+      "Patrones repetitivos y numéricos hasta 20"
+    ],
+    "procedimentales": [
+      "Conteo de colecciones con material concreto",
+      "Representación pictórica y simbólica de cantidades",
+      "Uso de la recta numérica y de la tabla de valor posicional",
+      "Creación y continuación de patrones"
+    ],
+    "actitudinales": [
+      "Trabajar en equipo y respetar los turnos (OAT 25)",
+      "Perseverar de manera reflexiva en la resolución de problemas (OAT 9)"
+    ]
+  },
+  "actividades": [
+    "Cuentan colecciones de hasta 20 objetos (tapitas, cubos encajables) e identifican y escriben el número correspondiente.",
+    "Representan un número con material concreto, lo dibujan con círculos y escriben el símbolo.",
+    "Juego en parejas: cada estudiante saca una tarjeta con un número; comparan y gana quien tiene el mayor; quien pierde representa su número con material.",
+    "Ordenan tres tarjetas con números de menor a mayor y viceversa en la pizarra.",
+    "Se dicta un número y lo forman en dos grupos con tapitas (por ejemplo, 6 = 4 + 2), nombrando la descomposición.",
+    "Agrupan palitos de helado de a 10 con un elástico (una decena) y cuentan las unidades sueltas (por ejemplo, 14 = 1 decena + 4 unidades).",
+    "Descubren y continúan patrones con sonidos, figuras y números hasta el 20.",
+    "Desarrollan guías de trabajo y actividades del texto de la asignatura por cada objetivo de la unidad."
+  ],
+  "instrumentos_evaluacion": ["Lista de cotejo", "Escala de apreciación", "Rúbrica", "Prueba escrita", "Prueba oral"],
+  "tipo_evaluacion": ["diagnostica", "formativa", "sumativa"],
+  "extras": {
+    "habilidades_siglo_xxi": ["Creatividad", "Pensamiento Crítico", "Metacognición", "Colaboración", "Comunicación"],
+    "metodologias_activas": ["Aprendizaje basado en el pensamiento", "Aprendizaje cooperativo", "Gamificación", "Evaluación auténtica"],
+    "principios_dua": ["Múltiples medios de representación", "Múltiples medios de acción y expresión", "Múltiples formas de implicación"],
+    "tipo_aprendizaje": ["conceptual", "procedimental", "actitudinal"],
+    "_nota": "Los campos de 'extras' son específicos de la plantilla del colegio (no son núcleo MINEDUC). Borrador generado por IA para revisión del docente."
+  }
+}
