@@ -14,6 +14,7 @@ import { z } from 'zod';
 import {
   CrearPlanificacionAnualUseCase,
   ListarPlanificacionAnualUseCase,
+  RevisarDocumentoUseCase,
 } from '@faro/application';
 import type { ClockPort } from '@faro/domain';
 import {
@@ -76,6 +77,8 @@ export function produccion() {
     // Use cases (escritura con gate) — encapsulan la lógica de dominio.
     crearPlan: new CrearPlanificacionAnualUseCase(planes, oas, corpus, relojSistema),
     listarPlanes: new ListarPlanificacionAnualUseCase(planes),
+    // Revisión HIL (H-PA.10): toda transición de estado pasa por la máquina del dominio.
+    revisar: new RevisarDocumentoUseCase(documentos),
     // Pool expuesto solo para el health check (SELECT 1); la web NO lo cierra.
     pool,
   };
