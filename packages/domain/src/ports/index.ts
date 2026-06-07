@@ -17,7 +17,11 @@ import type {
   Recuperado,
   Tarea,
 } from '../index.js';
-import type { PlanificacionAnual, PlanificacionAnualGuardada } from '../schemas/planificacionAnual.js';
+import type {
+  PlanificacionAnual,
+  PlanificacionAnualGuardada,
+  UnidadPlanificada,
+} from '../schemas/planificacionAnual.js';
 
 // --- Recuperación (RAG) ---
 
@@ -134,11 +138,39 @@ export interface TrazaRepository {
   registrar(traza: NuevaTraza): Promise<void>;
 }
 
+// Un trabajo de la cola listo para procesar (cascada desde una unidad planificada — RF-PA.3, ADR-003).
+export interface TrabajoCascada {
+  readonly id: string;
+  readonly unidadPlanificadaId: string;
+  readonly intentos: number; // ya incrementado por tomarSiguiente (cuenta el intento en curso)
+}
+
 export interface JobRepository {
-  encolar(documentoId: string): Promise<void>;
-  // FOR UPDATE SKIP LOCKED — ADR-003
-  tomarSiguiente(workerId: string): Promise<{ id: string; documentoId: string } | null>;
-  marcar(id: string, estado: 'hecho' | 'fallido'): Promise<void>;
+  // Encola una corrida de la cascada para una unidad; devuelve el id del job creado.
+  encolarCascadaUnidad(unidadPlanificadaId: string): Promise<string>;
+  // FOR UPDATE SKIP LOCKED — ADR-003. Marca el job 'en_proceso' e incrementa intentos atómicamente.
+  tomarSiguiente(workerId: string): Promise<TrabajoCascada | null>;
+  // Éxito: estado='hecho' y documento_id = id del documento raíz de la cascada (la unidad generada).
+  marcarHecho(id: string, documentoRaizId: string): Promise<void>;
+  // Reintento acotado: vuelve a 'pendiente' y registra el error del intento (otro worker lo retomará).
+  reintentar(id: string, error: string): Promise<void>;
+  // Agotados los reintentos: estado='fallido' y se conserva el último error.
+  marcarFallido(id: string, error: string): Promise<void>;
+}
+
+// --- Unidad de trabajo transaccional (atomicidad de la persistencia de la cascada) ---
+// Sin atomicidad, un fallo a mitad de los 4 crearBorrador + 4 trazas + marcarHecho deja
+// documentos huérfanos que el reintento del job duplicaría. enTransaccion envuelve todo en UNA tx.
+
+export interface ReposTransaccion {
+  readonly documentos: DocumentoRepository;
+  readonly trazas: TrazaRepository;
+  readonly jobs: JobRepository;
+}
+
+export interface UnidadDeTrabajo {
+  // Ejecuta fn dentro de UNA transacción; si fn lanza, se revierte TODO (atomicidad).
+  enTransaccion<T>(fn: (repos: ReposTransaccion) => Promise<T>): Promise<T>;
 }
 
 // --- Corpus Version (RF-PA.2, INV-4, ADR-004) ---
@@ -168,4 +200,16 @@ export interface PlanificacionAnualRepository {
     nivel?: string;
     anio?: number;
   }): Promise<PlanificacionAnualGuardada[]>;
+  // Resuelve una unidad y la cabecera de su plan (para derivar el ContextoCascada en el worker — RF-PA.3).
+  obtenerUnidad(unidadPlanificadaId: string): Promise<{
+    unidad: UnidadPlanificada;
+    cabecera: {
+      id: string;
+      establecimiento: string;
+      asignatura: string;
+      nivel: string;
+      anio: number;
+      corpusVersionId: string;
+    };
+  } | null>;
 }

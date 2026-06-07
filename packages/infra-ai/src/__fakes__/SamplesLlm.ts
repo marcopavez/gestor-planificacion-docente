@@ -1,7 +1,8 @@
-// apps/web/src/lib/samplesLlm.ts
+// packages/infra-ai/src/__fakes__/SamplesLlm.ts
 // LlmPort de modo demo (INV-6): NO usa API key ni token de suscripción. Sirve los artefactos
 // curados de samples/<materia>/ y los valida contra el schema real (un sample inválido falla).
 // Despacha por identidad de schema (el mismo objeto que pasan los use cases).
+// Su sitio natural es infra-ai: es un adapter de LlmPort, reutilizable por apps/web y apps/worker.
 
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';

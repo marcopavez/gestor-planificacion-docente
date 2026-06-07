@@ -7,6 +7,8 @@ export { AnthropicLlmAdapter } from './anthropic/AnthropicLlmAdapter.js';
 export { effortCapado, minimoCacheTokens, rutaPara } from './anthropic/router.js';
 export type { Effort, RutaModelo } from './anthropic/router.js';
 export { FakeLlm } from './__fakes__/FakeLlm.js';
+// Adapter de demo: sirve samples curados como LlmPort (sin API key) — usado por apps/web y apps/worker.
+export { crearSamplesLlm } from './__fakes__/SamplesLlm.js';
 
 // TODO H-0.5: VoyageEmbeddingsAdapter + FakeEmbeddings; RerankerAdapter (Haiku) + FakeReranker
 

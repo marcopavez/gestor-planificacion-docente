@@ -299,6 +299,44 @@ describe('DocumentoRepository — round-trip básico', () => {
     expect(leido!.contenido).toMatchObject({ titulo: 'Clase generada' });
     expect(leido!.resultadoGates).toMatchObject({ ok: true });
   }, T);
+
+  it('crearBorrador inserta corpus real + payload + origen_id y nace en borrador (INV-3)', async () => {
+    const db = await crearDb();
+    const cvId = await insertarCorpusVersion(db);
+    const repo = new DocumentoRepositoryDrizzle(db as unknown as DrizzleDb);
+
+    // Documento raíz (unidad) sin origen.
+    const unidadDoc = await repo.crearBorrador({
+      tipo: 'planificacion_unidad',
+      establecimientoId: 'Colegio Test',
+      corpusVersionId: cvId,
+      payload: { unidad: 'U1' },
+      resultadoGates: { ok: true },
+      estadoGeneracion: 'validado',
+    });
+    expect(unidadDoc.estadoRevision).toBe('borrador');
+    expect(unidadDoc.estadoGeneracion).toBe('validado');
+    expect(unidadDoc.contenido).toMatchObject({ unidad: 'U1' });
+
+    // Documento hijo (clase) con origen_id = unidad → trazabilidad de la cascada.
+    const claseDoc = await repo.crearBorrador({
+      tipo: 'planificacion_clase',
+      establecimientoId: 'Colegio Test',
+      corpusVersionId: cvId,
+      origenId: unidadDoc.id,
+      payload: { clase: 1 },
+      estadoGeneracion: 'validado',
+    });
+
+    const rows = await db.execute(
+      sql`SELECT origen_id, corpus_version_id FROM documento_generado WHERE id = ${claseDoc.id}`,
+    );
+    const fila = (
+      rows as unknown as { rows: Array<{ origen_id: string; corpus_version_id: string }> }
+    ).rows[0];
+    expect(fila?.origen_id).toBe(unidadDoc.id);
+    expect(fila?.corpus_version_id).toBe(cvId);
+  }, T);
 });
 
 // ---------------------------------------------------------------------------
@@ -337,28 +375,93 @@ describe('TrazaRepository — round-trip básico', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Round-trip básico JobRepository
+// Round-trip JobRepository (nuevo contrato: cascada-desde-unidad — RF-PA.3, ADR-003)
 // ---------------------------------------------------------------------------
-describe('JobRepository — round-trip básico', () => {
-  it('encolar → tomarSiguiente devuelve el job → marcar hecho', async () => {
+
+/** Inserta una planificacion_anual con UNA unidad y devuelve el id de la unidad. */
+async function insertarUnidadPlanificada(db: TestDb, cvId: string): Promise<string> {
+  const repo = new PlanificacionAnualRepositoryDrizzle(db as unknown as DrizzleDb);
+  const guardada = await repo.guardar(
+    {
+      establecimiento: 'Colegio Test',
+      asignatura: 'Matemática',
+      nivel: '1° básico',
+      anio: 2026,
+      unidades: [{ orden: 1, titulo: 'U1', oaCodigos: ['MA01 OA 01'] }],
+    },
+    cvId,
+  );
+  // obtenerUnidad no devuelve id de unidad; lo leemos directo de la tabla por el plan recién creado.
+  const rows = await db.execute(
+    sql`SELECT id FROM unidad_planificada WHERE planificacion_anual_id = ${guardada.id} LIMIT 1`,
+  );
+  const id = (rows as unknown as { rows: Array<{ id: string }> }).rows[0]?.id;
+  if (!id) throw new Error('No se pudo crear la unidad_planificada de prueba');
+  return id;
+}
+
+describe('JobRepository — nuevo contrato cascada-unidad', () => {
+  it('encolarCascadaUnidad → tomarSiguiente devuelve la unidad e incrementa intentos → marcarHecho', async () => {
     const db = await crearDb();
     const cvId = await insertarCorpusVersion(db);
+    const unidadId = await insertarUnidadPlanificada(db, cvId);
     const docId = await insertarDocumentoSql(db, cvId);
     const repo = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
 
-    await repo.encolar(docId);
+    const jobId = await repo.encolarCascadaUnidad(unidadId);
+    expect(jobId).toBeDefined();
 
     const job = await repo.tomarSiguiente('worker-01');
     expect(job).not.toBeNull();
-    expect(job!.documentoId).toBe(docId);
+    expect(job!.id).toBe(jobId);
+    expect(job!.unidadPlanificadaId).toBe(unidadId);
+    // tomarSiguiente cuenta el intento en curso (intentos pasa de 0 a 1).
+    expect(job!.intentos).toBe(1);
 
-    await repo.marcar(job!.id, 'hecho');
+    await repo.marcarHecho(job!.id, docId);
 
     const estadoResult = await db.execute(
-      sql`SELECT estado FROM job_generacion WHERE id = ${job!.id}`,
+      sql`SELECT estado, documento_id FROM job_generacion WHERE id = ${job!.id}`,
     );
-    const estado = (estadoResult as unknown as { rows: Array<{ estado: string }> }).rows[0]
-      ?.estado;
-    expect(estado).toBe('hecho');
+    const fila = (
+      estadoResult as unknown as { rows: Array<{ estado: string; documento_id: string }> }
+    ).rows[0];
+    expect(fila?.estado).toBe('hecho');
+    expect(fila?.documento_id).toBe(docId);
+  }, T);
+
+  it('reintentar vuelve el job a pendiente con error; marcarFallido lo deja fallido', async () => {
+    const db = await crearDb();
+    const cvId = await insertarCorpusVersion(db);
+    const unidadId = await insertarUnidadPlanificada(db, cvId);
+    const repo = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
+
+    await repo.encolarCascadaUnidad(unidadId);
+    const job = await repo.tomarSiguiente('worker-01');
+    expect(job).not.toBeNull();
+
+    await repo.reintentar(job!.id, 'fallo transitorio');
+    const trasReintento = await db.execute(
+      sql`SELECT estado, error FROM job_generacion WHERE id = ${job!.id}`,
+    );
+    const filaR = (
+      trasReintento as unknown as { rows: Array<{ estado: string; error: string }> }
+    ).rows[0];
+    expect(filaR?.estado).toBe('pendiente');
+    expect(filaR?.error).toBe('fallo transitorio');
+
+    // Un nuevo tomarSiguiente lo retoma (estaba pendiente) e incrementa intentos a 2.
+    const reintento = await repo.tomarSiguiente('worker-02');
+    expect(reintento!.intentos).toBe(2);
+
+    await repo.marcarFallido(reintento!.id, 'fallo definitivo');
+    const trasFallo = await db.execute(
+      sql`SELECT estado, error FROM job_generacion WHERE id = ${reintento!.id}`,
+    );
+    const filaF = (
+      trasFallo as unknown as { rows: Array<{ estado: string; error: string }> }
+    ).rows[0];
+    expect(filaF?.estado).toBe('fallido');
+    expect(filaF?.error).toBe('fallo definitivo');
   }, T);
 });

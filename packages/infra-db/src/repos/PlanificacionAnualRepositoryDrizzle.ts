@@ -220,4 +220,43 @@ export class PlanificacionAnualRepositoryDrizzle implements PlanificacionAnualRe
 
     return cabeceras.map((c) => filaAGuardada(c, porPlanificacion.get(c.id) ?? []));
   }
+
+  /**
+   * Resuelve una unidad + la cabecera de su plan (RF-PA.3). El worker lo usa para construir
+   * el ContextoCascada: la unidad aporta los OA; la cabecera aporta asignatura/nivel/corpus.
+   */
+  async obtenerUnidad(unidadPlanificadaId: string): Promise<{
+    unidad: UnidadPlanificada;
+    cabecera: {
+      id: string;
+      establecimiento: string;
+      asignatura: string;
+      nivel: string;
+      anio: number;
+      corpusVersionId: string;
+    };
+  } | null> {
+    const [row] = await this.db
+      .select({
+        unidad: unidadPlanificada,
+        cabecera: planificacionAnual,
+      })
+      .from(unidadPlanificada)
+      .innerJoin(planificacionAnual, eq(unidadPlanificada.planificacionAnualId, planificacionAnual.id))
+      .where(eq(unidadPlanificada.id, unidadPlanificadaId));
+
+    if (!row) return null;
+
+    return {
+      unidad: unidadFilaADominio(row.unidad),
+      cabecera: {
+        id: row.cabecera.id,
+        establecimiento: row.cabecera.establecimiento,
+        asignatura: row.cabecera.asignatura,
+        nivel: row.cabecera.nivel,
+        anio: row.cabecera.anio,
+        corpusVersionId: row.cabecera.corpusVersionId,
+      },
+    };
+  }
 }

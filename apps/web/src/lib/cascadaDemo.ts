@@ -8,13 +8,12 @@ import { basename, join } from 'node:path';
 import { CascadaAulaUseCase } from '@faro/application';
 import type { ContextoCascada, OaCorpus, ResultadoCascada } from '@faro/application';
 import type { LlmPort } from '@faro/domain';
-import { AnthropicLlmAdapter } from '@faro/infra-ai';
+import { AnthropicLlmAdapter, crearSamplesLlm } from '@faro/infra-ai';
 import { PptxExportAdapter } from '@faro/infra-export';
 import { crearLoggerHijo } from '@faro/observability';
 import { cargarCorpus } from './corpus';
 import { materiaPorId } from './materias';
 import { raizRepo } from './raiz';
-import { crearSamplesLlm } from './samplesLlm';
 
 export type ModoCascada = 'demo' | 'live';
 

@@ -30,10 +30,13 @@ export type {
   OaRepository,
   PlanificacionAnualRepository,
   RerankerPort,
+  ReposTransaccion,
   ResultadoVerificacion,
   RetrievalPort,
   SalidaEstructurada,
+  TrabajoCascada,
   TrazaRepository,
+  UnidadDeTrabajo,
   UsoTokens,
   VerificationGate,
 } from './ports/index.js';
@@ -57,11 +60,18 @@ export interface Recuperado<T> {
   readonly via: 'vector' | 'bm25' | 'grafo';
 }
 
-// Input para crear un documento borrador
+// Input para crear un documento borrador.
+// La cascada necesita persistir corpus real (INV-4), trazabilidad self-FK (origen_id), y el artefacto.
 export interface NuevoDocumento {
+  readonly tipo: string; // 'planificacion_unidad' | 'planificacion_clase' | 'prueba' | 'clase_deck'
   readonly establecimientoId: string;
-  readonly tipo: string;
-  readonly autorHumano: string | null;
+  readonly corpusVersionId: string; // versión REAL del corpus (no placeholder — INV-4, FK NOT NULL)
+  readonly unidadPlanificadaId?: string;
+  readonly origenId?: string; // self-FK: traza la cadena de la cascada (clase.origen_id = unidad, etc.)
+  readonly payload?: unknown;
+  readonly resultadoGates?: unknown;
+  readonly estadoGeneracion?: import('./entities/index.js').EstadoGeneracion; // default 'pendiente'
+  readonly autorHumano?: string | null;
 }
 
 // Input para registrar una traza de IA (reproducibilidad legal — INV-4)

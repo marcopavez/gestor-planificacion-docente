@@ -102,9 +102,28 @@ importers:
       '@faro/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@faro/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
+      '@faro/infra-ai':
+        specifier: workspace:*
+        version: link:../../packages/infra-ai
+      '@faro/infra-db':
+        specifier: workspace:*
+        version: link:../../packages/infra-db
+      '@faro/infra-export':
+        specifier: workspace:*
+        version: link:../../packages/infra-export
       '@faro/observability':
         specifier: workspace:*
         version: link:../../packages/observability
+    devDependencies:
+      '@electric-sql/pglite':
+        specifier: ^0.5.1
+        version: 0.5.1
+      drizzle-orm:
+        specifier: ^0.45.2
+        version: 0.45.2(@electric-sql/pglite@0.5.1)(@types/pg@8.20.0)(pg@8.21.0)
 
   packages/application:
     dependencies:

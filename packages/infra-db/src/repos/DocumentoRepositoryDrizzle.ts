@@ -10,7 +10,7 @@ import type {
   EstadoRevision,
   NuevoDocumento,
 } from '@faro/domain';
-import type { DrizzleDb } from '../db.js';
+import type { DbOTx } from '../db.js';
 import { documentoGenerado } from '../schema/index.js';
 
 type DocumentoRow = typeof documentoGenerado.$inferSelect;
@@ -41,7 +41,8 @@ function filaADominio(row: DocumentoRow): DocumentoGenerado {
 }
 
 export class DocumentoRepositoryDrizzle implements DocumentoRepository {
-  constructor(private readonly db: DrizzleDb) {}
+  // DbOTx: acepta la instancia top-level o una transacción (para la unidad de trabajo atómica).
+  constructor(private readonly db: DbOTx) {}
 
   async crearBorrador(input: NuevoDocumento): Promise<DocumentoGenerado> {
     const [row] = await this.db
@@ -50,14 +51,20 @@ export class DocumentoRepositoryDrizzle implements DocumentoRepository {
         tipo: input.tipo,
         // NuevoDocumento.establecimientoId → columna establecimiento
         establecimiento: input.establecimientoId,
-        // corpusVersionId es obligatorio en DB (NOT NULL FK).
-        // FRICCIÓN SEÑALADA: NuevoDocumento no incluye corpusVersionId ni payload inicial.
-        // El adapter inyecta un placeholder; el worker debe llamar marcarGeneracion() con el
-        // payload real. Ver reporte.
-        corpusVersionId: '00000000-0000-0000-0000-000000000000',
+        // corpus_version_id es la versión REAL del corpus vista en esta generación (INV-4, FK NOT NULL).
+        corpusVersionId: input.corpusVersionId,
+        unidadPlanificadaId: input.unidadPlanificadaId,
+        // origen_id encadena la trazabilidad de la cascada (clase/prueba → unidad; deck → clase).
+        origenId: input.origenId,
+        payload: input.payload !== undefined ? (input.payload as Record<string, unknown>) : undefined,
+        resultadoGates:
+          input.resultadoGates !== undefined
+            ? (input.resultadoGates as Record<string, unknown>)
+            : undefined,
+        // INV-3: el estado de revisión SIEMPRE nace en 'borrador'; ninguna ruta lo fuerza a 'aprobado'.
         estadoRevision: 'borrador',
-        estadoGeneracion: 'pendiente',
-        autorHumano: input.autorHumano,
+        estadoGeneracion: input.estadoGeneracion ?? 'pendiente',
+        autorHumano: input.autorHumano ?? null,
       })
       .returning();
 

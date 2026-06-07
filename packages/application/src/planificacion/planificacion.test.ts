@@ -157,6 +157,7 @@ function crearFakePlanRepo(planGuardado: PlanificacionAnualGuardada): Planificac
     actualizar: vi.fn().mockResolvedValue(planGuardado),
     obtener: vi.fn().mockResolvedValue(null),
     listar: vi.fn().mockResolvedValue([]),
+    obtenerUnidad: vi.fn().mockResolvedValue(null),
   };
 }
 
@@ -301,6 +302,7 @@ describe('EditarPlanificacionAnualUseCase', () => {
       // obtener devuelve null → plan inexistente
       obtener: vi.fn().mockResolvedValue(null),
       listar: vi.fn().mockResolvedValue([]),
+      obtenerUnidad: vi.fn().mockResolvedValue(null),
     };
     const uc = new EditarPlanificacionAnualUseCase(
       planRepo,
@@ -326,6 +328,7 @@ describe('EditarPlanificacionAnualUseCase', () => {
       // obtener devuelve el plan existente
       obtener: vi.fn().mockResolvedValue(PLAN_GUARDADO),
       listar: vi.fn().mockResolvedValue([]),
+      obtenerUnidad: vi.fn().mockResolvedValue(null),
     };
     const uc = new EditarPlanificacionAnualUseCase(
       planRepo,
@@ -353,6 +356,7 @@ describe('EditarPlanificacionAnualUseCase', () => {
       actualizar: vi.fn(),
       obtener: vi.fn().mockResolvedValue(PLAN_GUARDADO),
       listar: vi.fn().mockResolvedValue([]),
+      obtenerUnidad: vi.fn().mockResolvedValue(null),
     };
     const uc = new EditarPlanificacionAnualUseCase(
       planRepo,
