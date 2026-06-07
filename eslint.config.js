@@ -32,7 +32,7 @@ const config = [
         projectService: {
           // Permite typechecking de archivos de config raíz (vitest.config.ts, eslint.config.js)
           // que no forman parte de ningún tsconfig de paquete (solo existen en raíz).
-          allowDefaultProject: ['*.ts', '*.js'],
+          allowDefaultProject: ['*.ts', '*.js', 'packages/*/drizzle.config.ts'],
           defaultProject: 'tsconfig.base.json',
         },
         tsconfigRootDir: import.meta.dirname,

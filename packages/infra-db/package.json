@@ -13,14 +13,19 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
+    "@faro/config": "workspace:*",
     "@faro/domain": "workspace:*",
     "drizzle-orm": "^0.45.2",
     "pg": "^8.21.0"
   },
   "devDependencies": {
-    "@types/pg": "^8.20.0"
+    "@electric-sql/pglite": "^0.5.1",
+    "@types/pg": "^8.20.0",
+    "drizzle-kit": "^0.31.10"
   }
 }
