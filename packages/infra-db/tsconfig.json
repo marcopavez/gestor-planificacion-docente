@@ -5,11 +5,13 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "paths": {
-      "@faro/domain": ["../domain/src/index.ts"]
+      "@faro/domain": ["../domain/src/index.ts"],
+      "@faro/config": ["../config/src/index.ts"]
     }
   },
   "references": [
-    { "path": "../domain" }
+    { "path": "../domain" },
+    { "path": "../config" }
   ],
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

@@ -1,14 +1,43 @@
 // packages/infra-db/src/index.ts
-// Paquete @faro/infra-db: adapters Drizzle (repositorios, HybridRetriever).
-// INV-5: implementa puertos de @faro/domain; nunca importa apps ni application directamente.
-// La composition root (DI) vive en apps/web y apps/worker.
+// @faro/infra-db — capa de persistencia Drizzle / Postgres para el proyecto Faro.
+// INV-5: este paquete implementa puertos de @faro/domain; nunca es importado por domain ni application.
+//         La composition root (DI) vive en apps/web y apps/worker.
 
-// TODO H-0.2: schema Drizzle + migraciones
-// TODO H-0.5: repositorios (DrizzleNormaRepository, DrizzleOaRepository, etc.)
-// TODO H-0.6: HybridRetriever (vector <=> + ts_rank_cd + RRF)
+// --- Schema Drizzle (tablas y tipos inferidos) ---
+export {
+  corpusVersion,
+  objetivoAprendizaje,
+  planificacionAnual,
+  unidadPlanificada,
+  documentoGenerado,
+  trazaIa,
+  jobGeneracion,
+} from './schema/index.js';
 
-/**
- * Placeholder que confirma que el paquete compila y que sus exports
- * están cableados con @faro/domain (RF-0.1).
- */
-export const INFRA_DB_VERSION = '0.0.1-fase0-skeleton' as const;
+export type {
+  CorpusVersion,
+  NuevaCorpusVersion,
+  ObjetivoAprendizaje,
+  NuevoObjetivoAprendizaje,
+  PlanificacionAnualRow,
+  NuevaPlanificacionAnualRow,
+  UnidadPlanificadaRow,
+  NuevaUnidadPlanificadaRow,
+  DocumentoGenerado,
+  NuevoDocumentoGenerado,
+  TrazaIa,
+  NuevaTrazaIa,
+  JobGeneracion,
+  NuevoJobGeneracion,
+} from './schema/index.js';
+
+// --- Cliente Drizzle (factoría, tipo de instancia) ---
+export { crearDb } from './db.js';
+export type { DrizzleDb } from './db.js';
+
+// --- Adapters de repositorios (implementan los puertos de @faro/domain — INV-5) ---
+export { OaRepositoryDrizzle } from './repos/OaRepositoryDrizzle.js';
+export { DocumentoRepositoryDrizzle } from './repos/DocumentoRepositoryDrizzle.js';
+export { TrazaRepositoryDrizzle } from './repos/TrazaRepositoryDrizzle.js';
+export { JobRepositoryDrizzle } from './repos/JobRepositoryDrizzle.js';
+export { PlanificacionAnualRepositoryDrizzle } from './repos/PlanificacionAnualRepositoryDrizzle.js';

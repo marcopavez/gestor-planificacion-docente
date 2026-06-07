@@ -26,6 +26,7 @@ export type {
   LlmPort,
   NormaRepository,
   OaRepository,
+  PlanificacionAnualRepository,
   RerankerPort,
   ResultadoVerificacion,
   RetrievalPort,
@@ -87,6 +88,10 @@ export type { ReglamentoAuditoria } from './schemas/reglamentoAuditoria.js';
 
 // --- Schemas de la cascada M0 Aula (spec 02-aula-cascada) ---
 export { SchemaPlanificacionUnidad, OaReferenciado, IndicadorEvaluacion } from './schemas/planificacionUnidad.js';
+
+// --- Planificación Anual (RF-PA.4 — §4.3 plan-fase-1) ---
+export { SchemaPlanificacionAnual, SchemaUnidadPlanificada } from './schemas/planificacionAnual.js';
+export type { PlanificacionAnual, PlanificacionAnualGuardada, UnidadPlanificada } from './schemas/planificacionAnual.js';
 export type {
   PlanificacionUnidad,
   OaReferenciadoType,
@@ -104,16 +109,27 @@ export {
   correrGatesCascada,
   pedagogicalGate,
   planificacionGate,
+  secuenciaAnualGate,
 } from './gates/index.js';
 export type {
   EntradaCitationGate,
   EntradaGatesCascada,
   Hallazgo,
+  OaCorpus,
   OaVigencia,
   ReporteGates,
   ResultadoGate,
   Severidad,
 } from './gates/index.js';
+
+// --- HIL: máquina de estados de revisión (RF-PA.11, INV-2, INV-3) ---
+// EstadoRevision ya se exporta desde entities/index.js (mismo tipo canónico).
+export { transicionar } from './hil/estadoRevision.js';
+export type {
+  AccionRevision,
+  ContextoTransicion,
+  ResultadoTransicion,
+} from './hil/estadoRevision.js';
 
 // --- Errores del dominio ---
 export { CitaInvalidaError, GeneracionError, ReglaDominioError } from './errors/index.js';
