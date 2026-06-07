@@ -6,6 +6,7 @@ import type { ZodType } from 'zod';
 import type {
   Cita,
   ClaseDeck,
+  CorpusVersion,
   DocumentoGenerado,
   EstadoGeneracion,
   FiltrosRecuperacion,
@@ -140,12 +141,26 @@ export interface JobRepository {
   marcar(id: string, estado: 'hecho' | 'fallido'): Promise<void>;
 }
 
+// --- Corpus Version (RF-PA.2, INV-4, ADR-004) ---
+
+export interface CorpusVersionRepository {
+  // Crea una nueva versión en estado 'borrador'; idempotencia por etiqueta la maneja el caller.
+  crear(etiqueta: string): Promise<CorpusVersion>;
+  buscarPorEtiqueta(etiqueta: string): Promise<CorpusVersion | null>;
+  // Transiciona a 'publicada' y registra publicadaAt = ahora; snapshot activo.
+  publicar(id: string): Promise<CorpusVersion>;
+  // Retorna la versión publicada más reciente (snapshot activo para generar documentos).
+  obtenerPublicadaVigente(): Promise<CorpusVersion | null>;
+}
+
 // --- Planificación Anual (RF-PA.4/PA.5 — §4.2 plan-fase-1) ---
 // Solo la interfaz; el adapter Drizzle se implementa en H-PA.3/H-PA.5 (infra-db).
 
 export interface PlanificacionAnualRepository {
   // corpusVersionId ligado al corpus vigente en el momento de guardar (INV-4, RF-PA.4).
   guardar(p: PlanificacionAnual, corpusVersionId: string): Promise<PlanificacionAnualGuardada>;
+  // Actualiza la cabecera y reemplaza unidades; corpusVersionId puede cambiar si el corpus se actualizó.
+  actualizar(id: string, p: PlanificacionAnual, corpusVersionId: string): Promise<PlanificacionAnualGuardada>;
   obtener(id: string): Promise<PlanificacionAnualGuardada | null>;
   listar(filtro: {
     establecimiento: string;

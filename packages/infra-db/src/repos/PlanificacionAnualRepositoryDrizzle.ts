@@ -2,7 +2,7 @@
 // Adapter Drizzle para PlanificacionAnualRepository (RF-PA.3, RF-PA.4, INV-4).
 // guardar/obtener/listar son transaccionales: cabecera + unidades en una sola transacción.
 
-import { and, asc, eq, inArray } from 'drizzle-orm';
+import { and, asc, eq, inArray, sql } from 'drizzle-orm';
 import type {
   PlanificacionAnual,
   PlanificacionAnualGuardada,
@@ -92,6 +92,69 @@ export class PlanificacionAnualRepositoryDrizzle implements PlanificacionAnualRe
           : [];
 
       // Ordenamos por campo orden para coherencia con obtener/listar.
+      const unidadesOrdenadas = [...unidadesInsertadas].sort((a, b) => a.orden - b.orden);
+      return filaAGuardada(cabecera, unidadesOrdenadas);
+    });
+  }
+
+  /**
+   * Actualiza la cabecera y reemplaza todas las unidades en una transacción (RF-PA.5).
+   * Borra las unidades existentes del plan e inserta las nuevas (replace-all semántico).
+   * Si el id no existe, lanza error claro para que el use case lo propague al caller.
+   */
+  async actualizar(
+    id: string,
+    p: PlanificacionAnual,
+    corpusVersionId: string,
+  ): Promise<PlanificacionAnualGuardada> {
+    return this.db.transaction(async (tx) => {
+      // Verificar existencia antes de actualizar para dar error claro (no silencioso).
+      const [existente] = await tx
+        .select({ id: planificacionAnual.id })
+        .from(planificacionAnual)
+        .where(eq(planificacionAnual.id, id));
+
+      if (!existente) {
+        throw new Error(`PlanificacionAnual con id '${id}' no encontrada`);
+      }
+
+      // Actualizar cabecera; updatedAt se renueva explícitamente (no tiene defaultNow en UPDATE).
+      const [cabecera] = await tx
+        .update(planificacionAnual)
+        .set({
+          establecimiento: p.establecimiento,
+          asignatura: p.asignatura,
+          nivel: p.nivel,
+          anio: p.anio,
+          corpusVersionId,
+          updatedAt: sql`now()`,
+        })
+        .where(eq(planificacionAnual.id, id))
+        .returning();
+
+      if (!cabecera) throw new Error(`Error al actualizar cabecera de PlanificacionAnual '${id}'`);
+
+      // Reemplazar unidades: borra las existentes e inserta las nuevas (semántica clear+insert).
+      await tx.delete(unidadPlanificada).where(eq(unidadPlanificada.planificacionAnualId, id));
+
+      const unidadesInsertadas =
+        p.unidades.length > 0
+          ? await tx
+              .insert(unidadPlanificada)
+              .values(
+                p.unidades.map((u) => ({
+                  planificacionAnualId: id,
+                  orden: u.orden,
+                  titulo: u.titulo,
+                  oaCodigos: u.oaCodigos,
+                  inicio: u.inicio ?? null,
+                  fin: u.fin ?? null,
+                  semanas: u.semanas ?? null,
+                })),
+              )
+              .returning()
+          : [];
+
       const unidadesOrdenadas = [...unidadesInsertadas].sort((a, b) => a.orden - b.orden);
       return filaAGuardada(cabecera, unidadesOrdenadas);
     });

@@ -4,6 +4,7 @@
 // --- Entidades ---
 export type {
   Cita,
+  CorpusVersion,
   Dependencia,
   DocumentoGenerado,
   EstadoGeneracion,
@@ -19,6 +20,7 @@ export type {
   ArchivoExportado,
   BloqueSistema,
   ClockPort,
+  CorpusVersionRepository,
   DocumentoRepository,
   EmbeddingsPort,
   ExportPort,
@@ -133,3 +135,6 @@ export type {
 
 // --- Errores del dominio ---
 export { CitaInvalidaError, GeneracionError, ReglaDominioError } from './errors/index.js';
+
+// --- Utils de dominio (funciones puras, deterministas — INV-1) ---
+export { estaVigente } from './utils/vigencia.js';

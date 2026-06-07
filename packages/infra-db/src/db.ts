@@ -5,8 +5,13 @@
 
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
-import type { Env } from '@faro/config';
 import * as schema from './schema/index.js';
+
+// Interfaz mínima que crearDb realmente necesita — los callers con Env completa siguen
+// compilando por tipado estructural (Env extiende EnvDb implícitamente).
+export interface EnvDb {
+  readonly DATABASE_URL: string;
+}
 
 // Re-export del tipo de la instancia Drizzle para que los repositorios puedan tipar la inyección.
 export type DrizzleDb = ReturnType<typeof crearDb>['db'];
@@ -20,7 +25,7 @@ export type DrizzleDb = ReturnType<typeof crearDb>['db'];
  *   const { db, pool } = crearDb(env);
  *   process.on('SIGTERM', () => pool.end());
  */
-export function crearDb(env: Env) {
+export function crearDb(env: EnvDb) {
   const pool = new Pool({ connectionString: env.DATABASE_URL });
 
   const db = drizzle(pool, {

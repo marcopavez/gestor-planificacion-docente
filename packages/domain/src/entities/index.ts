@@ -1,6 +1,18 @@
 // packages/domain/src/entities/index.ts
 // Entidades del dominio regulado — TS puro, sin I/O (INV-1).
 
+/**
+ * Versión del corpus (normativa + OA) que congela el snapshot usado en cada generación.
+ * 'publicada' habilita el uso productivo; 'retirada' deshabilita sin borrar (ADR-004, INV-4).
+ */
+export interface CorpusVersion {
+  readonly id: string;
+  readonly etiqueta: string;
+  readonly estado: 'borrador' | 'publicada' | 'retirada';
+  readonly createdAt: Date;
+  readonly publicadaAt: Date | null;
+}
+
 // Tipos de norma que maneja el sistema (Fase 0: subconjunto)
 export type TipoNorma = 'ley' | 'decreto' | 'plan' | 'orientacion';
 
