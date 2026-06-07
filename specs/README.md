@@ -113,6 +113,7 @@ De `arquitectura-faro.md` §13. Se listan aquí con la **fase que bloquean** y s
 
 - ✅ **Escritas:** Fase 0 (`00-cimientos.md`), Fase 1 (`01-nucleo-rag.md`), Fase 2 (`02-aula-cascada.md`).
 - ⬜ **Pendientes:** Fases 3–5. Se redactan con la misma plantilla cuando el dueño lo indique (orden sugerido: 3 → 4 → 5).
+- 🔁 **Re-secuenciación (dueño, 2026-06-06):** tras **cerrar el demo de Aula**, la siguiente fase de construcción es **productizar M0 Aula** (persistencia + HIL + worker asíncrono + **línea de tiempo / Planificación Anual**), **no** el RAG. El foso RAG (`01-nucleo-rag.md`) y todo `pgvector` se **posponen a M3** (el currículum es estructurado: OA por `(asignatura, nivel)` = consulta determinista, no búsqueda semántica). Plan aprobado: [`../docs/plan-fase-1-productizacion-aula.md`](../docs/plan-fase-1-productizacion-aula.md). Este índice se actualizará al promover ese plan a spec numerada.
 
 > **Nota (sesión 2026-06-06):** la Fase 2 se expandió por decisión del dueño de "pruebas + clases" a la **cascada completa de planificación** (Unidad → Clase → Prueba + `.pptx`) con plantillas configurables por colegio; ver `02-aula-cascada.md` §1.3.
 
