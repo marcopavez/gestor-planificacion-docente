@@ -8,6 +8,7 @@ import type {
   PlanificacionAnualGuardada,
   PlanificacionAnualRepository,
   UnidadPlanificada,
+  UnidadPlanificadaGuardada,
 } from '@faro/domain';
 import type { DrizzleDb } from '../db.js';
 import {
@@ -18,8 +19,10 @@ import {
 type PlanificacionRow = typeof planificacionAnual.$inferSelect;
 type UnidadRow = typeof unidadPlanificada.$inferSelect;
 
-function unidadFilaADominio(row: UnidadRow): UnidadPlanificada {
+// Incluye el id de fila (Opción A): la web lo usa para encolar la cascada (H-PA.9).
+function unidadFilaADominio(row: UnidadRow): UnidadPlanificadaGuardada {
   return {
+    id: row.id,
     orden: row.orden,
     titulo: row.titulo,
     // oa_codigos: text[] nativo de Postgres → string[]

@@ -2,7 +2,7 @@
 // Adapter Drizzle para DocumentoRepository (RF-PA.3, INV-3).
 // INV-3: los documentos nacen siempre en estado 'borrador' (default de DB + lógica de dominio).
 
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import type {
   DocumentoGenerado,
   DocumentoRepository,
@@ -14,6 +14,24 @@ import type { DbOTx } from '../db.js';
 import { documentoGenerado } from '../schema/index.js';
 
 type DocumentoRow = typeof documentoGenerado.$inferSelect;
+
+// Fila cruda devuelta por `SELECT *` (snake_case + tipos del driver) — el CTE recursivo no pasa
+// por el mapeo de columnas de Drizzle, así que tipamos lo que realmente llega.
+interface DocumentoRowSql {
+  id: string;
+  tipo: string;
+  establecimiento: string;
+  corpus_version_id: string;
+  origen_id: string | null;
+  unidad_planificada_id: string | null;
+  estado_revision: string;
+  estado_generacion: string;
+  payload: unknown;
+  resultado_gates: unknown;
+  autor_humano: string | null;
+  created_at: Date | string;
+  updated_at: Date | string;
+}
 
 function filaADominio(row: DocumentoRow): DocumentoGenerado {
   return {
@@ -36,6 +54,24 @@ function filaADominio(row: DocumentoRow): DocumentoGenerado {
     createdAt: row.createdAt,
     // aprobadoAt no tiene columna propia; se deduce de updatedAt cuando estado='aprobado'.
     // FRICCIÓN SEÑALADA: no hay columna aprobado_at en el schema actual. Ver reporte.
+    aprobadoAt: null,
+  };
+}
+
+// Variante para filas crudas del CTE recursivo (snake_case) — mismo dominio que filaADominio.
+function filaSqlADominio(row: DocumentoRowSql): DocumentoGenerado {
+  return {
+    id: row.id,
+    establecimientoId: row.establecimiento,
+    tipo: row.tipo,
+    contenido: row.payload,
+    citas: [],
+    estadoRevision: row.estado_revision as EstadoRevision,
+    estadoGeneracion: row.estado_generacion as EstadoGeneracion,
+    autorHumano: row.autor_humano,
+    resultadoGates: row.resultado_gates,
+    // El driver puede devolver created_at como Date (pg) o string ISO (pglite) — normalizamos.
+    createdAt: row.created_at instanceof Date ? row.created_at : new Date(row.created_at),
     aprobadoAt: null,
   };
 }
@@ -96,5 +132,31 @@ export class DocumentoRepositoryDrizzle implements DocumentoRepository {
       .where(eq(documentoGenerado.id, id));
 
     return row !== undefined ? filaADominio(row) : null;
+  }
+
+  /**
+   * Cascada completa desde la raíz (H-PA.9): documento raíz + todos los descendientes por origen_id.
+   * La cascada tiene 2 niveles (deck → clase → unidad), así que origen_id = raizId no basta:
+   * el deck cuelga de la clase, no de la unidad. Recorremos transitivamente con un CTE recursivo
+   * (Postgres y pglite lo soportan). Orden estable por created_at, luego tipo, para una salida
+   * determinista en la UI.
+   */
+  async listarPorRaiz(raizId: string): Promise<DocumentoGenerado[]> {
+    const result = await this.db.execute(
+      // WITH RECURSIVE recorre la cadena origen_id partiendo del documento raíz.
+      sql`
+        WITH RECURSIVE cascada AS (
+          SELECT * FROM documento_generado WHERE id = ${raizId}
+          UNION ALL
+          SELECT d.* FROM documento_generado d
+          JOIN cascada c ON d.origen_id = c.id
+        )
+        SELECT * FROM cascada
+        ORDER BY created_at ASC, tipo ASC
+      `,
+    );
+
+    const filas = (result as unknown as { rows: DocumentoRowSql[] }).rows;
+    return filas.map(filaSqlADominio);
   }
 }

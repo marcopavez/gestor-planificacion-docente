@@ -210,6 +210,8 @@ const PLAN_GUARDADO: PlanificacionAnualGuardada = {
   ...PLAN_VALIDO,
   id: 'plan-id-1',
   corpusVersionId: 'cv-1',
+  // Las unidades guardadas exponen su id de fila (UnidadPlanificadaGuardada, H-PA.9).
+  unidades: PLAN_VALIDO.unidades.map((u, i) => ({ ...u, id: `unidad-id-${i + 1}` })),
 };
 
 // ---------------------------------------------------------------------------

@@ -23,6 +23,7 @@ export type {
   CorpusVersionRepository,
   DocumentoRepository,
   EmbeddingsPort,
+  EstadoJob,
   ExportPort,
   JobRepository,
   LlmPort,
@@ -103,7 +104,12 @@ export { SchemaPlanificacionUnidad, OaReferenciado, IndicadorEvaluacion } from '
 
 // --- Planificación Anual (RF-PA.4 — §4.3 plan-fase-1) ---
 export { SchemaPlanificacionAnual, SchemaUnidadPlanificada } from './schemas/planificacionAnual.js';
-export type { PlanificacionAnual, PlanificacionAnualGuardada, UnidadPlanificada } from './schemas/planificacionAnual.js';
+export type {
+  PlanificacionAnual,
+  PlanificacionAnualGuardada,
+  UnidadPlanificada,
+  UnidadPlanificadaGuardada,
+} from './schemas/planificacionAnual.js';
 export type {
   PlanificacionUnidad,
   OaReferenciadoType,

@@ -132,6 +132,9 @@ export interface DocumentoRepository {
     gates?: unknown,
   ): Promise<void>;
   porId(id: string): Promise<DocumentoGenerado | null>;
+  // Devuelve la cascada completa desde su raíz: el documento raíz (id = raizId) + todos los
+  // que cuelgan de él por origen_id (clase/prueba → unidad; deck → clase). RF-PA.9 / H-PA.9.
+  listarPorRaiz(raizId: string): Promise<DocumentoGenerado[]>;
 }
 
 export interface TrazaRepository {
@@ -145,11 +148,23 @@ export interface TrabajoCascada {
   readonly intentos: number; // ya incrementado por tomarSiguiente (cuenta el intento en curso)
 }
 
+// Estado de un job de la cola, leído por la web para hacer polling del avance (H-PA.9).
+// documentoId = id del documento raíz de la cascada (la unidad generada) cuando estado='hecho'.
+export interface EstadoJob {
+  readonly id: string;
+  readonly estado: 'pendiente' | 'en_proceso' | 'hecho' | 'fallido';
+  readonly documentoId: string | null;
+  readonly intentos: number;
+  readonly error: string | null;
+}
+
 export interface JobRepository {
   // Encola una corrida de la cascada para una unidad; devuelve el id del job creado.
   encolarCascadaUnidad(unidadPlanificadaId: string): Promise<string>;
   // FOR UPDATE SKIP LOCKED — ADR-003. Marca el job 'en_proceso' e incrementa intentos atómicamente.
   tomarSiguiente(workerId: string): Promise<TrabajoCascada | null>;
+  // Estado del job para el polling de la web; null si el id no existe (H-PA.9).
+  obtenerEstado(jobId: string): Promise<EstadoJob | null>;
   // Éxito: estado='hecho' y documento_id = id del documento raíz de la cascada (la unidad generada).
   marcarHecho(id: string, documentoRaizId: string): Promise<void>;
   // Reintento acotado: vuelve a 'pendiente' y registra el error del intento (otro worker lo retomará).

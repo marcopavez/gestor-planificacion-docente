@@ -4,9 +4,16 @@
 // El flujo es cascada-desde-unidad: el job referencia la unidad_planificada, no un documento.
 
 import { eq, sql } from 'drizzle-orm';
-import type { JobRepository, TrabajoCascada } from '@faro/domain';
+import type { EstadoJob, JobRepository, TrabajoCascada } from '@faro/domain';
 import type { DbOTx } from '../db.js';
 import { jobGeneracion } from '../schema/index.js';
+
+// Estados posibles en la columna; estrechamos el text de DB al union del puerto sin asumir 'any'.
+const ESTADOS_JOB = ['pendiente', 'en_proceso', 'hecho', 'fallido'] as const;
+type EstadoJobValor = (typeof ESTADOS_JOB)[number];
+function esEstadoJob(v: string): v is EstadoJobValor {
+  return (ESTADOS_JOB as readonly string[]).includes(v);
+}
 
 export class JobRepositoryDrizzle implements JobRepository {
   // DbOTx: marcarHecho/reintentar/marcarFallido corren dentro de la unidad de trabajo (tx);
@@ -25,6 +32,37 @@ export class JobRepositoryDrizzle implements JobRepository {
 
     if (!row) throw new Error('No se pudo encolar el job de cascada');
     return row.id;
+  }
+
+  /**
+   * Estado del job para el polling de la web (H-PA.9). Solo lectura; null si el id no existe.
+   * El union de estado se valida con esEstadoJob para no degradar el tipo a `string`.
+   */
+  async obtenerEstado(jobId: string): Promise<EstadoJob | null> {
+    const [row] = await this.db
+      .select({
+        id: jobGeneracion.id,
+        estado: jobGeneracion.estado,
+        documentoId: jobGeneracion.documentoId,
+        intentos: jobGeneracion.intentos,
+        error: jobGeneracion.error,
+      })
+      .from(jobGeneracion)
+      .where(eq(jobGeneracion.id, jobId));
+
+    if (!row) return null;
+    if (!esEstadoJob(row.estado)) {
+      // Defensa: un estado fuera del union indica corrupción de datos, no un caso normal.
+      throw new Error(`Estado de job desconocido en DB: '${row.estado}' (job ${jobId})`);
+    }
+
+    return {
+      id: row.id,
+      estado: row.estado,
+      documentoId: row.documentoId,
+      intentos: row.intentos,
+      error: row.error,
+    };
   }
 
   /**
