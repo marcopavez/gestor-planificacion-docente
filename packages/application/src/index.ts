@@ -24,6 +24,10 @@ export { GenerarClaseDeckUseCase } from './aula/cascada/GenerarClaseDeckUseCase.
 // --- derivarContextoCascada (función pura: UnidadPlanificada → ContextoCascada) ---
 export { derivarContextoCascada } from './aula/cascada/derivarContextoCascada.js';
 
+// --- Revisión humana HIL (H-PA.10, RF-PA.11/12): transiciones vía máquina de estados del dominio ---
+export { RevisarDocumentoUseCase } from './aula/RevisarDocumentoUseCase.js';
+export type { ResultadoRevision } from './aula/RevisarDocumentoUseCase.js';
+
 // --- Worker de generación asíncrona (H-PA.8, ADR-003): orquesta la cascada desde la cola ---
 export { ProcesarTrabajoCascadaUseCase } from './aula/ProcesarTrabajoCascadaUseCase.js';
 export type {

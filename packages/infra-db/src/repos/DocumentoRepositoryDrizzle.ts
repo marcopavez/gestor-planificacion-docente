@@ -2,7 +2,7 @@
 // Adapter Drizzle para DocumentoRepository (RF-PA.3, INV-3).
 // INV-3: los documentos nacen siempre en estado 'borrador' (default de DB + lógica de dominio).
 
-import { eq, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import type {
   DocumentoGenerado,
   DocumentoRepository,
@@ -158,5 +158,47 @@ export class DocumentoRepositoryDrizzle implements DocumentoRepository {
 
     const filas = (result as unknown as { rows: DocumentoRowSql[] }).rows;
     return filas.map(filaSqlADominio);
+  }
+
+  /**
+   * Cola de revisión HIL (RF-PA.12): documentos pendientes de un establecimiento.
+   * 'borrador' y 'en_revision' son los únicos estados que el revisor debe atender;
+   * los más recientes primero (created_at DESC). Usa el query builder (no SQL crudo)
+   * → pasa por el mapeo de columnas de Drizzle, así que reusa filaADominio.
+   */
+  async listarPendientesRevision(establecimientoId: string): Promise<DocumentoGenerado[]> {
+    const rows = await this.db
+      .select()
+      .from(documentoGenerado)
+      .where(
+        and(
+          eq(documentoGenerado.establecimiento, establecimientoId),
+          inArray(documentoGenerado.estadoRevision, ['borrador', 'en_revision']),
+        ),
+      )
+      .orderBy(desc(documentoGenerado.createdAt));
+
+    return rows.map(filaADominio);
+  }
+
+  /**
+   * Persiste una transición HIL ya decidida por la máquina de estados del dominio (RF-PA.11/12).
+   * INV-3: el adapter NO contiene lógica de transición — si alguien lo llama saltándose el use case,
+   * el CHECK chk_aprobado_requiere_humano impide 'aprobado' sin autor_humano. autorHumano se setea
+   * explícitamente (null en enviar/rechazar; el email del revisor en aprobar).
+   */
+  async actualizarEstadoRevision(
+    id: string,
+    estado: EstadoRevision,
+    autorHumano: string | null,
+  ): Promise<void> {
+    await this.db
+      .update(documentoGenerado)
+      .set({
+        estadoRevision: estado,
+        autorHumano,
+        updatedAt: new Date(),
+      })
+      .where(eq(documentoGenerado.id, id));
   }
 }

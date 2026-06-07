@@ -9,6 +9,7 @@ import type {
   CorpusVersion,
   DocumentoGenerado,
   EstadoGeneracion,
+  EstadoRevision,
   FiltrosRecuperacion,
   Norma,
   NuevaTraza,
@@ -135,6 +136,17 @@ export interface DocumentoRepository {
   // Devuelve la cascada completa desde su raíz: el documento raíz (id = raizId) + todos los
   // que cuelgan de él por origen_id (clase/prueba → unidad; deck → clase). RF-PA.9 / H-PA.9.
   listarPorRaiz(raizId: string): Promise<DocumentoGenerado[]>;
+  // Cola de revisión HIL (RF-PA.12, H-PA.10): documentos 'borrador'/'en_revision' del
+  // establecimiento, más recientes primero. Solo lo pendiente; no incluye aprobado/rechazado.
+  listarPendientesRevision(establecimientoId: string): Promise<DocumentoGenerado[]>;
+  // Persiste el resultado de UNA transición HIL ya decidida por la máquina de estados del dominio.
+  // El adapter NO valida la transición (eso lo hace `transicionar`); el CHECK chk_aprobado_requiere_humano
+  // es la última red contra 'aprobado' sin autorHumano (INV-3). autorHumano = null salvo en 'aprobado'.
+  actualizarEstadoRevision(
+    id: string,
+    estado: EstadoRevision,
+    autorHumano: string | null,
+  ): Promise<void>;
 }
 
 export interface TrazaRepository {

@@ -639,3 +639,95 @@ describe('PlanificacionAnualRepository — id de unidad (H-PA.9)', () => {
     expect(listadas[0]!.unidades[0]!.id.length).toBeGreaterThan(0);
   }, T);
 });
+
+// ---------------------------------------------------------------------------
+// DocumentoRepository — superficie de revisión HIL (RF-PA.12, H-PA.10, INV-3)
+// ---------------------------------------------------------------------------
+
+/**
+ * Inserta un documento con establecimiento y created_at explícitos (para los tests de filtro/orden).
+ * Vía SQL directo porque crearBorrador fija established/created_at internamente.
+ */
+async function insertarDocumentoConEstablecimiento(
+  db: TestDb,
+  cvId: string,
+  establecimiento: string,
+  estadoRevision: string,
+  createdAt: string,
+  // Necesario para 'aprobado': el CHECK chk_aprobado_requiere_humano lo exige en el mismo INSERT.
+  autorHumano: string | null = null,
+): Promise<string> {
+  const result = await db.execute(
+    sql`INSERT INTO documento_generado
+        (tipo, establecimiento, corpus_version_id, estado_revision, estado_generacion, created_at, autor_humano)
+        VALUES ('prueba', ${establecimiento}, ${cvId}, ${estadoRevision}, 'validado', ${createdAt}, ${autorHumano})
+        RETURNING id`,
+  );
+  const id = (result as unknown as { rows: Array<{ id: string }> }).rows[0]?.id;
+  if (!id) throw new Error('No se pudo insertar documento_generado');
+  return id;
+}
+
+describe('DocumentoRepository — revisión HIL (H-PA.10)', () => {
+  it('actualizarEstadoRevision: borrador → en_revision → aprobado(autor) reflejado por porId', async () => {
+    const db = await crearDb();
+    const cvId = await insertarCorpusVersion(db);
+    const repo = new DocumentoRepositoryDrizzle(db as unknown as DrizzleDb);
+    const docId = await insertarDocumentoSql(db, cvId);
+
+    await repo.actualizarEstadoRevision(docId, 'en_revision', null);
+    let leido = await repo.porId(docId);
+    expect(leido!.estadoRevision).toBe('en_revision');
+    expect(leido!.autorHumano).toBeNull();
+
+    await repo.actualizarEstadoRevision(docId, 'aprobado', 'prof.garcia@colegio.cl');
+    leido = await repo.porId(docId);
+    expect(leido!.estadoRevision).toBe('aprobado');
+    expect(leido!.autorHumano).toBe('prof.garcia@colegio.cl');
+  }, T);
+
+  it('actualizarEstadoRevision a aprobado SIN autor → rechazado por el CHECK (INV-3)', async () => {
+    const db = await crearDb();
+    const cvId = await insertarCorpusVersion(db);
+    const repo = new DocumentoRepositoryDrizzle(db as unknown as DrizzleDb);
+    const docId = await insertarDocumentoSql(db, cvId);
+
+    // INV-3: el CHECK chk_aprobado_requiere_humano es la última red incluso si el adapter
+    // se llama saltándose la máquina de estados del dominio.
+    await expect(repo.actualizarEstadoRevision(docId, 'aprobado', null)).rejects.toThrow();
+  }, T);
+
+  it('listarPendientesRevision: filtra por establecimiento, solo borrador/en_revision, orden created_at DESC', async () => {
+    const db = await crearDb();
+    const cvId = await insertarCorpusVersion(db);
+    const repo = new DocumentoRepositoryDrizzle(db as unknown as DrizzleDb);
+
+    // Colegio A: 1 borrador (antiguo), 1 en_revision (reciente), 1 aprobado (excluido), 1 rechazado (excluido).
+    const aBorrador = await insertarDocumentoConEstablecimiento(
+      db, cvId, 'Colegio A', 'borrador', '2026-01-01T00:00:00Z',
+    );
+    const aEnRevision = await insertarDocumentoConEstablecimiento(
+      db, cvId, 'Colegio A', 'en_revision', '2026-03-01T00:00:00Z',
+    );
+    // aprobado: requiere autor_humano en el mismo INSERT (CHECK chk_aprobado_requiere_humano).
+    await insertarDocumentoConEstablecimiento(
+      db, cvId, 'Colegio A', 'aprobado', '2026-02-01T00:00:00Z', 'rev@colegio.cl',
+    );
+    await insertarDocumentoConEstablecimiento(
+      db, cvId, 'Colegio A', 'rechazado', '2026-02-15T00:00:00Z',
+    );
+    // Otro establecimiento: no debe aparecer.
+    await insertarDocumentoConEstablecimiento(
+      db, cvId, 'Colegio B', 'borrador', '2026-04-01T00:00:00Z',
+    );
+
+    const pendientes = await repo.listarPendientesRevision('Colegio A');
+
+    // Solo los dos pendientes de Colegio A (excluye aprobado/rechazado y Colegio B).
+    expect(pendientes).toHaveLength(2);
+    expect(pendientes.every((d) => d.establecimientoId === 'Colegio A')).toBe(true);
+    expect(pendientes.every((d) => ['borrador', 'en_revision'].includes(d.estadoRevision))).toBe(true);
+    // Orden created_at DESC: el en_revision (marzo) antes que el borrador (enero).
+    expect(pendientes.map((d) => d.id)).toEqual([aEnRevision, aBorrador]);
+  }, T);
+});
