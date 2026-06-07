@@ -140,6 +140,14 @@ describe('CascadaAulaUseCase (RF-2.5–2.8, e2e sin API key)', () => {
     expect(llamadas).toEqual(['redaccion', 'redaccion', 'redaccion', 'redaccion']);
     // Los gates deterministas corren sobre los artefactos y no bloquean este caso válido.
     expect(r.gates.ok).toBe(true);
+
+    // metadatos: cada artefacto trae modelo/usage para alimentar su fila de traza_ia (RF-PA.10).
+    expect(r.metadatos).toBeDefined();
+    for (const meta of [r.metadatos.unidad, r.metadatos.clase, r.metadatos.prueba, r.metadatos.deck]) {
+      expect(meta.modelo).toBe('muestras');
+      expect(meta.usage).toEqual({ input: 0, output: 0, cacheRead: 0, cacheCreation: 0 });
+      expect(meta.stopReason).toBe('end_turn');
+    }
   });
 
   it('bloquea si no hay OA en el contexto (ReglaDominioError)', async () => {

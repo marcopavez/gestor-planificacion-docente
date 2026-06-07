@@ -6,7 +6,13 @@ export type { GenerarPruebaInput } from './aula/GenerarPruebaUseCase.js';
 export { GenerarPruebaUseCase, GeneracionError } from './aula/GenerarPruebaUseCase.js';
 
 // --- Cascada de Aula (demo síncrono, full-context, genérico por asignatura/nivel) ---
-export type { ContextoCascada, OaCorpus, ResultadoCascada } from './aula/cascada/tipos.js';
+export type {
+  ContextoCascada,
+  MetaArtefacto,
+  MetadatosCascada,
+  OaCorpus,
+  ResultadoCascada,
+} from './aula/cascada/tipos.js';
 // Veredicto de gates (re-export del dominio) para tipar respuestas en apps.
 export type { Hallazgo, ReporteGates, ResultadoGate, Severidad } from '@faro/domain';
 export { CascadaAulaUseCase } from './aula/cascada/CascadaAulaUseCase.js';
@@ -14,3 +20,26 @@ export { GenerarPlanificacionUnidadUseCase } from './aula/cascada/GenerarPlanifi
 export { GenerarPlanificacionClaseUseCase } from './aula/cascada/GenerarPlanificacionClaseUseCase.js';
 export { GenerarPruebaCascadaUseCase } from './aula/cascada/GenerarPruebaCascadaUseCase.js';
 export { GenerarClaseDeckUseCase } from './aula/cascada/GenerarClaseDeckUseCase.js';
+
+// --- derivarContextoCascada (función pura: UnidadPlanificada → ContextoCascada) ---
+export { derivarContextoCascada } from './aula/cascada/derivarContextoCascada.js';
+
+// --- Revisión humana HIL (H-PA.10, RF-PA.11/12): transiciones vía máquina de estados del dominio ---
+export { RevisarDocumentoUseCase } from './aula/RevisarDocumentoUseCase.js';
+export type { ResultadoRevision } from './aula/RevisarDocumentoUseCase.js';
+
+// --- Worker de generación asíncrona (H-PA.8, ADR-003): orquesta la cascada desde la cola ---
+export { ProcesarTrabajoCascadaUseCase } from './aula/ProcesarTrabajoCascadaUseCase.js';
+export type {
+  DependenciasProcesarTrabajo,
+  ResultadoProcesarTrabajo,
+} from './aula/ProcesarTrabajoCascadaUseCase.js';
+
+// --- CRUD de PlanificacionAnual (H-PA.5) ---
+export { CrearPlanificacionAnualUseCase } from './planificacion/CrearPlanificacionAnualUseCase.js';
+export type { ResultadoCrearPlan } from './planificacion/CrearPlanificacionAnualUseCase.js';
+export { EditarPlanificacionAnualUseCase } from './planificacion/EditarPlanificacionAnualUseCase.js';
+export type { ResultadoEditarPlan, ResultadoEdicion } from './planificacion/EditarPlanificacionAnualUseCase.js';
+export { ListarPlanificacionAnualUseCase } from './planificacion/ListarPlanificacionAnualUseCase.js';
+export type { FiltroListarPlan } from './planificacion/ListarPlanificacionAnualUseCase.js';
+export { ObtenerPlanificacionAnualUseCase } from './planificacion/ObtenerPlanificacionAnualUseCase.js';

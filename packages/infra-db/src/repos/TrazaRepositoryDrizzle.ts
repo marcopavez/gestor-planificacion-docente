@@ -3,11 +3,12 @@
 // Cada llamada al LLM escribe una fila inmutable de auditoría; nunca se edita.
 
 import type { NuevaTraza, TrazaRepository } from '@faro/domain';
-import type { DrizzleDb } from '../db.js';
+import type { DbOTx } from '../db.js';
 import { trazaIa } from '../schema/index.js';
 
 export class TrazaRepositoryDrizzle implements TrazaRepository {
-  constructor(private readonly db: DrizzleDb) {}
+  // DbOTx: acepta la instancia top-level o una transacción (para la unidad de trabajo atómica).
+  constructor(private readonly db: DbOTx) {}
 
   async registrar(traza: NuevaTraza): Promise<void> {
     // NuevaTraza.usage es UsoTokens (objeto tipado); se persiste como jsonb tal cual.

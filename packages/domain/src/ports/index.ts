@@ -6,8 +6,10 @@ import type { ZodType } from 'zod';
 import type {
   Cita,
   ClaseDeck,
+  CorpusVersion,
   DocumentoGenerado,
   EstadoGeneracion,
+  EstadoRevision,
   FiltrosRecuperacion,
   Norma,
   NuevaTraza,
@@ -16,7 +18,11 @@ import type {
   Recuperado,
   Tarea,
 } from '../index.js';
-import type { PlanificacionAnual, PlanificacionAnualGuardada } from '../schemas/planificacionAnual.js';
+import type {
+  PlanificacionAnual,
+  PlanificacionAnualGuardada,
+  UnidadPlanificada,
+} from '../schemas/planificacionAnual.js';
 
 // --- Recuperación (RAG) ---
 
@@ -127,17 +133,83 @@ export interface DocumentoRepository {
     gates?: unknown,
   ): Promise<void>;
   porId(id: string): Promise<DocumentoGenerado | null>;
+  // Devuelve la cascada completa desde su raíz: el documento raíz (id = raizId) + todos los
+  // que cuelgan de él por origen_id (clase/prueba → unidad; deck → clase). RF-PA.9 / H-PA.9.
+  listarPorRaiz(raizId: string): Promise<DocumentoGenerado[]>;
+  // Cola de revisión HIL (RF-PA.12, H-PA.10): documentos 'borrador'/'en_revision' del
+  // establecimiento, más recientes primero. Solo lo pendiente; no incluye aprobado/rechazado.
+  listarPendientesRevision(establecimientoId: string): Promise<DocumentoGenerado[]>;
+  // Persiste el resultado de UNA transición HIL ya decidida por la máquina de estados del dominio.
+  // El adapter NO valida la transición (eso lo hace `transicionar`); el CHECK chk_aprobado_requiere_humano
+  // es la última red contra 'aprobado' sin autorHumano (INV-3). autorHumano = null salvo en 'aprobado'.
+  actualizarEstadoRevision(
+    id: string,
+    estado: EstadoRevision,
+    autorHumano: string | null,
+  ): Promise<void>;
 }
 
 export interface TrazaRepository {
   registrar(traza: NuevaTraza): Promise<void>;
 }
 
+// Un trabajo de la cola listo para procesar (cascada desde una unidad planificada — RF-PA.3, ADR-003).
+export interface TrabajoCascada {
+  readonly id: string;
+  readonly unidadPlanificadaId: string;
+  readonly intentos: number; // ya incrementado por tomarSiguiente (cuenta el intento en curso)
+}
+
+// Estado de un job de la cola, leído por la web para hacer polling del avance (H-PA.9).
+// documentoId = id del documento raíz de la cascada (la unidad generada) cuando estado='hecho'.
+export interface EstadoJob {
+  readonly id: string;
+  readonly estado: 'pendiente' | 'en_proceso' | 'hecho' | 'fallido';
+  readonly documentoId: string | null;
+  readonly intentos: number;
+  readonly error: string | null;
+}
+
 export interface JobRepository {
-  encolar(documentoId: string): Promise<void>;
-  // FOR UPDATE SKIP LOCKED — ADR-003
-  tomarSiguiente(workerId: string): Promise<{ id: string; documentoId: string } | null>;
-  marcar(id: string, estado: 'hecho' | 'fallido'): Promise<void>;
+  // Encola una corrida de la cascada para una unidad; devuelve el id del job creado.
+  encolarCascadaUnidad(unidadPlanificadaId: string): Promise<string>;
+  // FOR UPDATE SKIP LOCKED — ADR-003. Marca el job 'en_proceso' e incrementa intentos atómicamente.
+  tomarSiguiente(workerId: string): Promise<TrabajoCascada | null>;
+  // Estado del job para el polling de la web; null si el id no existe (H-PA.9).
+  obtenerEstado(jobId: string): Promise<EstadoJob | null>;
+  // Éxito: estado='hecho' y documento_id = id del documento raíz de la cascada (la unidad generada).
+  marcarHecho(id: string, documentoRaizId: string): Promise<void>;
+  // Reintento acotado: vuelve a 'pendiente' y registra el error del intento (otro worker lo retomará).
+  reintentar(id: string, error: string): Promise<void>;
+  // Agotados los reintentos: estado='fallido' y se conserva el último error.
+  marcarFallido(id: string, error: string): Promise<void>;
+}
+
+// --- Unidad de trabajo transaccional (atomicidad de la persistencia de la cascada) ---
+// Sin atomicidad, un fallo a mitad de los 4 crearBorrador + 4 trazas + marcarHecho deja
+// documentos huérfanos que el reintento del job duplicaría. enTransaccion envuelve todo en UNA tx.
+
+export interface ReposTransaccion {
+  readonly documentos: DocumentoRepository;
+  readonly trazas: TrazaRepository;
+  readonly jobs: JobRepository;
+}
+
+export interface UnidadDeTrabajo {
+  // Ejecuta fn dentro de UNA transacción; si fn lanza, se revierte TODO (atomicidad).
+  enTransaccion<T>(fn: (repos: ReposTransaccion) => Promise<T>): Promise<T>;
+}
+
+// --- Corpus Version (RF-PA.2, INV-4, ADR-004) ---
+
+export interface CorpusVersionRepository {
+  // Crea una nueva versión en estado 'borrador'; idempotencia por etiqueta la maneja el caller.
+  crear(etiqueta: string): Promise<CorpusVersion>;
+  buscarPorEtiqueta(etiqueta: string): Promise<CorpusVersion | null>;
+  // Transiciona a 'publicada' y registra publicadaAt = ahora; snapshot activo.
+  publicar(id: string): Promise<CorpusVersion>;
+  // Retorna la versión publicada más reciente (snapshot activo para generar documentos).
+  obtenerPublicadaVigente(): Promise<CorpusVersion | null>;
 }
 
 // --- Planificación Anual (RF-PA.4/PA.5 — §4.2 plan-fase-1) ---
@@ -146,6 +218,8 @@ export interface JobRepository {
 export interface PlanificacionAnualRepository {
   // corpusVersionId ligado al corpus vigente en el momento de guardar (INV-4, RF-PA.4).
   guardar(p: PlanificacionAnual, corpusVersionId: string): Promise<PlanificacionAnualGuardada>;
+  // Actualiza la cabecera y reemplaza unidades; corpusVersionId puede cambiar si el corpus se actualizó.
+  actualizar(id: string, p: PlanificacionAnual, corpusVersionId: string): Promise<PlanificacionAnualGuardada>;
   obtener(id: string): Promise<PlanificacionAnualGuardada | null>;
   listar(filtro: {
     establecimiento: string;
@@ -153,4 +227,16 @@ export interface PlanificacionAnualRepository {
     nivel?: string;
     anio?: number;
   }): Promise<PlanificacionAnualGuardada[]>;
+  // Resuelve una unidad y la cabecera de su plan (para derivar el ContextoCascada en el worker — RF-PA.3).
+  obtenerUnidad(unidadPlanificadaId: string): Promise<{
+    unidad: UnidadPlanificada;
+    cabecera: {
+      id: string;
+      establecimiento: string;
+      asignatura: string;
+      nivel: string;
+      anio: number;
+      corpusVersionId: string;
+    };
+  } | null>;
 }

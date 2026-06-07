@@ -9,6 +9,7 @@ import type {
   PlanificacionUnidad,
   Prueba,
   ReporteGates,
+  UsoTokens,
 } from '@faro/domain';
 
 /** OA del corpus curado para una asignatura/nivel (única fuente válida para grounding). */
@@ -34,6 +35,21 @@ export interface ContextoCascada {
   readonly oaCorpusValidacion?: readonly OaVigencia[];
 }
 
+/** Metadatos de auditoría de la llamada al LLM por artefacto (para traza_ia — INV-4, RF-PA.10). */
+export interface MetaArtefacto {
+  readonly modelo: string;
+  readonly usage: UsoTokens;
+  readonly stopReason: string;
+}
+
+/** Metadatos por artefacto generado (surface aditivo desde cada Generar*UseCase). */
+export interface MetadatosCascada {
+  readonly unidad: MetaArtefacto;
+  readonly clase: MetaArtefacto;
+  readonly prueba: MetaArtefacto;
+  readonly deck: MetaArtefacto;
+}
+
 /** Los cuatro artefactos que produce la cascada (todos borradores — HIL) + el veredicto de gates. */
 export interface ResultadoCascada {
   readonly unidad: PlanificacionUnidad;
@@ -41,4 +57,6 @@ export interface ResultadoCascada {
   readonly prueba: Prueba;
   readonly deck: ClaseDeck;
   readonly gates: ReporteGates;
+  // Metadatos de cada llamada al LLM (modelo/usage) para las 4 filas de traza_ia.
+  readonly metadatos: MetadatosCascada;
 }

@@ -4,6 +4,7 @@
 // --- Entidades ---
 export type {
   Cita,
+  CorpusVersion,
   Dependencia,
   DocumentoGenerado,
   EstadoGeneracion,
@@ -19,8 +20,10 @@ export type {
   ArchivoExportado,
   BloqueSistema,
   ClockPort,
+  CorpusVersionRepository,
   DocumentoRepository,
   EmbeddingsPort,
+  EstadoJob,
   ExportPort,
   JobRepository,
   LlmPort,
@@ -28,10 +31,13 @@ export type {
   OaRepository,
   PlanificacionAnualRepository,
   RerankerPort,
+  ReposTransaccion,
   ResultadoVerificacion,
   RetrievalPort,
   SalidaEstructurada,
+  TrabajoCascada,
   TrazaRepository,
+  UnidadDeTrabajo,
   UsoTokens,
   VerificationGate,
 } from './ports/index.js';
@@ -55,11 +61,18 @@ export interface Recuperado<T> {
   readonly via: 'vector' | 'bm25' | 'grafo';
 }
 
-// Input para crear un documento borrador
+// Input para crear un documento borrador.
+// La cascada necesita persistir corpus real (INV-4), trazabilidad self-FK (origen_id), y el artefacto.
 export interface NuevoDocumento {
+  readonly tipo: string; // 'planificacion_unidad' | 'planificacion_clase' | 'prueba' | 'clase_deck'
   readonly establecimientoId: string;
-  readonly tipo: string;
-  readonly autorHumano: string | null;
+  readonly corpusVersionId: string; // versión REAL del corpus (no placeholder — INV-4, FK NOT NULL)
+  readonly unidadPlanificadaId?: string;
+  readonly origenId?: string; // self-FK: traza la cadena de la cascada (clase.origen_id = unidad, etc.)
+  readonly payload?: unknown;
+  readonly resultadoGates?: unknown;
+  readonly estadoGeneracion?: import('./entities/index.js').EstadoGeneracion; // default 'pendiente'
+  readonly autorHumano?: string | null;
 }
 
 // Input para registrar una traza de IA (reproducibilidad legal — INV-4)
@@ -91,7 +104,12 @@ export { SchemaPlanificacionUnidad, OaReferenciado, IndicadorEvaluacion } from '
 
 // --- Planificación Anual (RF-PA.4 — §4.3 plan-fase-1) ---
 export { SchemaPlanificacionAnual, SchemaUnidadPlanificada } from './schemas/planificacionAnual.js';
-export type { PlanificacionAnual, PlanificacionAnualGuardada, UnidadPlanificada } from './schemas/planificacionAnual.js';
+export type {
+  PlanificacionAnual,
+  PlanificacionAnualGuardada,
+  UnidadPlanificada,
+  UnidadPlanificadaGuardada,
+} from './schemas/planificacionAnual.js';
 export type {
   PlanificacionUnidad,
   OaReferenciadoType,
@@ -133,3 +151,6 @@ export type {
 
 // --- Errores del dominio ---
 export { CitaInvalidaError, GeneracionError, ReglaDominioError } from './errors/index.js';
+
+// --- Utils de dominio (funciones puras, deterministas — INV-1) ---
+export { estaVigente } from './utils/vigencia.js';

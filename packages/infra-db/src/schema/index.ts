@@ -23,14 +23,20 @@ import { sql } from 'drizzle-orm';
 // ---------------------------------------------------------------------------
 // corpus_version — inmutable al publicar (INV-4, ADR-004)
 // ---------------------------------------------------------------------------
-export const corpusVersion = pgTable('corpus_version', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  etiqueta: text('etiqueta').notNull(),
-  // 'borrador' permite edición; 'publicada' congela el corpus; 'retirada' deshabilita uso.
-  estado: text('estado').notNull().default('borrador'),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  publicadaAt: timestamp('publicada_at', { withTimezone: true }),
-});
+export const corpusVersion = pgTable(
+  'corpus_version',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    etiqueta: text('etiqueta').notNull(),
+    // 'borrador' permite edición; 'publicada' congela el corpus; 'retirada' deshabilita uso.
+    estado: text('estado').notNull().default('borrador'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    publicadaAt: timestamp('publicada_at', { withTimezone: true }),
+  },
+  // La etiqueta es la clave de idempotencia de ingesta (RF-PA.2): re-correr con la misma etiqueta
+  // reutiliza la versión existente; UNIQUE lo garantiza a nivel de DB.
+  (t) => [unique('corpus_version_etiqueta_unique').on(t.etiqueta)],
+);
 
 // ---------------------------------------------------------------------------
 // objetivo_aprendizaje — filas del corpus bajo una corpus_version

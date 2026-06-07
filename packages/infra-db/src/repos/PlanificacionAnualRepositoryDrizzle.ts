@@ -2,12 +2,13 @@
 // Adapter Drizzle para PlanificacionAnualRepository (RF-PA.3, RF-PA.4, INV-4).
 // guardar/obtener/listar son transaccionales: cabecera + unidades en una sola transacción.
 
-import { and, asc, eq, inArray } from 'drizzle-orm';
+import { and, asc, eq, inArray, sql } from 'drizzle-orm';
 import type {
   PlanificacionAnual,
   PlanificacionAnualGuardada,
   PlanificacionAnualRepository,
   UnidadPlanificada,
+  UnidadPlanificadaGuardada,
 } from '@faro/domain';
 import type { DrizzleDb } from '../db.js';
 import {
@@ -18,8 +19,10 @@ import {
 type PlanificacionRow = typeof planificacionAnual.$inferSelect;
 type UnidadRow = typeof unidadPlanificada.$inferSelect;
 
-function unidadFilaADominio(row: UnidadRow): UnidadPlanificada {
+// Incluye el id de fila (Opción A): la web lo usa para encolar la cascada (H-PA.9).
+function unidadFilaADominio(row: UnidadRow): UnidadPlanificadaGuardada {
   return {
+    id: row.id,
     orden: row.orden,
     titulo: row.titulo,
     // oa_codigos: text[] nativo de Postgres → string[]
@@ -97,6 +100,69 @@ export class PlanificacionAnualRepositoryDrizzle implements PlanificacionAnualRe
     });
   }
 
+  /**
+   * Actualiza la cabecera y reemplaza todas las unidades en una transacción (RF-PA.5).
+   * Borra las unidades existentes del plan e inserta las nuevas (replace-all semántico).
+   * Si el id no existe, lanza error claro para que el use case lo propague al caller.
+   */
+  async actualizar(
+    id: string,
+    p: PlanificacionAnual,
+    corpusVersionId: string,
+  ): Promise<PlanificacionAnualGuardada> {
+    return this.db.transaction(async (tx) => {
+      // Verificar existencia antes de actualizar para dar error claro (no silencioso).
+      const [existente] = await tx
+        .select({ id: planificacionAnual.id })
+        .from(planificacionAnual)
+        .where(eq(planificacionAnual.id, id));
+
+      if (!existente) {
+        throw new Error(`PlanificacionAnual con id '${id}' no encontrada`);
+      }
+
+      // Actualizar cabecera; updatedAt se renueva explícitamente (no tiene defaultNow en UPDATE).
+      const [cabecera] = await tx
+        .update(planificacionAnual)
+        .set({
+          establecimiento: p.establecimiento,
+          asignatura: p.asignatura,
+          nivel: p.nivel,
+          anio: p.anio,
+          corpusVersionId,
+          updatedAt: sql`now()`,
+        })
+        .where(eq(planificacionAnual.id, id))
+        .returning();
+
+      if (!cabecera) throw new Error(`Error al actualizar cabecera de PlanificacionAnual '${id}'`);
+
+      // Reemplazar unidades: borra las existentes e inserta las nuevas (semántica clear+insert).
+      await tx.delete(unidadPlanificada).where(eq(unidadPlanificada.planificacionAnualId, id));
+
+      const unidadesInsertadas =
+        p.unidades.length > 0
+          ? await tx
+              .insert(unidadPlanificada)
+              .values(
+                p.unidades.map((u) => ({
+                  planificacionAnualId: id,
+                  orden: u.orden,
+                  titulo: u.titulo,
+                  oaCodigos: u.oaCodigos,
+                  inicio: u.inicio ?? null,
+                  fin: u.fin ?? null,
+                  semanas: u.semanas ?? null,
+                })),
+              )
+              .returning()
+          : [];
+
+      const unidadesOrdenadas = [...unidadesInsertadas].sort((a, b) => a.orden - b.orden);
+      return filaAGuardada(cabecera, unidadesOrdenadas);
+    });
+  }
+
   async obtener(id: string): Promise<PlanificacionAnualGuardada | null> {
     const [cabecera] = await this.db
       .select()
@@ -156,5 +222,44 @@ export class PlanificacionAnualRepositoryDrizzle implements PlanificacionAnualRe
     }
 
     return cabeceras.map((c) => filaAGuardada(c, porPlanificacion.get(c.id) ?? []));
+  }
+
+  /**
+   * Resuelve una unidad + la cabecera de su plan (RF-PA.3). El worker lo usa para construir
+   * el ContextoCascada: la unidad aporta los OA; la cabecera aporta asignatura/nivel/corpus.
+   */
+  async obtenerUnidad(unidadPlanificadaId: string): Promise<{
+    unidad: UnidadPlanificada;
+    cabecera: {
+      id: string;
+      establecimiento: string;
+      asignatura: string;
+      nivel: string;
+      anio: number;
+      corpusVersionId: string;
+    };
+  } | null> {
+    const [row] = await this.db
+      .select({
+        unidad: unidadPlanificada,
+        cabecera: planificacionAnual,
+      })
+      .from(unidadPlanificada)
+      .innerJoin(planificacionAnual, eq(unidadPlanificada.planificacionAnualId, planificacionAnual.id))
+      .where(eq(unidadPlanificada.id, unidadPlanificadaId));
+
+    if (!row) return null;
+
+    return {
+      unidad: unidadFilaADominio(row.unidad),
+      cabecera: {
+        id: row.cabecera.id,
+        establecimiento: row.cabecera.establecimiento,
+        asignatura: row.cabecera.asignatura,
+        nivel: row.cabecera.nivel,
+        anio: row.cabecera.anio,
+        corpusVersionId: row.cabecera.corpusVersionId,
+      },
+    };
   }
 }

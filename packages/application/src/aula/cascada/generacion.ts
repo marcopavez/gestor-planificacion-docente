@@ -6,7 +6,11 @@
 import type { BloqueSistema, PlanificacionClase, PlanificacionUnidad, SalidaEstructurada } from '@faro/domain';
 import { GeneracionError } from '@faro/domain';
 import type { ClasePlanificadaType } from '@faro/domain';
-import type { ContextoCascada } from './tipos.js';
+import type { ContextoCascada, MetaArtefacto } from './tipos.js';
+
+// Alias hacia la única fuente de verdad (MetaArtefacto en tipos.ts): evita duplicar campos.
+// Se conserva el nombre MetaGeneracion porque los Generar*UseCase lo importan desde aquí.
+export type MetaGeneracion = MetaArtefacto;
 
 /** RF-0.9: si el LLM devuelve null (refusal/max_tokens), nunca se persiste basura. */
 export function exigirParsed<T>(salida: SalidaEstructurada<T>): T {
@@ -14,6 +18,20 @@ export function exigirParsed<T>(salida: SalidaEstructurada<T>): T {
     throw new GeneracionError(salida.stopReason);
   }
   return salida.parsed;
+}
+
+/**
+ * Variante aditiva de exigirParsed: además del valor, devuelve los metadatos de la llamada
+ * (modelo/usage/stopReason) para registrar la traza por artefacto sin cambiar la generación.
+ */
+export function exigirParsedConMeta<T>(salida: SalidaEstructurada<T>): { valor: T; meta: MetaGeneracion } {
+  if (salida.parsed === null) {
+    throw new GeneracionError(salida.stopReason);
+  }
+  return {
+    valor: salida.parsed,
+    meta: { modelo: salida.modelo, usage: salida.usage, stopReason: salida.stopReason },
+  };
 }
 
 /**

@@ -299,6 +299,44 @@ describe('DocumentoRepository — round-trip básico', () => {
     expect(leido!.contenido).toMatchObject({ titulo: 'Clase generada' });
     expect(leido!.resultadoGates).toMatchObject({ ok: true });
   }, T);
+
+  it('crearBorrador inserta corpus real + payload + origen_id y nace en borrador (INV-3)', async () => {
+    const db = await crearDb();
+    const cvId = await insertarCorpusVersion(db);
+    const repo = new DocumentoRepositoryDrizzle(db as unknown as DrizzleDb);
+
+    // Documento raíz (unidad) sin origen.
+    const unidadDoc = await repo.crearBorrador({
+      tipo: 'planificacion_unidad',
+      establecimientoId: 'Colegio Test',
+      corpusVersionId: cvId,
+      payload: { unidad: 'U1' },
+      resultadoGates: { ok: true },
+      estadoGeneracion: 'validado',
+    });
+    expect(unidadDoc.estadoRevision).toBe('borrador');
+    expect(unidadDoc.estadoGeneracion).toBe('validado');
+    expect(unidadDoc.contenido).toMatchObject({ unidad: 'U1' });
+
+    // Documento hijo (clase) con origen_id = unidad → trazabilidad de la cascada.
+    const claseDoc = await repo.crearBorrador({
+      tipo: 'planificacion_clase',
+      establecimientoId: 'Colegio Test',
+      corpusVersionId: cvId,
+      origenId: unidadDoc.id,
+      payload: { clase: 1 },
+      estadoGeneracion: 'validado',
+    });
+
+    const rows = await db.execute(
+      sql`SELECT origen_id, corpus_version_id FROM documento_generado WHERE id = ${claseDoc.id}`,
+    );
+    const fila = (
+      rows as unknown as { rows: Array<{ origen_id: string; corpus_version_id: string }> }
+    ).rows[0];
+    expect(fila?.origen_id).toBe(unidadDoc.id);
+    expect(fila?.corpus_version_id).toBe(cvId);
+  }, T);
 });
 
 // ---------------------------------------------------------------------------
@@ -337,28 +375,359 @@ describe('TrazaRepository — round-trip básico', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Round-trip básico JobRepository
+// Round-trip JobRepository (nuevo contrato: cascada-desde-unidad — RF-PA.3, ADR-003)
 // ---------------------------------------------------------------------------
-describe('JobRepository — round-trip básico', () => {
-  it('encolar → tomarSiguiente devuelve el job → marcar hecho', async () => {
+
+/** Inserta una planificacion_anual con UNA unidad y devuelve el id de la unidad. */
+async function insertarUnidadPlanificada(db: TestDb, cvId: string): Promise<string> {
+  const repo = new PlanificacionAnualRepositoryDrizzle(db as unknown as DrizzleDb);
+  const guardada = await repo.guardar(
+    {
+      establecimiento: 'Colegio Test',
+      asignatura: 'Matemática',
+      nivel: '1° básico',
+      anio: 2026,
+      unidades: [{ orden: 1, titulo: 'U1', oaCodigos: ['MA01 OA 01'] }],
+    },
+    cvId,
+  );
+  // obtenerUnidad no devuelve id de unidad; lo leemos directo de la tabla por el plan recién creado.
+  const rows = await db.execute(
+    sql`SELECT id FROM unidad_planificada WHERE planificacion_anual_id = ${guardada.id} LIMIT 1`,
+  );
+  const id = (rows as unknown as { rows: Array<{ id: string }> }).rows[0]?.id;
+  if (!id) throw new Error('No se pudo crear la unidad_planificada de prueba');
+  return id;
+}
+
+describe('JobRepository — nuevo contrato cascada-unidad', () => {
+  it('encolarCascadaUnidad → tomarSiguiente devuelve la unidad e incrementa intentos → marcarHecho', async () => {
     const db = await crearDb();
     const cvId = await insertarCorpusVersion(db);
+    const unidadId = await insertarUnidadPlanificada(db, cvId);
     const docId = await insertarDocumentoSql(db, cvId);
     const repo = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
 
-    await repo.encolar(docId);
+    const jobId = await repo.encolarCascadaUnidad(unidadId);
+    expect(jobId).toBeDefined();
 
     const job = await repo.tomarSiguiente('worker-01');
     expect(job).not.toBeNull();
-    expect(job!.documentoId).toBe(docId);
+    expect(job!.id).toBe(jobId);
+    expect(job!.unidadPlanificadaId).toBe(unidadId);
+    // tomarSiguiente cuenta el intento en curso (intentos pasa de 0 a 1).
+    expect(job!.intentos).toBe(1);
 
-    await repo.marcar(job!.id, 'hecho');
+    await repo.marcarHecho(job!.id, docId);
 
     const estadoResult = await db.execute(
-      sql`SELECT estado FROM job_generacion WHERE id = ${job!.id}`,
+      sql`SELECT estado, documento_id FROM job_generacion WHERE id = ${job!.id}`,
     );
-    const estado = (estadoResult as unknown as { rows: Array<{ estado: string }> }).rows[0]
-      ?.estado;
-    expect(estado).toBe('hecho');
+    const fila = (
+      estadoResult as unknown as { rows: Array<{ estado: string; documento_id: string }> }
+    ).rows[0];
+    expect(fila?.estado).toBe('hecho');
+    expect(fila?.documento_id).toBe(docId);
+  }, T);
+
+  it('reintentar vuelve el job a pendiente con error; marcarFallido lo deja fallido', async () => {
+    const db = await crearDb();
+    const cvId = await insertarCorpusVersion(db);
+    const unidadId = await insertarUnidadPlanificada(db, cvId);
+    const repo = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
+
+    await repo.encolarCascadaUnidad(unidadId);
+    const job = await repo.tomarSiguiente('worker-01');
+    expect(job).not.toBeNull();
+
+    await repo.reintentar(job!.id, 'fallo transitorio');
+    const trasReintento = await db.execute(
+      sql`SELECT estado, error FROM job_generacion WHERE id = ${job!.id}`,
+    );
+    const filaR = (
+      trasReintento as unknown as { rows: Array<{ estado: string; error: string }> }
+    ).rows[0];
+    expect(filaR?.estado).toBe('pendiente');
+    expect(filaR?.error).toBe('fallo transitorio');
+
+    // Un nuevo tomarSiguiente lo retoma (estaba pendiente) e incrementa intentos a 2.
+    const reintento = await repo.tomarSiguiente('worker-02');
+    expect(reintento!.intentos).toBe(2);
+
+    await repo.marcarFallido(reintento!.id, 'fallo definitivo');
+    const trasFallo = await db.execute(
+      sql`SELECT estado, error FROM job_generacion WHERE id = ${reintento!.id}`,
+    );
+    const filaF = (
+      trasFallo as unknown as { rows: Array<{ estado: string; error: string }> }
+    ).rows[0];
+    expect(filaF?.estado).toBe('fallido');
+    expect(filaF?.error).toBe('fallo definitivo');
+  }, T);
+});
+
+// ---------------------------------------------------------------------------
+// JobRepository.obtenerEstado — lectura del estado para el polling de la web (H-PA.9)
+// ---------------------------------------------------------------------------
+describe('JobRepository — obtenerEstado (H-PA.9)', () => {
+  it('devuelve null para un jobId inexistente', async () => {
+    const db = await crearDb();
+    const repo = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
+
+    const estado = await repo.obtenerEstado('00000000-0000-0000-0000-000000000000');
+    expect(estado).toBeNull();
+  }, T);
+
+  it('refleja pendiente → en_proceso → hecho con documentoId', async () => {
+    const db = await crearDb();
+    const cvId = await insertarCorpusVersion(db);
+    const unidadId = await insertarUnidadPlanificada(db, cvId);
+    const docId = await insertarDocumentoSql(db, cvId);
+    const repo = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
+
+    const jobId = await repo.encolarCascadaUnidad(unidadId);
+
+    // Recién encolado: pendiente, sin documento, 0 intentos.
+    const inicial = await repo.obtenerEstado(jobId);
+    expect(inicial).not.toBeNull();
+    expect(inicial!.estado).toBe('pendiente');
+    expect(inicial!.documentoId).toBeNull();
+    expect(inicial!.intentos).toBe(0);
+    expect(inicial!.error).toBeNull();
+
+    // Tomado: en_proceso, intentos = 1.
+    await repo.tomarSiguiente('worker-01');
+    const enProceso = await repo.obtenerEstado(jobId);
+    expect(enProceso!.estado).toBe('en_proceso');
+    expect(enProceso!.intentos).toBe(1);
+
+    // Hecho: documentoId = raíz de la cascada.
+    await repo.marcarHecho(jobId, docId);
+    const hecho = await repo.obtenerEstado(jobId);
+    expect(hecho!.estado).toBe('hecho');
+    expect(hecho!.documentoId).toBe(docId);
+  }, T);
+});
+
+// ---------------------------------------------------------------------------
+// DocumentoRepository.listarPorRaiz — cascada completa raíz + descendientes (H-PA.9)
+// ---------------------------------------------------------------------------
+describe('DocumentoRepository — listarPorRaiz (H-PA.9)', () => {
+  it('devuelve la raíz + los 3 descendientes (clase/prueba→unidad, deck→clase)', async () => {
+    const db = await crearDb();
+    const cvId = await insertarCorpusVersion(db);
+    const repo = new DocumentoRepositoryDrizzle(db as unknown as DrizzleDb);
+
+    // Reproducimos la cadena que arma el worker: unidad raíz; clase+prueba → unidad; deck → clase.
+    const unidadDoc = await repo.crearBorrador({
+      tipo: 'planificacion_unidad',
+      establecimientoId: 'Colegio Test',
+      corpusVersionId: cvId,
+      payload: { unidad: 'U1' },
+      estadoGeneracion: 'validado',
+    });
+    const claseDoc = await repo.crearBorrador({
+      tipo: 'planificacion_clase',
+      establecimientoId: 'Colegio Test',
+      corpusVersionId: cvId,
+      origenId: unidadDoc.id,
+      payload: { clase: 1 },
+      estadoGeneracion: 'validado',
+    });
+    await repo.crearBorrador({
+      tipo: 'prueba',
+      establecimientoId: 'Colegio Test',
+      corpusVersionId: cvId,
+      origenId: unidadDoc.id,
+      payload: { items: [] },
+      estadoGeneracion: 'validado',
+    });
+    // deck cuelga de la clase, NO de la unidad → exige recorrido transitivo (CTE recursivo).
+    await repo.crearBorrador({
+      tipo: 'clase_deck',
+      establecimientoId: 'Colegio Test',
+      corpusVersionId: cvId,
+      origenId: claseDoc.id,
+      payload: { deck: { slides: [] }, pptx: { ruta: '/tmp/x.pptx', bytes: 10 } },
+      estadoGeneracion: 'validado',
+    });
+
+    const cascada = await repo.listarPorRaiz(unidadDoc.id);
+    expect(cascada).toHaveLength(4);
+    const tipos = cascada.map((d) => d.tipo).sort();
+    expect(tipos).toEqual(['clase_deck', 'planificacion_clase', 'planificacion_unidad', 'prueba']);
+    // La raíz debe estar presente.
+    expect(cascada.some((d) => d.id === unidadDoc.id)).toBe(true);
+    // El deck (nieto de la unidad) debe incluirse pese a colgar de la clase.
+    const deck = cascada.find((d) => d.tipo === 'clase_deck');
+    expect(deck?.contenido).toMatchObject({ pptx: { ruta: '/tmp/x.pptx' } });
+  }, T);
+
+  it('raíz sin descendientes devuelve solo la raíz', async () => {
+    const db = await crearDb();
+    const cvId = await insertarCorpusVersion(db);
+    const repo = new DocumentoRepositoryDrizzle(db as unknown as DrizzleDb);
+
+    const unidadDoc = await repo.crearBorrador({
+      tipo: 'planificacion_unidad',
+      establecimientoId: 'Colegio Test',
+      corpusVersionId: cvId,
+      payload: { unidad: 'U1' },
+      estadoGeneracion: 'validado',
+    });
+
+    const cascada = await repo.listarPorRaiz(unidadDoc.id);
+    expect(cascada).toHaveLength(1);
+    expect(cascada[0]!.id).toBe(unidadDoc.id);
+  }, T);
+});
+
+// ---------------------------------------------------------------------------
+// PlanificacionAnualRepository — id de unidad expuesto por obtener/listar (H-PA.9)
+// ---------------------------------------------------------------------------
+describe('PlanificacionAnualRepository — id de unidad (H-PA.9)', () => {
+  it('obtener expone el id de cada unidad', async () => {
+    const db = await crearDb();
+    const cvId = await insertarCorpusVersion(db);
+    const repo = new PlanificacionAnualRepositoryDrizzle(db as unknown as DrizzleDb);
+
+    const guardada = await repo.guardar(
+      {
+        establecimiento: 'Colegio Faro',
+        asignatura: 'Matemática',
+        nivel: '1° básico',
+        anio: 2026,
+        unidades: [
+          { orden: 1, titulo: 'U1', oaCodigos: ['MA01 OA 01'] },
+          { orden: 2, titulo: 'U2', oaCodigos: ['MA01 OA 02'] },
+        ],
+      },
+      cvId,
+    );
+
+    // guardar ya devuelve unidades con id (UnidadPlanificadaGuardada).
+    for (const u of guardada.unidades) {
+      expect(typeof u.id).toBe('string');
+      expect(u.id.length).toBeGreaterThan(0);
+    }
+
+    const obtenida = await repo.obtener(guardada.id);
+    expect(obtenida).not.toBeNull();
+    // El id de cada unidad debe coincidir con el de guardar (misma fila).
+    expect(obtenida!.unidades.map((u) => u.id)).toEqual(guardada.unidades.map((u) => u.id));
+  }, T);
+
+  it('listar expone el id de cada unidad', async () => {
+    const db = await crearDb();
+    const cvId = await insertarCorpusVersion(db);
+    const repo = new PlanificacionAnualRepositoryDrizzle(db as unknown as DrizzleDb);
+
+    await repo.guardar(
+      {
+        establecimiento: 'Colegio Z',
+        asignatura: 'Matemática',
+        nivel: '1° básico',
+        anio: 2026,
+        unidades: [{ orden: 1, titulo: 'U1', oaCodigos: ['MA01 OA 01'] }],
+      },
+      cvId,
+    );
+
+    const listadas = await repo.listar({ establecimiento: 'Colegio Z' });
+    expect(listadas).toHaveLength(1);
+    expect(typeof listadas[0]!.unidades[0]!.id).toBe('string');
+    expect(listadas[0]!.unidades[0]!.id.length).toBeGreaterThan(0);
+  }, T);
+});
+
+// ---------------------------------------------------------------------------
+// DocumentoRepository — superficie de revisión HIL (RF-PA.12, H-PA.10, INV-3)
+// ---------------------------------------------------------------------------
+
+/**
+ * Inserta un documento con establecimiento y created_at explícitos (para los tests de filtro/orden).
+ * Vía SQL directo porque crearBorrador fija established/created_at internamente.
+ */
+async function insertarDocumentoConEstablecimiento(
+  db: TestDb,
+  cvId: string,
+  establecimiento: string,
+  estadoRevision: string,
+  createdAt: string,
+  // Necesario para 'aprobado': el CHECK chk_aprobado_requiere_humano lo exige en el mismo INSERT.
+  autorHumano: string | null = null,
+): Promise<string> {
+  const result = await db.execute(
+    sql`INSERT INTO documento_generado
+        (tipo, establecimiento, corpus_version_id, estado_revision, estado_generacion, created_at, autor_humano)
+        VALUES ('prueba', ${establecimiento}, ${cvId}, ${estadoRevision}, 'validado', ${createdAt}, ${autorHumano})
+        RETURNING id`,
+  );
+  const id = (result as unknown as { rows: Array<{ id: string }> }).rows[0]?.id;
+  if (!id) throw new Error('No se pudo insertar documento_generado');
+  return id;
+}
+
+describe('DocumentoRepository — revisión HIL (H-PA.10)', () => {
+  it('actualizarEstadoRevision: borrador → en_revision → aprobado(autor) reflejado por porId', async () => {
+    const db = await crearDb();
+    const cvId = await insertarCorpusVersion(db);
+    const repo = new DocumentoRepositoryDrizzle(db as unknown as DrizzleDb);
+    const docId = await insertarDocumentoSql(db, cvId);
+
+    await repo.actualizarEstadoRevision(docId, 'en_revision', null);
+    let leido = await repo.porId(docId);
+    expect(leido!.estadoRevision).toBe('en_revision');
+    expect(leido!.autorHumano).toBeNull();
+
+    await repo.actualizarEstadoRevision(docId, 'aprobado', 'prof.garcia@colegio.cl');
+    leido = await repo.porId(docId);
+    expect(leido!.estadoRevision).toBe('aprobado');
+    expect(leido!.autorHumano).toBe('prof.garcia@colegio.cl');
+  }, T);
+
+  it('actualizarEstadoRevision a aprobado SIN autor → rechazado por el CHECK (INV-3)', async () => {
+    const db = await crearDb();
+    const cvId = await insertarCorpusVersion(db);
+    const repo = new DocumentoRepositoryDrizzle(db as unknown as DrizzleDb);
+    const docId = await insertarDocumentoSql(db, cvId);
+
+    // INV-3: el CHECK chk_aprobado_requiere_humano es la última red incluso si el adapter
+    // se llama saltándose la máquina de estados del dominio.
+    await expect(repo.actualizarEstadoRevision(docId, 'aprobado', null)).rejects.toThrow();
+  }, T);
+
+  it('listarPendientesRevision: filtra por establecimiento, solo borrador/en_revision, orden created_at DESC', async () => {
+    const db = await crearDb();
+    const cvId = await insertarCorpusVersion(db);
+    const repo = new DocumentoRepositoryDrizzle(db as unknown as DrizzleDb);
+
+    // Colegio A: 1 borrador (antiguo), 1 en_revision (reciente), 1 aprobado (excluido), 1 rechazado (excluido).
+    const aBorrador = await insertarDocumentoConEstablecimiento(
+      db, cvId, 'Colegio A', 'borrador', '2026-01-01T00:00:00Z',
+    );
+    const aEnRevision = await insertarDocumentoConEstablecimiento(
+      db, cvId, 'Colegio A', 'en_revision', '2026-03-01T00:00:00Z',
+    );
+    // aprobado: requiere autor_humano en el mismo INSERT (CHECK chk_aprobado_requiere_humano).
+    await insertarDocumentoConEstablecimiento(
+      db, cvId, 'Colegio A', 'aprobado', '2026-02-01T00:00:00Z', 'rev@colegio.cl',
+    );
+    await insertarDocumentoConEstablecimiento(
+      db, cvId, 'Colegio A', 'rechazado', '2026-02-15T00:00:00Z',
+    );
+    // Otro establecimiento: no debe aparecer.
+    await insertarDocumentoConEstablecimiento(
+      db, cvId, 'Colegio B', 'borrador', '2026-04-01T00:00:00Z',
+    );
+
+    const pendientes = await repo.listarPendientesRevision('Colegio A');
+
+    // Solo los dos pendientes de Colegio A (excluye aprobado/rechazado y Colegio B).
+    expect(pendientes).toHaveLength(2);
+    expect(pendientes.every((d) => d.establecimientoId === 'Colegio A')).toBe(true);
+    expect(pendientes.every((d) => ['borrador', 'en_revision'].includes(d.estadoRevision))).toBe(true);
+    // Orden created_at DESC: el en_revision (marzo) antes que el borrador (enero).
+    expect(pendientes.map((d) => d.id)).toEqual([aEnRevision, aBorrador]);
   }, T);
 });

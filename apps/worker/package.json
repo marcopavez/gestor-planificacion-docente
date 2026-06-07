@@ -11,7 +11,15 @@
   },
   "dependencies": {
     "@faro/application": "workspace:*",
-    "@faro/observability": "workspace:*",
-    "@faro/config": "workspace:*"
+    "@faro/config": "workspace:*",
+    "@faro/domain": "workspace:*",
+    "@faro/infra-ai": "workspace:*",
+    "@faro/infra-db": "workspace:*",
+    "@faro/infra-export": "workspace:*",
+    "@faro/observability": "workspace:*"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.1",
+    "drizzle-orm": "^0.45.2"
   }
 }

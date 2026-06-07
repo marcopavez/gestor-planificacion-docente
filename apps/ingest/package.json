@@ -1,0 +1,19 @@
+{
+  "name": "@faro/ingest",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/main.js",
+  "scripts": {
+    "build": "tsc --build",
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/main.js"
+  },
+  "dependencies": {
+    "@faro/config": "workspace:*",
+    "@faro/domain": "workspace:*",
+    "@faro/infra-db": "workspace:*",
+    "@faro/observability": "workspace:*",
+    "zod": "^4.4.3"
+  }
+}

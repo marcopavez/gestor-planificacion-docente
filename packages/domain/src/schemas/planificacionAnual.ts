@@ -26,11 +26,23 @@ export type UnidadPlanificada = z.infer<typeof SchemaUnidadPlanificada>;
 export type PlanificacionAnual = z.infer<typeof SchemaPlanificacionAnual>;
 
 /**
+ * UnidadPlanificada enriquecida con el id de fila (Opción A del plan, type-safe).
+ * La web necesita el id de la unidad para disparar la cascada (POST /generaciones).
+ * El adapter ya tiene el id de fila; antes lo descartaba al mapear a UnidadPlanificada.
+ */
+export type UnidadPlanificadaGuardada = UnidadPlanificada & {
+  readonly id: string;
+};
+
+/**
  * PlanificacionAnual enriquecida con los campos de persistencia (id + corpusVersionId).
  * Devuelta por PlanificacionAnualRepository.guardar/obtener/listar.
+ * Las unidades incluyen su id de fila (UnidadPlanificadaGuardada) para que la web pueda
+ * referenciarlas al encolar la cascada (RF-PA.7 / H-PA.9).
  * Los campos de persistencia son responsabilidad de infra-db, no del dominio puro.
  */
-export type PlanificacionAnualGuardada = PlanificacionAnual & {
+export type PlanificacionAnualGuardada = Omit<PlanificacionAnual, 'unidades'> & {
   readonly id: string;
   readonly corpusVersionId: string;
+  readonly unidades: UnidadPlanificadaGuardada[];
 };

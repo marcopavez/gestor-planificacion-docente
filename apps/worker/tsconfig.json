@@ -6,14 +6,22 @@
     "rootDir": "./src",
     "paths": {
       "@faro/application": ["../../packages/application/src/index.ts"],
-      "@faro/observability": ["../../packages/observability/src/index.ts"],
-      "@faro/config": ["../../packages/config/src/index.ts"]
+      "@faro/config": ["../../packages/config/src/index.ts"],
+      "@faro/domain": ["../../packages/domain/src/index.ts"],
+      "@faro/infra-ai": ["../../packages/infra-ai/src/index.ts"],
+      "@faro/infra-db": ["../../packages/infra-db/src/index.ts"],
+      "@faro/infra-export": ["../../packages/infra-export/src/index.ts"],
+      "@faro/observability": ["../../packages/observability/src/index.ts"]
     }
   },
   "references": [
     { "path": "../../packages/application" },
-    { "path": "../../packages/observability" },
-    { "path": "../../packages/config" }
+    { "path": "../../packages/config" },
+    { "path": "../../packages/domain" },
+    { "path": "../../packages/infra-ai" },
+    { "path": "../../packages/infra-db" },
+    { "path": "../../packages/infra-export" },
+    { "path": "../../packages/observability" }
   ],
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

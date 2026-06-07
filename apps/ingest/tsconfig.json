@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "paths": {
+      "@faro/config": ["../../packages/config/src/index.ts"],
+      "@faro/domain": ["../../packages/domain/src/index.ts"],
+      "@faro/infra-db": ["../../packages/infra-db/src/index.ts"],
+      "@faro/observability": ["../../packages/observability/src/index.ts"]
+    }
+  },
+  "references": [
+    { "path": "../../packages/config" },
+    { "path": "../../packages/domain" },
+    { "path": "../../packages/infra-db" },
+    { "path": "../../packages/observability" }
+  ],
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

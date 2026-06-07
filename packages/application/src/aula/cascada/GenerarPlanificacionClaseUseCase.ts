@@ -3,19 +3,27 @@
 
 import type { LlmPort, PlanificacionClase, PlanificacionUnidad } from '@faro/domain';
 import { SchemaPlanificacionClase } from '@faro/domain';
-import { bloqueCorpus, entradaClase, exigirParsed, INSTR_CLASE } from './generacion.js';
+import { bloqueCorpus, entradaClase, exigirParsedConMeta, INSTR_CLASE } from './generacion.js';
+import type { MetaGeneracion } from './generacion.js';
 import type { ContextoCascada } from './tipos.js';
 
 export class GenerarPlanificacionClaseUseCase {
   constructor(private readonly llm: LlmPort) {}
 
-  async ejecutar(ctx: ContextoCascada, unidad: PlanificacionUnidad): Promise<PlanificacionClase> {
+  async ejecutarConMeta(
+    ctx: ContextoCascada,
+    unidad: PlanificacionUnidad,
+  ): Promise<{ valor: PlanificacionClase; meta: MetaGeneracion }> {
     const salida = await this.llm.generar({
       tarea: 'redaccion',
       schema: SchemaPlanificacionClase,
       system: [bloqueCorpus(ctx), INSTR_CLASE],
       entradaUsuario: entradaClase(unidad),
     });
-    return exigirParsed(salida);
+    return exigirParsedConMeta(salida);
+  }
+
+  async ejecutar(ctx: ContextoCascada, unidad: PlanificacionUnidad): Promise<PlanificacionClase> {
+    return (await this.ejecutarConMeta(ctx, unidad)).valor;
   }
 }

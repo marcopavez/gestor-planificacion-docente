@@ -3,19 +3,25 @@
 
 import type { LlmPort, PlanificacionUnidad } from '@faro/domain';
 import { SchemaPlanificacionUnidad } from '@faro/domain';
-import { bloqueCorpus, entradaUnidad, exigirParsed, INSTR_UNIDAD } from './generacion.js';
+import { bloqueCorpus, entradaUnidad, exigirParsedConMeta, INSTR_UNIDAD } from './generacion.js';
+import type { MetaGeneracion } from './generacion.js';
 import type { ContextoCascada } from './tipos.js';
 
 export class GenerarPlanificacionUnidadUseCase {
   constructor(private readonly llm: LlmPort) {}
 
-  async ejecutar(ctx: ContextoCascada): Promise<PlanificacionUnidad> {
+  // Variante con metadatos (modelo/usage) para registrar la traza por artefacto (RF-PA.10).
+  async ejecutarConMeta(ctx: ContextoCascada): Promise<{ valor: PlanificacionUnidad; meta: MetaGeneracion }> {
     const salida = await this.llm.generar({
       tarea: 'redaccion',
       schema: SchemaPlanificacionUnidad,
       system: [bloqueCorpus(ctx), INSTR_UNIDAD],
       entradaUsuario: entradaUnidad(ctx),
     });
-    return exigirParsed(salida);
+    return exigirParsedConMeta(salida);
+  }
+
+  async ejecutar(ctx: ContextoCascada): Promise<PlanificacionUnidad> {
+    return (await this.ejecutarConMeta(ctx)).valor;
   }
 }

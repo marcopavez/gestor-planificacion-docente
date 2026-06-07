@@ -13,8 +13,12 @@ import * as schema from '../schema/index.js';
 // __dirname equivalente en ESM
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// Ruta a la migración generada por drizzle-kit en H-PA.1.
-const MIGRATION_SQL_PATH = join(__dirname, '../../migrations/0000_robust_mulholland_black.sql');
+// Todas las migraciones en orden — añadir aquí cada nuevo archivo de migración.
+// El helper las aplica secuencialmente para que los tests siempre corran contra el schema completo.
+const MIGRATION_PATHS = [
+  join(__dirname, '../../migrations/0000_robust_mulholland_black.sql'),
+  join(__dirname, '../../migrations/0001_glorious_tinkerer.sql'),
+];
 
 /**
  * Crea una instancia Drizzle apuntando a pglite en memoria con el schema aplicado.
@@ -26,17 +30,19 @@ const MIGRATION_SQL_PATH = join(__dirname, '../../migrations/0000_robust_mulholl
 export async function crearDbTest(): Promise<ReturnType<typeof drizzle<typeof schema>>> {
   const pg = new PGlite();
 
-  // Aplicar la migración completa (el mismo SQL que va a Postgres real).
+  // Aplicar cada migración en orden (el mismo SQL que va a Postgres real).
   // drizzle-kit genera bloques separados por '--> statement-breakpoint'; pglite
   // no los entiende, así que los dividimos y ejecutamos uno a uno.
-  const migrationSql = readFileSync(MIGRATION_SQL_PATH, 'utf-8');
-  const statements = migrationSql
-    .split('--> statement-breakpoint')
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0);
+  for (const migrationPath of MIGRATION_PATHS) {
+    const migrationSql = readFileSync(migrationPath, 'utf-8');
+    const statements = migrationSql
+      .split('--> statement-breakpoint')
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
 
-  for (const stmt of statements) {
-    await pg.exec(stmt);
+    for (const stmt of statements) {
+      await pg.exec(stmt);
+    }
   }
 
   return drizzle(pg, { schema });

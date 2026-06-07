@@ -33,7 +33,7 @@ export type {
 
 // --- Cliente Drizzle (factoría, tipo de instancia) ---
 export { crearDb } from './db.js';
-export type { DrizzleDb } from './db.js';
+export type { DrizzleDb, EnvDb } from './db.js';
 
 // --- Adapters de repositorios (implementan los puertos de @faro/domain — INV-5) ---
 export { OaRepositoryDrizzle } from './repos/OaRepositoryDrizzle.js';
@@ -41,3 +41,6 @@ export { DocumentoRepositoryDrizzle } from './repos/DocumentoRepositoryDrizzle.j
 export { TrazaRepositoryDrizzle } from './repos/TrazaRepositoryDrizzle.js';
 export { JobRepositoryDrizzle } from './repos/JobRepositoryDrizzle.js';
 export { PlanificacionAnualRepositoryDrizzle } from './repos/PlanificacionAnualRepositoryDrizzle.js';
+export { CorpusVersionRepositoryDrizzle } from './repos/CorpusVersionRepositoryDrizzle.js';
+// Unidad de trabajo transaccional: envuelve la persistencia de la cascada en UNA tx (atomicidad).
+export { UnidadDeTrabajoDrizzle } from './repos/UnidadDeTrabajoDrizzle.js';

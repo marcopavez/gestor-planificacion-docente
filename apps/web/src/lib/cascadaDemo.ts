@@ -8,13 +8,12 @@ import { basename, join } from 'node:path';
 import { CascadaAulaUseCase } from '@faro/application';
 import type { ContextoCascada, OaCorpus, ResultadoCascada } from '@faro/application';
 import type { LlmPort } from '@faro/domain';
-import { AnthropicLlmAdapter } from '@faro/infra-ai';
+import { crearLlm } from '@faro/infra-ai';
 import { PptxExportAdapter } from '@faro/infra-export';
 import { crearLoggerHijo } from '@faro/observability';
 import { cargarCorpus } from './corpus';
 import { materiaPorId } from './materias';
 import { raizRepo } from './raiz';
-import { crearSamplesLlm } from './samplesLlm';
 
 export type ModoCascada = 'demo' | 'live';
 
@@ -40,11 +39,18 @@ export interface EntradaCascadaDemo {
 }
 
 function construirLlm(samplesDir: string): { llm: LlmPort; modo: ModoCascada } {
-  const apiKey = process.env['ANTHROPIC_API_KEY'];
-  if (apiKey) {
-    return { llm: AnthropicLlmAdapter.desdeApiKey(apiKey, crearLoggerHijo('infra-ai')), modo: 'live' };
-  }
-  return { llm: crearSamplesLlm(samplesDir), modo: 'demo' };
+  // Selección de proveedor centralizada en crearLlm (RF-PA.14): la precedencia
+  // claude-code → anthropic-api → samples NO se duplica aquí. El demo solo distingue
+  // 'demo' (samples, sin red) de 'live' (claude-code o anthropic-api).
+  const { llm, modo } = crearLlm(
+    {
+      CLAUDE_CODE_OAUTH_TOKEN: process.env['CLAUDE_CODE_OAUTH_TOKEN'],
+      ANTHROPIC_API_KEY: process.env['ANTHROPIC_API_KEY'],
+      samplesDir,
+    },
+    crearLoggerHijo('infra-ai'),
+  );
+  return { llm, modo: modo === 'samples' ? 'demo' : 'live' };
 }
 
 export async function ejecutarCascadaDemo(input: EntradaCascadaDemo): Promise<SalidaCascadaDemo> {

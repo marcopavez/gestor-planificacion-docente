@@ -1,21 +1,68 @@
 // packages/infra-db/src/repos/JobRepositoryDrizzle.ts
 // Adapter Drizzle para JobRepository (RF-PA.3, ADR-003).
 // La exclusión mutua de workers se garantiza con FOR UPDATE SKIP LOCKED en tomarSiguiente.
+// El flujo es cascada-desde-unidad: el job referencia la unidad_planificada, no un documento.
 
 import { eq, sql } from 'drizzle-orm';
-import type { JobRepository } from '@faro/domain';
-import type { DrizzleDb } from '../db.js';
+import type { EstadoJob, JobRepository, TrabajoCascada } from '@faro/domain';
+import type { DbOTx } from '../db.js';
 import { jobGeneracion } from '../schema/index.js';
 
-export class JobRepositoryDrizzle implements JobRepository {
-  constructor(private readonly db: DrizzleDb) {}
+// Estados posibles en la columna; estrechamos el text de DB al union del puerto sin asumir 'any'.
+const ESTADOS_JOB = ['pendiente', 'en_proceso', 'hecho', 'fallido'] as const;
+type EstadoJobValor = (typeof ESTADOS_JOB)[number];
+function esEstadoJob(v: string): v is EstadoJobValor {
+  return (ESTADOS_JOB as readonly string[]).includes(v);
+}
 
-  async encolar(documentoId: string): Promise<void> {
-    await this.db.insert(jobGeneracion).values({
-      documentoId,
-      tipoTrabajo: 'cascada_unidad',
-      estado: 'pendiente',
-    });
+export class JobRepositoryDrizzle implements JobRepository {
+  // DbOTx: marcarHecho/reintentar/marcarFallido corren dentro de la unidad de trabajo (tx);
+  // tomarSiguiente abre su propia tx (SKIP LOCKED) y por eso exige la instancia top-level.
+  constructor(private readonly db: DbOTx) {}
+
+  async encolarCascadaUnidad(unidadPlanificadaId: string): Promise<string> {
+    const [row] = await this.db
+      .insert(jobGeneracion)
+      .values({
+        unidadPlanificadaId,
+        tipoTrabajo: 'cascada_unidad',
+        estado: 'pendiente',
+      })
+      .returning({ id: jobGeneracion.id });
+
+    if (!row) throw new Error('No se pudo encolar el job de cascada');
+    return row.id;
+  }
+
+  /**
+   * Estado del job para el polling de la web (H-PA.9). Solo lectura; null si el id no existe.
+   * El union de estado se valida con esEstadoJob para no degradar el tipo a `string`.
+   */
+  async obtenerEstado(jobId: string): Promise<EstadoJob | null> {
+    const [row] = await this.db
+      .select({
+        id: jobGeneracion.id,
+        estado: jobGeneracion.estado,
+        documentoId: jobGeneracion.documentoId,
+        intentos: jobGeneracion.intentos,
+        error: jobGeneracion.error,
+      })
+      .from(jobGeneracion)
+      .where(eq(jobGeneracion.id, jobId));
+
+    if (!row) return null;
+    if (!esEstadoJob(row.estado)) {
+      // Defensa: un estado fuera del union indica corrupción de datos, no un caso normal.
+      throw new Error(`Estado de job desconocido en DB: '${row.estado}' (job ${jobId})`);
+    }
+
+    return {
+      id: row.id,
+      estado: row.estado,
+      documentoId: row.documentoId,
+      intentos: row.intentos,
+      error: row.error,
+    };
   }
 
   /**
@@ -23,13 +70,15 @@ export class JobRepositoryDrizzle implements JobRepository {
    * FOR UPDATE SKIP LOCKED evita bloqueos entre workers concurrentes.
    * Drizzle no soporta FOR UPDATE SKIP LOCKED directamente → sql`` tag.
    */
-  async tomarSiguiente(workerId: string): Promise<{ id: string; documentoId: string } | null> {
+  async tomarSiguiente(workerId: string): Promise<TrabajoCascada | null> {
     // Transacción necesaria: el SELECT y el UPDATE deben ser atómicos.
+    // tomarSiguiente nunca se llama desde la unidad de trabajo (abre su propia tx SKIP LOCKED),
+    // así que la instancia inyectada es la top-level con .transaction disponible.
     return this.db.transaction(async (tx) => {
       // Drizzle no tiene API de primer nivel para FOR UPDATE SKIP LOCKED;
       // usamos sql`` para la cláusula de bloqueo (aceptado por el proyecto per ADR-003).
-      const rows = await tx.execute<{ id: string; documento_id: string }>(
-        sql`SELECT id, documento_id FROM job_generacion
+      const rows = await tx.execute<{ id: string; unidad_planificada_id: string }>(
+        sql`SELECT id, unidad_planificada_id FROM job_generacion
             WHERE estado = 'pendiente'
             ORDER BY created_at ASC
             LIMIT 1
@@ -37,10 +86,13 @@ export class JobRepositoryDrizzle implements JobRepository {
       );
 
       // pglite / pg devuelven las filas en .rows
-      const row = (rows as unknown as { rows: Array<{ id: string; documento_id: string }> }).rows[0];
+      const row = (
+        rows as unknown as { rows: Array<{ id: string; unidad_planificada_id: string }> }
+      ).rows[0];
       if (!row) return null;
 
-      await tx
+      // Marcamos en_proceso e incrementamos intentos en el mismo UPDATE para contar este intento.
+      const [actualizado] = await tx
         .update(jobGeneracion)
         .set({
           estado: 'en_proceso',
@@ -48,16 +100,40 @@ export class JobRepositoryDrizzle implements JobRepository {
           lockedAt: new Date(),
           intentos: sql`${jobGeneracion.intentos} + 1`,
         })
-        .where(eq(jobGeneracion.id, row.id));
+        .where(eq(jobGeneracion.id, row.id))
+        .returning({ intentos: jobGeneracion.intentos });
 
-      return { id: row.id, documentoId: row.documento_id };
+      if (!actualizado) throw new Error('No se pudo bloquear el job tomado');
+
+      return {
+        id: row.id,
+        unidadPlanificadaId: row.unidad_planificada_id,
+        intentos: actualizado.intentos,
+      };
     });
   }
 
-  async marcar(id: string, estado: 'hecho' | 'fallido'): Promise<void> {
+  async marcarHecho(id: string, documentoRaizId: string): Promise<void> {
+    // Libera el lock al cerrar el job para no dejar locked_by/locked_at colgados (diagnóstico limpio).
     await this.db
       .update(jobGeneracion)
-      .set({ estado })
+      .set({ estado: 'hecho', documentoId: documentoRaizId, error: null, lockedBy: null, lockedAt: null })
+      .where(eq(jobGeneracion.id, id));
+  }
+
+  async reintentar(id: string, error: string): Promise<void> {
+    // Vuelve a 'pendiente' para que otro intento lo retome; conserva el último error como diagnóstico.
+    // Libera el lock: otro worker debe poder tomarlo en el próximo tomarSiguiente.
+    await this.db
+      .update(jobGeneracion)
+      .set({ estado: 'pendiente', error, lockedBy: null, lockedAt: null })
+      .where(eq(jobGeneracion.id, id));
+  }
+
+  async marcarFallido(id: string, error: string): Promise<void> {
+    await this.db
+      .update(jobGeneracion)
+      .set({ estado: 'fallido', error })
       .where(eq(jobGeneracion.id, id));
   }
 }

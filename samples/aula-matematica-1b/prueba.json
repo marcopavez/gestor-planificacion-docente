@@ -3,11 +3,11 @@
   "curso": "1º básico",
   "perfil_nivel": "1B",
   "tabla_especificaciones": [
-    { "oa": "MA01 OA 03", "n_items": 2, "puntaje": 4 },
-    { "oa": "MA01 OA 04", "n_items": 1, "puntaje": 2 },
-    { "oa": "MA01 OA 06", "n_items": 1, "puntaje": 2 },
-    { "oa": "MA01 OA 08", "n_items": 1, "puntaje": 2 },
-    { "oa": "MA01 OA 11", "n_items": 1, "puntaje": 2 }
+    { "oa": "MA01 OA 03", "n_items": 4, "puntaje": 8 },
+    { "oa": "MA01 OA 04", "n_items": 3, "puntaje": 6 },
+    { "oa": "MA01 OA 06", "n_items": 3, "puntaje": 6 },
+    { "oa": "MA01 OA 08", "n_items": 3, "puntaje": 6 },
+    { "oa": "MA01 OA 11", "n_items": 3, "puntaje": 6 }
   ],
   "items": [
     {
@@ -76,9 +76,108 @@
         { "texto": "🟢 (verde)", "correcta": false }
       ],
       "puntaje": 2
+    },
+    {
+      "oa": "MA01 OA 03",
+      "habilidad": "recordar",
+      "tipo": "seleccion_multiple",
+      "enunciado": "(Lee la docente) Cuenta los pollitos y marca el número correcto. [Imagen: 12 pollitos 🐤]",
+      "alternativas": [
+        { "texto": "11", "correcta": false },
+        { "texto": "12", "correcta": true },
+        { "texto": "13", "correcta": false }
+      ],
+      "puntaje": 2
+    },
+    {
+      "oa": "MA01 OA 03",
+      "habilidad": "comprender",
+      "tipo": "completacion",
+      "enunciado": "(Lee la docente) Dibuja o escribe el número que representa esta cantidad de manzanas. [Imagen: 9 manzanas 🍎]",
+      "respuesta_correcta": "9",
+      "puntaje": 2
+    },
+    {
+      "oa": "MA01 OA 04",
+      "habilidad": "comprender",
+      "tipo": "seleccion_multiple",
+      "enunciado": "(Lee la docente) ¿Qué número es MENOR? [Imagen: una tarjeta con 6 y una tarjeta con 3]",
+      "alternativas": [
+        { "texto": "6", "correcta": false },
+        { "texto": "3", "correcta": true },
+        { "texto": "Son iguales", "correcta": false }
+      ],
+      "puntaje": 2
+    },
+    {
+      "oa": "MA01 OA 04",
+      "habilidad": "aplicar",
+      "tipo": "completacion",
+      "enunciado": "(Lee la docente) Ordena estos números de menor a mayor y escribe el que va primero: 8, 2, 5.",
+      "respuesta_correcta": "2",
+      "puntaje": 2
+    },
+    {
+      "oa": "MA01 OA 06",
+      "habilidad": "comprender",
+      "tipo": "verdadero_falso",
+      "enunciado": "(Lee la docente) 5 y 3 juntos forman 8. [Imagen: 5 cubos azules y 3 cubos rojos]",
+      "alternativas": [
+        { "texto": "Verdadero", "correcta": true },
+        { "texto": "Falso", "correcta": false }
+      ],
+      "puntaje": 2
+    },
+    {
+      "oa": "MA01 OA 06",
+      "habilidad": "aplicar",
+      "tipo": "completacion",
+      "enunciado": "(Lee la docente) Tengo 10 fichas. Si pongo 7 en una caja, ¿cuántas fichas quedan fuera? [Imagen: 10 fichas, 7 dentro de una caja]",
+      "respuesta_correcta": "3",
+      "puntaje": 2
+    },
+    {
+      "oa": "MA01 OA 08",
+      "habilidad": "recordar",
+      "tipo": "seleccion_multiple",
+      "enunciado": "(Lee la docente) ¿Cuántas decenas tiene el número 10? [Imagen: 1 paquete de 10 palitos]",
+      "alternativas": [
+        { "texto": "0 decenas", "correcta": false },
+        { "texto": "1 decena", "correcta": true },
+        { "texto": "2 decenas", "correcta": false }
+      ],
+      "puntaje": 2
+    },
+    {
+      "oa": "MA01 OA 08",
+      "habilidad": "comprender",
+      "tipo": "completacion",
+      "enunciado": "(Lee la docente) El número 17 tiene 1 decena y ___ unidades. [Imagen: 1 paquete de 10 palitos + 7 palitos sueltos]",
+      "respuesta_correcta": "7",
+      "puntaje": 2
+    },
+    {
+      "oa": "MA01 OA 11",
+      "habilidad": "comprender",
+      "tipo": "seleccion_multiple",
+      "enunciado": "(Lee la docente) Observa el patrón de sonidos y marca el que sigue: 👏 👏 🦶 👏 👏 ___",
+      "alternativas": [
+        { "texto": "👏 (aplauso)", "correcta": false },
+        { "texto": "🦶 (pisada)", "correcta": true },
+        { "texto": "🙌 (manos arriba)", "correcta": false }
+      ],
+      "puntaje": 2
+    },
+    {
+      "oa": "MA01 OA 11",
+      "habilidad": "aplicar",
+      "tipo": "completacion",
+      "enunciado": "(Lee la docente) Observa el patrón numérico que crece de 2 en 2 y escribe el número que sigue: 2, 4, 6, ___.",
+      "respuesta_correcta": "8",
+      "puntaje": 2
     }
   ],
-  "pauta_correccion": "Cada ítem vale 2 puntos (total 12). Ítems de selección múltiple y verdadero/falso: 2 puntos si la alternativa marcada es la correcta, 0 si no. Completación: 2 puntos si escribe 4. La prueba se lee en voz alta por la docente (perfil 1º básico, pre-lectores). Se sugiere acompañar con apoyo visual proyectado.",
+  "pauta_correccion": "Cada ítem vale 2 puntos (16 ítems, total 32). Ítems de selección múltiple y verdadero/falso: 2 puntos si la alternativa marcada es la correcta, 0 si no. Completación: 2 puntos si escribe la respuesta_correcta indicada. La prueba se lee en voz alta por la docente (perfil 1º básico, pre-lectores). Se sugiere acompañar con apoyo visual proyectado.",
   "alineada_reglamento": false,
   "version_nee_dua": false
 }

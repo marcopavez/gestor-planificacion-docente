@@ -1,0 +1,1 @@
+ALTER TABLE "corpus_version" ADD CONSTRAINT "corpus_version_etiqueta_unique" UNIQUE("etiqueta");
