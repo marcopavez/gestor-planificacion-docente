@@ -3,10 +3,14 @@
 // producción encola y responde 202 con polling). Ver specs/02-aula-cascada §4.8.
 
 import { NextResponse } from 'next/server';
+import { crearLoggerHijo } from '@faro/observability';
 import { ejecutarCascadaDemo } from '@/lib/cascadaDemo';
+import { responderError500 } from '@/lib/respuestaError';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+const log = crearLoggerHijo('web/cascada-demo');
 
 interface CuerpoCascada {
   materiaId?: string;
@@ -34,7 +38,6 @@ export async function POST(req: Request) {
     });
     return NextResponse.json(salida);
   } catch (e) {
-    const mensaje = e instanceof Error ? e.message : 'Error desconocido al generar la cascada.';
-    return NextResponse.json({ error: mensaje }, { status: 500 });
+    return responderError500(log, e, {}, 'POST /cascada (demo) falló');
   }
 }

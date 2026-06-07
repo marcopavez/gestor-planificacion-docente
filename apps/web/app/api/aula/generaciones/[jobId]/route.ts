@@ -7,6 +7,8 @@ import { NextResponse } from 'next/server';
 import type { DocumentoGenerado } from '@faro/domain';
 import { crearLoggerHijo } from '@faro/observability';
 import { produccion } from '@/lib/produccion';
+import { responderError500 } from '@/lib/respuestaError';
+import { contenidoParaUi } from '@/lib/contenidoDocumento';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -55,14 +57,12 @@ export async function GET(
         prueba: porTipo(cascada, 'prueba'),
         // El clase_deck persiste su payload como { deck: ClaseDeck, pptx }; la UI de producción
         // espera el ClaseDeck plano (.slides/.titulo), así que lo desempaquetamos aquí.
-        deck: (porTipo(cascada, 'clase_deck') as { deck?: unknown } | null)?.deck ?? null,
+        deck: contenidoParaUi('clase_deck', porTipo(cascada, 'clase_deck')),
       },
       // id del documento clase_deck para construir la URL de descarga del .pptx.
       deckDocId: deckDoc?.id ?? null,
     });
   } catch (e) {
-    const mensaje = e instanceof Error ? e.message : 'Error al consultar el estado del job.';
-    log.error({ err: mensaje, jobId }, 'GET /generaciones/[jobId] falló');
-    return NextResponse.json({ error: mensaje }, { status: 500 });
+    return responderError500(log, e, { jobId }, 'GET /generaciones/[jobId] falló');
   }
 }

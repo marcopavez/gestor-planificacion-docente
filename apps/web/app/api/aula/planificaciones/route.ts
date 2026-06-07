@@ -7,6 +7,7 @@ import { SchemaPlanificacionAnual } from '@faro/domain';
 import { ReglaDominioError } from '@faro/domain';
 import { crearLoggerHijo } from '@faro/observability';
 import { produccion } from '@/lib/produccion';
+import { responderError500 } from '@/lib/respuestaError';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -34,9 +35,7 @@ export async function GET(req: Request): Promise<NextResponse> {
     const planificaciones = await listarPlanes.ejecutar({ establecimiento, asignatura, nivel, anio });
     return NextResponse.json({ planificaciones });
   } catch (e) {
-    const mensaje = e instanceof Error ? e.message : 'Error al listar planificaciones.';
-    log.error({ err: mensaje }, 'GET /planificaciones falló');
-    return NextResponse.json({ error: mensaje }, { status: 500 });
+    return responderError500(log, e, {}, 'GET /planificaciones falló');
   }
 }
 
@@ -69,8 +68,6 @@ export async function POST(req: Request): Promise<NextResponse> {
     if (e instanceof ReglaDominioError) {
       return NextResponse.json({ error: e.message, regla: e.regla }, { status: 422 });
     }
-    const mensaje = e instanceof Error ? e.message : 'Error al crear la planificación.';
-    log.error({ err: mensaje }, 'POST /planificaciones falló');
-    return NextResponse.json({ error: mensaje }, { status: 500 });
+    return responderError500(log, e, {}, 'POST /planificaciones falló');
   }
 }

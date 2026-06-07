@@ -6,6 +6,7 @@ import { NextResponse } from 'next/server';
 import { crearLoggerHijo } from '@faro/observability';
 import { produccion } from '@/lib/produccion';
 import { leerPptx } from '@/lib/pptx';
+import { responderError500 } from '@/lib/respuestaError';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -52,8 +53,6 @@ export async function GET(
       },
     });
   } catch (e) {
-    const mensaje = e instanceof Error ? e.message : 'Error al servir el .pptx.';
-    log.error({ err: mensaje, id }, 'GET /documentos/[id]/pptx falló');
-    return NextResponse.json({ error: mensaje }, { status: 500 });
+    return responderError500(log, e, { id }, 'GET /documentos/[id]/pptx falló');
   }
 }

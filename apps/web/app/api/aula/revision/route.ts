@@ -6,6 +6,7 @@
 import { NextResponse } from 'next/server';
 import { crearLoggerHijo } from '@faro/observability';
 import { produccion } from '@/lib/produccion';
+import { responderError500 } from '@/lib/respuestaError';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -31,8 +32,6 @@ export async function GET(req: Request): Promise<NextResponse> {
     }));
     return NextResponse.json({ documentos: items });
   } catch (e) {
-    const mensaje = e instanceof Error ? e.message : 'Error al listar documentos pendientes.';
-    log.error({ err: mensaje }, 'GET /revision falló');
-    return NextResponse.json({ error: mensaje }, { status: 500 });
+    return responderError500(log, e, {}, 'GET /revision falló');
   }
 }

@@ -8,6 +8,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { crearLoggerHijo } from '@faro/observability';
 import { produccion } from '@/lib/produccion';
+import { responderError500 } from '@/lib/respuestaError';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -52,8 +53,6 @@ export async function POST(
     const status = resultado.regla === 'aprobacion_sin_humano' ? 422 : 409;
     return NextResponse.json({ error: resultado.mensaje, regla: resultado.regla }, { status });
   } catch (e) {
-    const mensaje = e instanceof Error ? e.message : 'Error al aprobar el documento.';
-    log.error({ err: mensaje, id }, 'POST /revision/[id]/aprobar falló');
-    return NextResponse.json({ error: mensaje }, { status: 500 });
+    return responderError500(log, e, { id }, 'POST /revision/[id]/aprobar falló');
   }
 }

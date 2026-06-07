@@ -6,6 +6,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { crearLoggerHijo } from '@faro/observability';
 import { produccion } from '@/lib/produccion';
+import { responderError500 } from '@/lib/respuestaError';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -46,8 +47,6 @@ export async function POST(req: Request): Promise<NextResponse> {
     log.info({ jobId, unidadPlanificadaId }, 'cascada encolada');
     return NextResponse.json({ jobId }, { status: 202 });
   } catch (e) {
-    const mensaje = e instanceof Error ? e.message : 'Error al encolar la generación.';
-    log.error({ err: mensaje }, 'POST /generaciones falló');
-    return NextResponse.json({ error: mensaje }, { status: 500 });
+    return responderError500(log, e, { unidadPlanificadaId }, 'POST /generaciones falló');
   }
 }

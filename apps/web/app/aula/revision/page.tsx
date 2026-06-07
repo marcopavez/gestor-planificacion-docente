@@ -26,12 +26,6 @@ interface ItemPendiente {
   createdAt: string;
 }
 
-// El payload del clase_deck se persiste como { deck, pptx }; el resto son el artefacto directo.
-interface ContenidoDeck {
-  deck: ClaseDeck;
-  pptx?: { ruta: string; bytes: number };
-}
-
 interface Detalle {
   id: string;
   tipo: string;
@@ -412,7 +406,7 @@ function ContenidoArtefacto({ tipo, contenido }: { tipo: string; contenido: unkn
     case 'prueba':
       return <VistaPrueba prueba={contenido as Prueba} />;
     case 'clase_deck':
-      return <VistaDeck contenido={contenido as ContenidoDeck} />;
+      return <VistaDeck deck={contenido as ClaseDeck} />;
     default:
       return (
         <section style={card}>
@@ -480,8 +474,7 @@ function VistaPrueba({ prueba }: { prueba: Prueba }): React.ReactElement {
   );
 }
 
-function VistaDeck({ contenido }: { contenido: ContenidoDeck }): React.ReactElement {
-  const deck = contenido.deck;
+function VistaDeck({ deck }: { deck: ClaseDeck }): React.ReactElement {
   return (
     <section style={{ ...card, background: COLOR.fondo }}>
       <p style={{ fontWeight: 600, marginTop: 0 }}>{deck.titulo}</p>

@@ -6,6 +6,7 @@
 import { NextResponse } from 'next/server';
 import { crearLoggerHijo } from '@faro/observability';
 import { produccion } from '@/lib/produccion';
+import { responderError500 } from '@/lib/respuestaError';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -34,8 +35,6 @@ export async function POST(
       { status: 409 },
     );
   } catch (e) {
-    const mensaje = e instanceof Error ? e.message : 'Error al rechazar el documento.';
-    log.error({ err: mensaje, id }, 'POST /revision/[id]/rechazar falló');
-    return NextResponse.json({ error: mensaje }, { status: 500 });
+    return responderError500(log, e, { id }, 'POST /revision/[id]/rechazar falló');
   }
 }

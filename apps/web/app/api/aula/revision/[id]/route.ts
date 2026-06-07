@@ -5,6 +5,8 @@
 import { NextResponse } from 'next/server';
 import { crearLoggerHijo } from '@faro/observability';
 import { produccion } from '@/lib/produccion';
+import { responderError500 } from '@/lib/respuestaError';
+import { contenidoParaUi } from '@/lib/contenidoDocumento';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -30,15 +32,14 @@ export async function GET(
       tipo: doc.tipo,
       estadoRevision: doc.estadoRevision,
       autorHumano: doc.autorHumano,
-      // payload/contenido del artefacto (el render por tipo lo hace la UI).
-      contenido: doc.contenido,
+      // payload/contenido del artefacto (el render por tipo lo hace la UI). P-D: el clase_deck se
+      // expone como ClaseDeck plano (igual que la superficie de generación), no como { deck, pptx }.
+      contenido: contenidoParaUi(doc.tipo, doc.contenido),
       // Reporte de gates deterministas ya corridos por el worker (esta historia los MUESTRA, no reejecuta).
       resultadoGates: doc.resultadoGates,
       createdAt: doc.createdAt,
     });
   } catch (e) {
-    const mensaje = e instanceof Error ? e.message : 'Error al obtener el documento.';
-    log.error({ err: mensaje, id }, 'GET /revision/[id] falló');
-    return NextResponse.json({ error: mensaje }, { status: 500 });
+    return responderError500(log, e, { id }, 'GET /revision/[id] falló');
   }
 }
