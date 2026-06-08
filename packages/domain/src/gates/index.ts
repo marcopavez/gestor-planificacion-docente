@@ -13,6 +13,7 @@ import type { ResultadoGate } from './tipos.js';
 export type { Severidad, Hallazgo, ResultadoGate } from './tipos.js';
 export { construirResultado } from './tipos.js';
 export { planificacionGate } from './planificacionGate.js';
+export { planificacionGateV2, type EntradaPlanificacionGateV2 } from './planificacionGateV2.js';
 export { pedagogicalGate } from './pedagogicalGate.js';
 export { citationGate, type OaVigencia, type EntradaCitationGate } from './citationGate.js';
 export { secuenciaAnualGate, type OaCorpus, type OpcionesSecuenciaAnualGate } from './secuenciaAnualGate.js';

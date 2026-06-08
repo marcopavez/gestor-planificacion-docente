@@ -166,11 +166,13 @@ export {
   correrGatesCascada,
   pedagogicalGate,
   planificacionGate,
+  planificacionGateV2,
   secuenciaAnualGate,
 } from './gates/index.js';
 export type {
   EntradaCitationGate,
   EntradaGatesCascada,
+  EntradaPlanificacionGateV2,
   Hallazgo,
   OaCorpus,
   OaVigencia,
@@ -178,6 +180,15 @@ export type {
   ResultadoGate,
   Severidad,
 } from './gates/index.js';
+
+// --- Proyección plantilla→plan (data-driven; compartida por gate v2 y export — H-2.4/H-2.5) ---
+export {
+  valorEscalarCampo,
+  seleccionCheckbox,
+  listaCampo,
+  oaCampo,
+  campoTieneContenido,
+} from './planificacion/proyeccion.js';
 
 // --- HIL: máquina de estados de revisión (RF-PA.11, INV-2, INV-3) ---
 // EstadoRevision ya se exporta desde entities/index.js (mismo tipo canónico).
