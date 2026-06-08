@@ -1,6 +1,7 @@
 {
   "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC)",
   "fuentePdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+  "version": "2026.1",
   "bloques": [
     {
       "asignatura": "Artes Visuales",
@@ -337,6 +338,12 @@
       "nivel": "6º básico",
       "archivo": "orientacion-6-basico.json",
       "oa": 9
+    },
+    {
+      "asignatura": "Transversal",
+      "nivel": "Básica",
+      "archivo": "oat-transversales.json",
+      "oa": 32
     }
   ]
 }
