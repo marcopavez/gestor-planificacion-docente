@@ -25,6 +25,7 @@ export type {
   EmbeddingsPort,
   EstadoJob,
   ExportPort,
+  ExportPlanificacionPort,
   JobRepository,
   LlmPort,
   NormaRepository,

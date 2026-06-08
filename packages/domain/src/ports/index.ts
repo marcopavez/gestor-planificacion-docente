@@ -24,6 +24,8 @@ import type {
   UnidadPlanificada,
 } from '../schemas/planificacionAnual.js';
 import type { FormatoPlantillaType, PlantillaPlanificacion } from '../schemas/plantilla.js';
+import type { PlanificacionUnidad } from '../schemas/planificacionUnidad.js';
+import type { CatalogosPlanificacion } from '../schemas/catalogosPlanificacion.js';
 
 // --- Recuperación (RAG) ---
 
@@ -85,7 +87,22 @@ export interface ArchivoExportado {
 
 export interface ExportPort {
   exportarPptx(deck: ClaseDeck): Promise<ArchivoExportado>;
-  // TODO RF-2.17: exportarPptx(deck, plantilla?: DefinicionPlantilla) + exportarDocx(doc, plantilla).
+}
+
+// --- Export de la Planificación de Unidad (.docx/.pdf) — H-2.5/H-2.6, INV-6 ---
+// El layout se deriva 1:1 de la `definicion` de la plantilla activa (calca las tablas del PDF real);
+// los catálogos proveen las opciones de cada checkbox_set. `.pdf` = render del mismo .docx (LibreOffice).
+export interface ExportPlanificacionPort {
+  aDocx(
+    plan: PlanificacionUnidad,
+    plantilla: PlantillaPlanificacion,
+    catalogos: CatalogosPlanificacion,
+  ): Promise<ArchivoExportado>;
+  aPdf(
+    plan: PlanificacionUnidad,
+    plantilla: PlantillaPlanificacion,
+    catalogos: CatalogosPlanificacion,
+  ): Promise<ArchivoExportado>;
 }
 
 // --- Verificación ---
