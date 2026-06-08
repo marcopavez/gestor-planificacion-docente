@@ -42,8 +42,9 @@ export function planificacionGate(unidad: PlanificacionUnidad, clase: Planificac
   }
 
   // Coherencia de duración: advisory (los planes de clase suelen ser iterativos/parciales).
+  // horas_pedagogicas es opcional (Formato B no lo lleva): sin ese dato no hay nada que comparar.
   const minClases = clase.clases.reduce((s, c) => s + c.duracion_min, 0);
-  const minUnidad = unidad.horas_pedagogicas * MIN_POR_HORA_PEDAGOGICA;
+  const minUnidad = (unidad.horas_pedagogicas ?? 0) * MIN_POR_HORA_PEDAGOGICA;
   if (minUnidad > 0) {
     const pct = Math.round((minClases / minUnidad) * 100);
     if (pct < 90 || pct > 110) {

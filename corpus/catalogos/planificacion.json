@@ -1,0 +1,118 @@
+{
+  "_fuente": {
+    "documento": "Plantillas reales Escuela General José Alejandro Bernales D-114",
+    "formatoA": "docs/planificaciones-primera-unidad-primero-basico.pdf (Planificación de Unidad — denso)",
+    "formatoB": "docs/planificaciones-primera-unidad-tercero-basico.pdf (Bloque de Actividades — DUA)",
+    "extraccion": "pdfplumber (tablas + texto); opciones verbatim, sin traducir ni resumir."
+  },
+  "_revision": "[VERIFICAR] La matriz de 5 columnas de 'Diversificación de la Enseñanza' (Formato A) tiene columnas adyacentes que la extracción mezcla. La pertenencia de columna de algunos ítems versátiles (p. ej. 'Ticket de salida', 'Lluvia de ideas', '¿Cómo lo estoy haciendo?') debe confirmarse visualmente contra el PDF. Las etiquetas en sí son verbatim del documento; lo dudoso es solo a qué columna pertenecen.",
+  "catalogos": {
+    "habilidades_siglo_xxi": [
+      { "etiqueta": "Creatividad" },
+      { "etiqueta": "Pensamiento Crítico" },
+      { "etiqueta": "Metacognición" },
+      { "etiqueta": "Colaboración" },
+      { "etiqueta": "Comunicación" },
+      { "etiqueta": "Vida y Carrera" },
+      { "etiqueta": "Ciudadanía" },
+      { "etiqueta": "Alfabetización en información" },
+      { "etiqueta": "Alfabetización en tecnologías digitales de información" },
+      { "etiqueta": "Responsabilidad personal y social" }
+    ],
+    "metodologias_activas": [
+      { "etiqueta": "Aprendizaje Basado en proyecto" },
+      { "etiqueta": "Aprendizaje basado en juegos" },
+      { "etiqueta": "Aprendizaje basado en Pensamiento" },
+      { "etiqueta": "Aprendizaje Servicio (A+S)" },
+      { "etiqueta": "STEM+" },
+      { "etiqueta": "Aula invertida" },
+      { "etiqueta": "Aprendizaje cooperativo" },
+      { "etiqueta": "Gamificación" },
+      { "etiqueta": "Estudio de caso" },
+      { "etiqueta": "Evaluación auténtica" },
+      { "etiqueta": "Lluvia de ideas" }
+    ],
+    "estrategias_ensenanza": [
+      { "etiqueta": "Comunica y demuestra altas expectativas." },
+      { "etiqueta": "Comunicación de objetivos instrucciones y conocimientos." },
+      { "etiqueta": "Participación de los estudiantes." },
+      { "etiqueta": "Ajuste de la práctica pedagógica." },
+      { "etiqueta": "Evaluación entre pares" },
+      { "etiqueta": "Análisis de casos breves" },
+      { "etiqueta": "Autoexplicación" },
+      { "etiqueta": "Técnica de un minuto" },
+      { "etiqueta": "Ticket de salida" },
+      { "etiqueta": "¿Cómo lo estoy haciendo?" },
+      { "etiqueta": "Retroalimentar efectiva y oportunamente" }
+    ],
+    "micropracticas": [
+      { "etiqueta": "Rutinas de pensamiento" },
+      { "etiqueta": "Videos reflexivos" },
+      { "etiqueta": "Preguntas poderosas" },
+      { "etiqueta": "Pensamiento visual" },
+      { "etiqueta": "Simulación de situaciones" },
+      { "etiqueta": "Escribe, comenta y avanza" },
+      { "etiqueta": "Mi error favorito" },
+      { "etiqueta": "Pausa reflexiva" },
+      { "etiqueta": "Resumen en una oración" }
+    ],
+    "estrategias_eval_formativa": [
+      { "etiqueta": "Palitos con nombre" },
+      { "etiqueta": "Pizarritas" },
+      { "etiqueta": "Luces de aprendizaje" },
+      { "etiqueta": "Tarjetas ABCD" },
+      { "etiqueta": "Clarificar criterios de logro" }
+    ],
+    "estrategias_eval_sumativa": [
+      { "etiqueta": "Aprendizaje individual" },
+      { "etiqueta": "Aprendizaje grupal" },
+      { "etiqueta": "Debate" },
+      { "etiqueta": "Disertación" },
+      { "etiqueta": "Maqueta" },
+      { "etiqueta": "Mapa conceptual" },
+      { "etiqueta": "Otro", "abierto": true }
+    ],
+    "tipo_aprendizaje": [
+      { "etiqueta": "Conceptual" },
+      { "etiqueta": "Procedimental" },
+      { "etiqueta": "Actitudinal" }
+    ],
+    "tipo_evaluacion": [
+      { "etiqueta": "Diagnóstica" },
+      { "etiqueta": "Formativa" },
+      { "etiqueta": "Sumativa" }
+    ],
+    "instrumentos_evaluacion": [
+      { "etiqueta": "Rúbrica" },
+      { "etiqueta": "Prueba escrita" },
+      { "etiqueta": "Prueba oral" },
+      { "etiqueta": "Lista de cotejo" },
+      { "etiqueta": "Escala de apreciación" }
+    ],
+    "recursos_espacios": [
+      { "etiqueta": "Proyector" },
+      { "etiqueta": "Parlantes" },
+      { "etiqueta": "Instrumentos musicales" },
+      { "etiqueta": "Celular" },
+      { "etiqueta": "Tablet - Profuturo" },
+      { "etiqueta": "CRA" },
+      { "etiqueta": "Sala de computación" },
+      { "etiqueta": "Patio" },
+      { "etiqueta": "Sala de lenguaje" },
+      { "etiqueta": "Juegos de mesa" },
+      { "etiqueta": "Reglas" },
+      { "etiqueta": "Compás" },
+      { "etiqueta": "Calculadora" },
+      { "etiqueta": "Mapas" },
+      { "etiqueta": "Diccionario" },
+      { "etiqueta": "Texto del estudiante" },
+      { "etiqueta": "Textos del CRA" },
+      { "etiqueta": "Otros", "abierto": true }
+    ],
+    "principios_dua": [
+      { "etiqueta": "Proveer múltiples medios de Representación" },
+      { "etiqueta": "Proveer múltiples medios de Acción y Expresión" },
+      { "etiqueta": "Proveer múltiples formas de Implicación" }
+    ]
+  }
+}

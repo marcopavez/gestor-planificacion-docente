@@ -10,6 +10,7 @@ import { citationGate, correrGatesCascada, pedagogicalGate, planificacionGate } 
 
 function unidad(): PlanificacionUnidad {
   return {
+    plantilla: 'A',
     establecimiento: 'Colegio Demo',
     asignatura: 'Matemática',
     nivel: '1º básico',
@@ -18,18 +19,15 @@ function unidad(): PlanificacionUnidad {
     duracion_semanas: 1,
     horas_pedagogicas: 2, // 2 × 45 = 90 min → coherente con 1 clase de 90 min
     oa: [
-      { codigo: 'MA01 OA 03', categoria: 'basal', descripcion: 'Leer números del 0 al 20.' },
-      { codigo: 'MA01 OA 04', categoria: 'basal', descripcion: 'Comparar y ordenar números del 0 al 20.' },
+      { codigo: 'MA01 OA 03', categoria: 'basal', descripcion: 'Leer números del 0 al 20.', habilidades: ['Representar'] },
+      { codigo: 'MA01 OA 04', categoria: 'basal', descripcion: 'Comparar y ordenar números del 0 al 20.', habilidades: [] },
     ],
-    habilidades: ['Representar'],
+    experiencias: ['Cuentan colecciones.'],
     indicadores_evaluacion: [
       { oa: 'MA01 OA 03', texto: 'Leen números del 0 al 20.', fuente: 'ia_borrador' },
       { oa: 'MA01 OA 04', texto: 'Comparan dos cantidades hasta 20.', fuente: 'ia_borrador' },
     ],
-    contenidos: { conceptuales: ['Números'], procedimentales: ['Conteo'], actitudinales: ['Trabajo en equipo'] },
-    actividades: ['Cuentan colecciones.'],
-    instrumentos_evaluacion: ['Lista de cotejo'],
-    tipo_evaluacion: ['diagnostica', 'formativa', 'sumativa'],
+    evaluacion: { tipo: ['diagnostica', 'formativa', 'sumativa'], instrumentos: ['Lista de cotejo'] },
     extras: {},
   };
 }
@@ -171,7 +169,7 @@ describe('gates deterministas de la cascada (H-0.7)', () => {
 
   it('citationGate bloquea un OA citado inexistente en el corpus', () => {
     const u = unidad();
-    u.oa.push({ codigo: 'MA01 OA 77', categoria: 'complementario', descripcion: 'OA inventado.' });
+    u.oa.push({ codigo: 'MA01 OA 77', categoria: 'complementario', descripcion: 'OA inventado.', habilidades: [] });
     const r = citationGate({ unidad: u, clase: clase(), prueba: prueba(), deck: deck(), corpus });
     expect(r.ok).toBe(false);
     expect(r.hallazgos.some((h) => h.regla === 'oa_existe' && h.ref === 'MA01 OA 77')).toBe(true);
@@ -191,7 +189,7 @@ describe('gates deterministas de la cascada (H-0.7)', () => {
 
   it('citationGate solo marca (no bloquea) los OAT transversales', () => {
     const u = unidad();
-    u.oa.push({ codigo: 'OAT 9', categoria: 'transversal', descripcion: 'Resolver problemas reflexivamente.' });
+    u.oa.push({ codigo: 'OAT 9', categoria: 'transversal', descripcion: 'Resolver problemas reflexivamente.', habilidades: [] });
     const r = citationGate({ unidad: u, clase: clase(), prueba: prueba(), deck: deck(), corpus });
     expect(r.ok).toBe(true);
     expect(r.hallazgos.some((h) => h.regla === 'oa_transversal' && h.severidad === 'marca')).toBe(true);

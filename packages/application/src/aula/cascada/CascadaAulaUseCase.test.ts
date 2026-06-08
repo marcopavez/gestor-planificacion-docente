@@ -26,6 +26,7 @@ const ctx: ContextoCascada = {
 };
 
 const unidadMuestra = {
+  plantilla: 'A',
   establecimiento: 'Colegio Demo',
   asignatura: 'Tecnología',
   nivel: '2º básico',
@@ -34,18 +35,15 @@ const unidadMuestra = {
   duracion_semanas: 5,
   horas_pedagogicas: 10,
   oa: [
-    { codigo: 'TE02 OA 01', categoria: 'basal', descripcion: 'Crear diseños de objetos tecnológicos.' },
-    { codigo: 'TE02 OA 03', categoria: 'basal', descripcion: 'Elaborar un objeto tecnológico para resolver una necesidad.' },
+    { codigo: 'TE02 OA 01', categoria: 'basal', descripcion: 'Crear diseños de objetos tecnológicos.', habilidades: ['Crear'] },
+    { codigo: 'TE02 OA 03', categoria: 'basal', descripcion: 'Elaborar un objeto tecnológico para resolver una necesidad.', habilidades: ['Crear', 'Comunicar'] },
   ],
-  habilidades: ['Crear', 'Comunicar'],
+  experiencias: ['Identifican objetos tecnológicos de la sala.'],
   indicadores_evaluacion: [
     { oa: 'TE02 OA 01', texto: 'Dibujan un objeto que resuelve una necesidad.', fuente: 'ia_borrador' },
     { oa: 'TE02 OA 03', texto: 'Elaboran un objeto tecnológico simple.', fuente: 'ia_borrador' },
   ],
-  contenidos: { conceptuales: ['Objetos tecnológicos'], procedimentales: ['Dibujo de diseño'], actitudinales: ['Trabajo en equipo'] },
-  actividades: ['Identifican objetos tecnológicos de la sala.'],
-  instrumentos_evaluacion: ['Lista de cotejo'],
-  tipo_evaluacion: ['diagnostica', 'formativa', 'sumativa'],
+  evaluacion: { tipo: ['diagnostica', 'formativa', 'sumativa'], instrumentos: ['Lista de cotejo'] },
   extras: {},
 };
 
