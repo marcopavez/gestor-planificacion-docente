@@ -44,6 +44,17 @@ const config = [
       '@typescript-eslint/no-explicit-any': 'error',
       // Prohibir console.log en producción (usar el logger estructurado de observability)
       'no-console': 'error',
+      // El prefijo `_` marca un binding intencionalmente sin usar; `ignoreRestSiblings`
+      // permite el patrón idiomático de omitir una clave vía rest (`const { x, ...resto } = obj`).
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
     },
   },
 
