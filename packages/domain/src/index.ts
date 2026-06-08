@@ -167,8 +167,14 @@ export type {
 } from './schemas/planificacionUnidad.js';
 export { SchemaPlanificacionClase, ClasePlanificada } from './schemas/planificacionClase.js';
 export type { PlanificacionClase, ClasePlanificadaType } from './schemas/planificacionClase.js';
-export { SchemaClaseDeck, SlideDeck } from './schemas/claseDeck.js';
-export type { ClaseDeck, SlideDeckType } from './schemas/claseDeck.js';
+export {
+  SchemaClaseDeck,
+  SlideDeck,
+  TemaDeckInfantil,
+  TEMAS_DECK_INFANTIL,
+  tramoDeNivel,
+} from './schemas/claseDeck.js';
+export type { ClaseDeck, SlideDeckType, TemaDeckInfantilType } from './schemas/claseDeck.js';
 
 // --- Gates deterministas de la cascada (INV-1/INV-2) ---
 export {

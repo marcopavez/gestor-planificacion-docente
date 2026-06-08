@@ -97,7 +97,9 @@ function deck(): ClaseDeck {
     asignatura: 'Matemática',
     nivel: '1º básico',
     oa: ['MA01 OA 03'],
-    slides: [{ momento: 'inicio', titulo: 'Inicio', contenido: ['Contemos'], notas_docente: 'Rutina.' }],
+    slides: [
+      { momento: 'inicio', titulo: 'Inicio', contenido: ['Contemos'], notas_docente: 'Rutina.', tipo: 'contenido', opciones: [] },
+    ],
   };
 }
 

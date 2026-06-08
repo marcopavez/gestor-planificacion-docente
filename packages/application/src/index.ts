@@ -21,6 +21,9 @@ export { GenerarPlanificacionClaseUseCase } from './aula/cascada/GenerarPlanific
 export { GenerarPruebaCascadaUseCase } from './aula/cascada/GenerarPruebaCascadaUseCase.js';
 export { GenerarClaseDeckUseCase } from './aula/cascada/GenerarClaseDeckUseCase.js';
 
+// --- PPT infantil (Fase 3): ClaseDeck infantil data-driven desde la PlanificacionUnidad ---
+export { GenerarPptInfantilUseCase } from './aula/cascada/GenerarPptInfantilUseCase.js';
+
 // --- derivarContextoCascada (función pura: UnidadPlanificada → ContextoCascada) ---
 export { derivarContextoCascada } from './aula/cascada/derivarContextoCascada.js';
 

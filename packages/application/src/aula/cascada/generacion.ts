@@ -66,6 +66,40 @@ export function bloqueCorpus(ctx: ContextoCascada): BloqueSistema {
   return { texto, cacheable: true };
 }
 
+/**
+ * Bloque de sistema para artefactos derivados de una PlanificacionUnidad ya generada (p. ej. el PPT
+ * infantil): el grounding son los OA de la unidad (verbatim), que la IA no debe alterar. Equivalente
+ * a bloqueCorpus pero a partir de la unidad (no del ContextoCascada), porque aguas abajo solo se tiene
+ * la planificación. Cacheable: es estable para una misma unidad.
+ */
+export function bloqueCorpusUnidad(unidad: PlanificacionUnidad): BloqueSistema {
+  const oaLista = unidad.oa
+    .map((oa) => {
+      const hab = oa.habilidades.length ? `\n    Habilidades: ${oa.habilidades.join(', ')}` : '';
+      return `- [${oa.categoria}] ${oa.codigo}: ${oa.descripcion}${hab}`;
+    })
+    .join('\n');
+
+  const texto = [
+    'Eres un asistente que prepara material de aula para niños de educación básica chilena (Bases Curriculares MINEDUC).',
+    '',
+    'Reglas inviolables:',
+    '1. Usa EXCLUSIVAMENTE los OA de la unidad provistos abajo y cita sus códigos VERBATIM. Nunca inventes OA ni reescribas su texto.',
+    '2. Todo lo que produces es un BORRADOR sujeto a revisión docente obligatoria (human-in-the-loop).',
+    '3. Adecúa el lenguaje a la edad de los estudiantes del nivel.',
+    '',
+    `Contexto: ${unidad.asignatura} · ${unidad.nivel} · ${unidad.establecimiento}.`,
+    `Unidad: ${unidad.unidad}.`,
+    unidad.proposito ? `Propósito de la unidad: ${unidad.proposito}` : '',
+    'OBJETIVOS DE APRENDIZAJE de la unidad (única fuente válida — no los modifiques):',
+    oaLista,
+  ]
+    .filter((l) => l !== '')
+    .join('\n');
+
+  return { texto, cacheable: true };
+}
+
 function instruccion(texto: string): BloqueSistema {
   return { texto, cacheable: false };
 }
@@ -115,6 +149,25 @@ export const INSTR_DECK = instruccion(
   ].join('\n'),
 );
 
+// Fase 3 (PPT infantil): la IA redacta SOLO los slides; el use case ensambla el ClaseDeck (tema/tramo
+// salen de los datos, no de la IA). El tramo (1-2 / 3-4 / 5-6) condiciona el lenguaje y el tamaño de texto.
+export const INSTR_DECK_INFANTIL = instruccion(
+  [
+    'Genera los SLIDES de un PPT INFANTIL (niños de 6 a 12 años) para proyectar una clase, derivado de su planificación de unidad.',
+    'El tramo de edad (1-2 / 3-4 / 5-6 básico) viene en la entrada: ajusta el lenguaje a ese tramo.',
+    '- Lenguaje simple, frases cortas y concretas; en el tramo 1-2 asume pre-lectores (texto que el/la docente lee en voz alta).',
+    "- Secuencia los slides por momento: 'inicio' → 'desarrollo' → 'cierre' (sigue propósito y experiencias de la unidad).",
+    "- Cada slide lleva su 'tipo':",
+    "  · 'contenido' → titulo + contenido (viñetas muy breves, 1 idea por viñeta).",
+    "  · 'pregunta' / 'elige' → una pregunta clara en 'titulo' y 2–4 'opciones' { texto, correcta }; marca EXACTAMENTE una 'correcta:true'. NO reveles la respuesta en el contenido: la respuesta correcta va SOLO en 'notas_docente'.",
+    "  · 'que_sigue' → un slide de transición ('¿Qué sigue?') con pistas breves de lo que viene en 'contenido'.",
+    "- Incluye 2–4 slides de interacción ('pregunta'/'elige') apoyadas en los OA e indicadores de la unidad.",
+    "- 'notas_docente' para el/la docente: cómo guiar el slide y, en interacción, cuál es la respuesta correcta y por qué.",
+    '- NO inventes OA ni alteres su texto; apóyate en el propósito, experiencias e indicadores de la unidad.',
+    "- Completa también 'titulo' (del deck), 'asignatura', 'nivel' y 'oa' (códigos de la unidad), pero la aplicación FIJA esos campos y el tema visual desde la planificación: tu aporte real son los slides.",
+  ].join('\n'),
+);
+
 // --- Entradas de usuario (la petición concreta + artefactos aguas arriba) ---
 
 export function entradaUnidad(ctx: ContextoCascada): string {
@@ -140,6 +193,18 @@ export function entradaDeck(unidad: PlanificacionUnidad, clase: ClasePlanificada
     `Unidad: ${unidad.unidad} (${unidad.asignatura} · ${unidad.nivel})`,
     `Clase a convertir en deck (JSON):`,
     JSON.stringify(clase),
+  ].join('\n');
+}
+
+/** Entrada para el PPT infantil: la planificación completa + el tramo de edad que fija el lenguaje. */
+export function entradaDeckInfantil(unidad: PlanificacionUnidad, tramo: '1-2' | '3-4' | '5-6'): string {
+  return [
+    `Unidad: ${unidad.unidad} (${unidad.asignatura} · ${unidad.nivel})`,
+    `Tramo de edad: ${tramo} básico`,
+    `Planificación de unidad (JSON):`,
+    JSON.stringify(unidad),
+    '',
+    'Genera los slides del PPT infantil para esta unidad, anclados a su propósito, experiencias, OA e indicadores.',
   ].join('\n');
 }
 
