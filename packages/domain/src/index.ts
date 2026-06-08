@@ -121,6 +121,11 @@ export {
   TipoCampo,
   OrigenCampo,
   FormatoPlantilla,
+  LayoutSeccion,
+  ColorHex,
+  TemaPlantilla,
+  TemaSeccion,
+  HeaderTema,
 } from './schemas/plantilla.js';
 export type {
   PlantillaPlanificacion,
@@ -129,6 +134,10 @@ export type {
   TipoCampoType,
   OrigenCampoType,
   FormatoPlantillaType,
+  LayoutSeccionType,
+  TemaPlantillaType,
+  TemaSeccionType,
+  HeaderTemaType,
 } from './schemas/plantilla.js';
 
 // --- Generación híbrida de la planificación (spec 02-planificacion §1.2, H-2.3) ---

@@ -4,22 +4,38 @@
   "nombre": "Planificación de Unidad",
   "establecimiento": "Escuela General José Alejandro Bernales D-114",
   "version": "1",
-  "_fuente": "docs/planificaciones-primera-unidad-primero-basico.pdf (Planificación de Unidad — denso). Estructura reconstruida fiel al PDF; etiquetas verbatim.",
+  "_fuente": "docs/planificaciones-primera-unidad-primero-basico.pdf + docs/images/format/ (Planificación de Unidad — denso, horizontal). Estructura y LOOK reconstruidos fieles al documento real; etiquetas verbatim.",
+  "tema": {
+    "orientacion": "horizontal",
+    "header": {
+      "izquierda": [
+        "Escuela José Alejandro Bernales D-114",
+        "Educación Parvularia – Enseñanza Básica",
+        "Unidad Técnico-Pedagógica",
+        "Conchalí"
+      ],
+      "centro": ["Jefa de Unidad Técnica Pedagógica", "Giannina Guzmán Guevara"],
+      "derecha": ["Servicio Local de Educación Pública", "LOS LIBERTADORES"]
+    },
+    "titulo": ["PLANIFICACIÓN DE UNIDAD"],
+    "tituloBanda": "C1E3F5",
+    "colorEtiqueta": "FFFFCC",
+    "colorCategoria": "DAE9F7"
+  },
   "secciones": [
     {
       "clave": "encabezado",
       "titulo": "Planificación de Unidad",
       "orden": 0,
       "campos": [
-        { "clave": "establecimiento", "etiqueta": "Establecimiento", "tipo": "encabezado", "requerido": true, "origen": "fijo", "orden": 0 },
-        { "clave": "unidad", "etiqueta": "Unidad", "tipo": "texto", "requerido": true, "origen": "input", "orden": 1 },
-        { "clave": "docente", "etiqueta": "Docente", "tipo": "texto", "requerido": true, "origen": "input", "orden": 2 },
-        { "clave": "curso", "etiqueta": "Curso", "tipo": "texto", "requerido": true, "origen": "input", "orden": 3 },
-        { "clave": "asignatura", "etiqueta": "Asignatura", "tipo": "texto", "requerido": true, "origen": "input", "orden": 4 },
-        { "clave": "duracion_semanas", "etiqueta": "Duración (semanas)", "tipo": "numero", "requerido": false, "origen": "input", "orden": 5 },
-        { "clave": "horas_pedagogicas", "etiqueta": "Horas Pedagógicas", "tipo": "numero", "requerido": false, "origen": "input", "orden": 6 },
-        { "clave": "fecha_inicio", "etiqueta": "Fecha de Inicio", "tipo": "fecha", "requerido": false, "origen": "input", "orden": 7 },
-        { "clave": "fecha_termino", "etiqueta": "Fecha de término", "tipo": "fecha", "requerido": false, "origen": "input", "orden": 8 }
+        { "clave": "docente", "etiqueta": "Docente", "tipo": "texto", "requerido": true, "origen": "input", "orden": 1 },
+        { "clave": "curso", "etiqueta": "Curso", "tipo": "texto", "requerido": true, "origen": "input", "orden": 2 },
+        { "clave": "asignatura", "etiqueta": "Asignatura", "tipo": "texto", "requerido": true, "origen": "input", "orden": 3 },
+        { "clave": "duracion_semanas", "etiqueta": "Duración (semanas)", "tipo": "numero", "requerido": false, "origen": "input", "orden": 4 },
+        { "clave": "horas_pedagogicas", "etiqueta": "Horas Pedagógicas", "tipo": "numero", "requerido": false, "origen": "input", "orden": 5 },
+        { "clave": "fecha_inicio", "etiqueta": "Fecha de Inicio", "tipo": "fecha", "requerido": false, "origen": "input", "orden": 6 },
+        { "clave": "fecha_termino", "etiqueta": "Fecha de término", "tipo": "fecha", "requerido": false, "origen": "input", "orden": 7 },
+        { "clave": "unidad", "etiqueta": "Unidad", "tipo": "texto", "requerido": true, "origen": "input", "orden": 8 }
       ]
     },
     {
@@ -43,6 +59,7 @@
       "titulo": "Diversificación de la Enseñanza",
       "orden": 3,
       "layout": "matriz",
+      "tema": { "banda": "FFFFCC", "cabecera": "DAE9F7" },
       "campos": [
         { "clave": "metodologias_activas", "etiqueta": "Metodologías Activas", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "metodologias_activas", "orden": 0 },
         { "clave": "estrategias_ensenanza", "etiqueta": "Estrategias de Enseñanza para el Logro de Aprendizajes Profundos", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "estrategias_ensenanza", "orden": 1 },
@@ -53,8 +70,9 @@
     },
     {
       "clave": "objetivos_aprendizaje",
-      "titulo": "Objetivos de Aprendizaje",
+      "titulo": "Objetivos de Aprendizajes",
       "orden": 4,
+      "tema": { "banda": "FFFFCC" },
       "campos": [
         { "clave": "objetivos_aprendizaje", "etiqueta": "Objetivos de Aprendizaje (Basal · Complementario · Transversal)", "tipo": "tabla_oa", "requerido": true, "origen": "fijo", "orden": 0 }
       ]

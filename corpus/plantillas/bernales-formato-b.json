@@ -4,14 +4,21 @@
   "nombre": "Bloque de Actividades",
   "establecimiento": "Escuela General José Alejandro Bernales D-114",
   "version": "1",
-  "_fuente": "docs/planificaciones-primera-unidad-tercero-basico.pdf (Bloque de Actividades — DUA). Estructura reconstruida fiel al PDF; etiquetas verbatim.",
+  "_fuente": "docs/planificaciones-primera-unidad-tercero-basico.pdf + docs/images/ (Bloque de Actividades — DUA, vertical). Estructura y LOOK reconstruidos fieles al documento real; etiquetas verbatim.",
+  "tema": {
+    "orientacion": "vertical",
+    "header": {
+      "centro": ["ESCUELA GENERAL JOSÉ ALEJANDRO BERNALES D- 114", "UNIDAD TÉCNICA PEDAGÓGICA"],
+      "bandaColor": "612322"
+    },
+    "titulo": ["PLANIFICACIÓN", "BLOQUE DE ACTIVIDADES"]
+  },
   "secciones": [
     {
       "clave": "encabezado",
       "titulo": "Bloque de Actividades",
       "orden": 0,
       "campos": [
-        { "clave": "establecimiento", "etiqueta": "Establecimiento", "tipo": "encabezado", "requerido": true, "origen": "fijo", "orden": 0 },
         { "clave": "docente", "etiqueta": "Docente", "tipo": "texto", "requerido": true, "origen": "input", "orden": 1 },
         { "clave": "curso", "etiqueta": "Curso", "tipo": "texto", "requerido": true, "origen": "input", "orden": 2 },
         { "clave": "asignatura", "etiqueta": "Asignatura", "tipo": "texto", "requerido": true, "origen": "input", "orden": 3 },
@@ -23,6 +30,7 @@
       "clave": "principios_dua",
       "titulo": "Principios DUA",
       "orden": 1,
+      "layout": "lista_en_linea",
       "campos": [
         { "clave": "principios_dua", "etiqueta": "Principios DUA", "tipo": "checkbox_set", "requerido": true, "origen": "fijo", "catalogo": "principios_dua", "orden": 0 }
       ]
@@ -31,6 +39,7 @@
       "clave": "objetivos_aprendizaje",
       "titulo": "Objetivos de Aprendizaje Priorizados",
       "orden": 2,
+      "tema": { "cabecera": "F8CBAD" },
       "campos": [
         { "clave": "objetivos_aprendizaje", "etiqueta": "Objetivo de Aprendizaje Priorizado · Habilidades · Experiencias de Aprendizaje/Actividades · Evaluación", "tipo": "tabla_oa", "requerido": true, "origen": "fijo", "orden": 0 }
       ]
