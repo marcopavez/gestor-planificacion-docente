@@ -4,4 +4,17 @@
 
 export { PptxExportAdapter } from './pptx/PptxExportAdapter.js';
 
-// TODO RF-2.17 (H-2.10): DocxExportAdapter (prueba/planificación) + plantillas configurables.
+// --- Export de la Planificación de Unidad a .docx (H-2.5) ---
+export { DocxExportAdapter, construirDocumento, MIME_DOCX } from './docx/DocxExportAdapter.js';
+export { planoDocumento } from './docx/plano.js';
+export type { DocumentoPlano, SeccionPlano, BloquePlano, OpcionCheck } from './docx/plano.js';
+
+// --- Export a .pdf (H-2.6): .docx → PDF vía LibreOffice headless ---
+export {
+  PdfExportAdapter,
+  MotorPdfNoDisponibleError,
+  MIME_PDF,
+  resolverSofficeBin,
+  construirComandoSoffice,
+  rutaPdfEsperada,
+} from './docx/PdfExportAdapter.js';

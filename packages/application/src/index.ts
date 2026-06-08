@@ -35,6 +35,24 @@ export type {
   ResultadoProcesarTrabajo,
 } from './aula/ProcesarTrabajoCascadaUseCase.js';
 
+// --- Generación híbrida de la Planificación de Unidad (H-2.3, spec 02-planificacion §1.2) ---
+export { GenerarPlanificacionUseCase } from './planificacion/GenerarPlanificacionUseCase.js';
+export {
+  GeneracionPlanificacionError,
+  PlantillaNoConfiguradaError,
+  OaInexistenteError,
+} from './planificacion/GenerarPlanificacionUseCase.js';
+export type {
+  DependenciasGenerarPlanificacion,
+  MetaPlanificacion,
+  ResultadoGenerarPlanificacion,
+} from './planificacion/GenerarPlanificacionUseCase.js';
+export { ProcesarTrabajoPlanificacionUseCase } from './planificacion/ProcesarTrabajoPlanificacionUseCase.js';
+export type {
+  DependenciasProcesarPlanificacion,
+  ResultadoProcesarPlanificacion,
+} from './planificacion/ProcesarTrabajoPlanificacionUseCase.js';
+
 // --- CRUD de PlanificacionAnual (H-PA.5) ---
 export { CrearPlanificacionAnualUseCase } from './planificacion/CrearPlanificacionAnualUseCase.js';
 export type { ResultadoCrearPlan } from './planificacion/CrearPlanificacionAnualUseCase.js';

@@ -25,6 +25,7 @@ export type {
   EmbeddingsPort,
   EstadoJob,
   ExportPort,
+  ExportPlanificacionPort,
   JobRepository,
   LlmPort,
   NormaRepository,
@@ -37,6 +38,7 @@ export type {
   RetrievalPort,
   SalidaEstructurada,
   TrabajoCascada,
+  TrabajoPlanificacion,
   TrazaRepository,
   UnidadDeTrabajo,
   UsoTokens,
@@ -129,6 +131,18 @@ export type {
   FormatoPlantillaType,
 } from './schemas/plantilla.js';
 
+// --- Generación híbrida de la planificación (spec 02-planificacion §1.2, H-2.3) ---
+export {
+  SchemaPayloadPlanificacion,
+  SchemaSeleccionCheckboxes,
+  SchemaBorradorPlanificacionIa,
+} from './schemas/generarPlanificacion.js';
+export type {
+  PayloadPlanificacion,
+  SeleccionCheckboxes,
+  BorradorPlanificacionIa,
+} from './schemas/generarPlanificacion.js';
+
 // --- Planificación Anual (RF-PA.4 — §4.3 plan-fase-1) ---
 export { SchemaPlanificacionAnual, SchemaUnidadPlanificada } from './schemas/planificacionAnual.js';
 export type {
@@ -154,11 +168,13 @@ export {
   correrGatesCascada,
   pedagogicalGate,
   planificacionGate,
+  planificacionGateV2,
   secuenciaAnualGate,
 } from './gates/index.js';
 export type {
   EntradaCitationGate,
   EntradaGatesCascada,
+  EntradaPlanificacionGateV2,
   Hallazgo,
   OaCorpus,
   OaVigencia,
@@ -166,6 +182,15 @@ export type {
   ResultadoGate,
   Severidad,
 } from './gates/index.js';
+
+// --- Proyección plantilla→plan (data-driven; compartida por gate v2 y export — H-2.4/H-2.5) ---
+export {
+  valorEscalarCampo,
+  seleccionCheckbox,
+  listaCampo,
+  oaCampo,
+  campoTieneContenido,
+} from './planificacion/proyeccion.js';
 
 // --- HIL: máquina de estados de revisión (RF-PA.11, INV-2, INV-3) ---
 // EstadoRevision ya se exporta desde entities/index.js (mismo tipo canónico).
