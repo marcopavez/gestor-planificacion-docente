@@ -38,6 +38,7 @@ function filaADominio(row: OaRow): ObjetivoAprendizaje {
     asignatura: row.asignatura,
     nivel: row.nivel,
     descripcion: row.descripcion,
+    eje: row.eje ?? undefined, // columna nullable → undefined cuando no hay eje
     indicadores,
     // date columns llegan como strings ISO 'YYYY-MM-DD' desde pg; convertimos a Date.
     vigenciaDesde: row.vigenciaDesde !== null ? new Date(row.vigenciaDesde) : null,

@@ -9,6 +9,7 @@ import type { ClaseDeck, Hallazgo, PlanificacionClase, PlanificacionUnidad, Repo
 interface OaItem {
   codigo: string;
   descripcion: string;
+  eje?: string;
 }
 interface Materia {
   id: string;
