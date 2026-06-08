@@ -22,8 +22,8 @@
         { "clave": "docente", "etiqueta": "Docente", "tipo": "texto", "requerido": true, "origen": "input", "orden": 1 },
         { "clave": "curso", "etiqueta": "Curso", "tipo": "texto", "requerido": true, "origen": "input", "orden": 2 },
         { "clave": "asignatura", "etiqueta": "Asignatura", "tipo": "texto", "requerido": true, "origen": "input", "orden": 3 },
-        { "clave": "unidad", "etiqueta": "Unidad", "tipo": "texto", "requerido": true, "origen": "input", "orden": 4 },
-        { "clave": "periodo", "etiqueta": "Período", "tipo": "texto", "requerido": true, "origen": "input", "orden": 5 }
+        { "clave": "periodo", "etiqueta": "Período", "tipo": "texto", "requerido": true, "origen": "input", "orden": 4 },
+        { "clave": "unidad", "etiqueta": "Unidad", "tipo": "texto", "requerido": true, "origen": "input", "orden": 5 }
       ]
     },
     {
@@ -39,6 +39,7 @@
       "clave": "objetivos_aprendizaje",
       "titulo": "Objetivos de Aprendizaje Priorizados",
       "orden": 2,
+      "ocultarTitulo": true,
       "tema": { "cabecera": "F8CBAD" },
       "campos": [
         { "clave": "objetivos_aprendizaje", "etiqueta": "Objetivo de Aprendizaje Priorizado · Habilidades · Experiencias de Aprendizaje/Actividades · Evaluación", "tipo": "tabla_oa", "requerido": true, "origen": "fijo", "orden": 0 }

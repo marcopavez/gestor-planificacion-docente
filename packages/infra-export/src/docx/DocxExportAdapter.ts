@@ -46,8 +46,9 @@ export const MIME_DOCX =
 const CHK = '☒';
 const UNCHK = '☐';
 
-// Bordes finos y completos (RF — "bordes de tabla finos y completos"). Gris medio, 0.5pt.
-const BORDE = { style: BorderStyle.SINGLE, size: 4, color: '808080' } as const;
+// Bordes finos y completos (RF — "bordes de tabla finos y completos"). Negro, 0.5pt: el documento
+// real lleva líneas negras, no grises (la fidelidad visual cala el LOOK del PDF Bernales).
+const BORDE = { style: BorderStyle.SINGLE, size: 4, color: '000000' } as const;
 const NADA = { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' } as const;
 const BORDES_TABLA = {
   top: BORDE,
@@ -117,6 +118,9 @@ export function construirDocumento(plano: DocumentoPlano): Document {
   const headers = conHeader ? { default: new Header({ children: headerInstitucional(tema.header!) }) } : undefined;
 
   return new Document({
+    // Fuente por defecto SANS (Arial): sin esto Word cae a Times New Roman (serif) y rompe el LOOK
+    // del documento real, que es sans. Aplica a todo el documento salvo runs que fijen otra fuente.
+    styles: { default: { document: { run: { font: 'Arial' } } } },
     sections: [
       {
         properties: {
@@ -201,10 +205,14 @@ function headerInstitucional(h: NonNullable<TemaPlano['header']>): Array<Paragra
       ? lineas.map((l, idx) => new Paragraph({ alignment, children: [new TextRun({ text: l, bold: idx === 0, size: 16 })] }))
       : [vacio()];
 
+  // La banda decorativa SOLO se dibuja si la plantilla define un color (granate en el Formato B);
+  // el Formato A no la trae, así que no se inventa una regla negra que el documento real no tiene.
+  const banda = h.bandaColor !== undefined ? [bandaDecorativa(h.bandaColor)] : [];
+
   // Membrete de un solo bloque (Formato B: el nombre del colegio centrado a todo el ancho): si no hay
   // bloques laterales, se evita la tabla de 3 columnas (que estrecharía el texto y lo haría partir feo).
   if (h.izquierda.length === 0 && h.derecha.length === 0) {
-    return [...bloque(h.centro, AlignmentType.CENTER), bandaDecorativa(h.bandaColor)];
+    return [...bloque(h.centro, AlignmentType.CENTER), ...banda];
   }
 
   const fila3 = new TableRow({
@@ -215,14 +223,14 @@ function headerInstitucional(h: NonNullable<TemaPlano['header']>): Array<Paragra
     ],
   });
   const tabla = new Table({ rows: [fila3], width: { size: 100, type: WidthType.PERCENTAGE }, borders: SIN_BORDES });
-  return [tabla, bandaDecorativa(h.bandaColor)];
+  return [tabla, ...banda];
 }
 
 /** Banda decorativa bajo el membrete: doble regla del color institucional (granate en el Formato B). */
-function bandaDecorativa(color?: string): Paragraph {
+function bandaDecorativa(color: string): Paragraph {
   return new Paragraph({
     spacing: { before: 20, after: 40 },
-    border: { bottom: { style: BorderStyle.DOUBLE, size: 12, color: color ?? '000000', space: 1 } },
+    border: { bottom: { style: BorderStyle.DOUBLE, size: 12, color, space: 1 } },
     children: [new TextRun({ text: '', size: 4 })],
   });
 }
@@ -269,7 +277,7 @@ function renderBloque(b: BloquePlano, ctx: CtxRender): Array<Paragraph | Table> 
       return [new Paragraph({ children: [new TextRun(b.texto.length > 0 ? b.texto : '—')] })];
     case 'lista':
       return b.items.length > 0
-        ? b.items.map((t) => new Paragraph({ text: t, bullet: { level: 0 } }))
+        ? b.items.map((t) => new Paragraph({ text: sinVinetaInicial(t), bullet: { level: 0 } }))
         : [new Paragraph({ children: [new TextRun('—')] })];
     case 'lista_en_linea':
       return [listaEnLinea(b.items)];
@@ -288,7 +296,7 @@ function renderBloque(b: BloquePlano, ctx: CtxRender): Array<Paragraph | Table> 
       return [
         tabla([
           fila(b.columnas.map((c) => celda(parrafosTexto(c.titulo, true, AlignmentType.CENTER), { fill: ctx.cabeceraColor, ancho }))),
-          fila(b.columnas.map((c) => celda(c.opciones.map((o) => parrafoOpcion(o.etiqueta, o.marcado)), { ancho }))),
+          fila(b.columnas.map((c) => celda(c.opciones.map((o) => parrafoOpcion(o.etiqueta, o.marcado, o.abierto)), { ancho }))),
         ]),
       ];
     }
@@ -302,15 +310,29 @@ function renderBloque(b: BloquePlano, ctx: CtxRender): Array<Paragraph | Table> 
             fila([
               celda(parrafosTexto(g.categoria, true), { fill: ctx.colorCategoria, ancho: 18 }),
               celda(
-                g.oas.map(
-                  (oa) =>
-                    new Paragraph({
-                      spacing: { after: 80 },
-                      children: [new TextRun({ text: `${oa.codigo}: `, bold: true }), new TextRun({ text: oa.descripcion })],
-                    }),
-                ),
+                g.oas.flatMap((oa) => [
+                  new Paragraph({
+                    // Sin sub-viñetas, separa el OA del siguiente; con ellas, el detalle queda pegado.
+                    spacing: { after: oa.detalle.length > 0 ? 20 : 80 },
+                    children: [new TextRun({ text: `${oa.codigo}: `, bold: true }), new TextRun({ text: oa.descripcion })],
+                  }),
+                  ...subVinetasOa(oa.detalle),
+                ]),
                 { ancho: 82 },
               ),
+            ]),
+          ),
+        ),
+      ];
+    case 'tabla_etiquetada':
+      // Una fila por campo: celda-etiqueta (sombreada, negrita) a la izquierda; contenido a la derecha.
+      // La celda-etiqueta ES el rótulo del campo, así que el contenido NO vuelve a rotularse.
+      return [
+        tabla(
+          b.filas.map((f) =>
+            fila([
+              celda(parrafosTexto(f.etiqueta, true), { fill: ctx.colorEtiqueta, ancho: 22 }),
+              celda(renderContenidoEtiquetado(f.contenido, ctx), { ancho: 78 }),
             ]),
           ),
         ),
@@ -327,18 +349,34 @@ function renderBloque(b: BloquePlano, ctx: CtxRender): Array<Paragraph | Table> 
           ...b.filas.map((f) =>
             fila([
               celda(
-                [new Paragraph({ children: [new TextRun({ text: `${f.codigo} `, bold: true }), new TextRun({ text: f.descripcion })] })],
+                [
+                  new Paragraph({ children: [new TextRun({ text: `${f.codigo} `, bold: true }), new TextRun({ text: f.descripcion })] }),
+                  ...subVinetasOa(f.detalle),
+                ],
                 { ancho: 26 },
               ),
               celda(parrafosDash(f.habilidades), { ancho: 14 }),
               // Experiencias a nivel de bloque: van en la 1ª fila; el resto en blanco (no '—').
               celda(parrafosLista(f.experiencias, ''), { ancho: 46 }),
-              celda(parrafosLista(f.evaluacion, ''), { ancho: 14 }),
+              // Evaluación en TEXTO PLANO (sin viñetas): el documento real no la presenta como lista.
+              celda(parrafosTextoPlano(f.evaluacion, ''), { ancho: 14 }),
             ]),
           ),
         ]),
       ];
   }
+}
+
+/**
+ * Render del contenido de una fila 'tabla_etiquetada' (la celda derecha). Reusa `renderBloque`, salvo
+ * para 'checkbox': ahí la celda-etiqueta ya rotula el campo, así que se emite SOLO la grilla de opciones
+ * (sin el banner de título, que duplicaría el rótulo).
+ */
+function renderContenidoEtiquetado(contenido: BloquePlano, ctx: CtxRender): Array<Paragraph | Table> {
+  if (contenido.tipo === 'checkbox') {
+    return [grillaOpciones(contenido.opciones, ctx.landscape ? 4 : 3)];
+  }
+  return renderBloque(contenido, ctx);
 }
 
 // --- helpers de docx ---
@@ -367,12 +405,15 @@ function grillaCampos(filas: ReadonlyArray<{ etiqueta: string; valor: string }>,
 }
 
 /** Opciones de checkbox en una grilla SIN bordes de `cols` columnas (compacta — p. ej. Recursos). */
-function grillaOpciones(opciones: ReadonlyArray<{ etiqueta: string; marcado: boolean }>, cols: number): Table {
+function grillaOpciones(
+  opciones: ReadonlyArray<{ etiqueta: string; marcado: boolean; abierto?: boolean }>,
+  cols: number,
+): Table {
   const ancho = Math.floor(100 / cols);
   const rows: TableRow[] = [];
   for (let i = 0; i < opciones.length; i += cols) {
     const grupo = opciones.slice(i, i + cols);
-    const cells = grupo.map((o) => celda([parrafoOpcion(o.etiqueta, o.marcado)], { ancho }));
+    const cells = grupo.map((o) => celda([parrafoOpcion(o.etiqueta, o.marcado, o.abierto)], { ancho }));
     while (cells.length < cols) cells.push(celda([vacio()], { ancho }));
     rows.push(fila(cells));
   }
@@ -392,8 +433,10 @@ function listaEnLinea(items: readonly string[]): Paragraph {
   return new Paragraph({ spacing: { after: 80 }, children: runs });
 }
 
-function parrafoOpcion(etiqueta: string, marcado: boolean): Paragraph {
-  return new Paragraph({ children: [new TextRun(`${marcado ? CHK : UNCHK} ${etiqueta}`)] });
+function parrafoOpcion(etiqueta: string, marcado: boolean, abierto = false): Paragraph {
+  // Opción de texto libre ("Otro"/"Otros"): se añade una línea para que el docente escriba a mano.
+  const texto = abierto ? `${marcado ? CHK : UNCHK} ${etiqueta}: ____` : `${marcado ? CHK : UNCHK} ${etiqueta}`;
+  return new Paragraph({ children: [new TextRun(texto)] });
 }
 
 function parrafosTexto(
@@ -412,14 +455,36 @@ function parrafosDash(items: readonly string[]): Paragraph[] {
 
 function parrafosLista(items: readonly string[], placeholderVacio = '—'): Paragraph[] {
   if (items.length === 0) return [new Paragraph({ children: [new TextRun(placeholderVacio)] })];
-  return items.map((t) => new Paragraph({ text: t, bullet: { level: 0 } }));
+  // Quita un marcador inicial del texto antes de añadir la viñeta (evita el doble "● -texto").
+  return items.map((t) => new Paragraph({ text: sinVinetaInicial(t), bullet: { level: 0 } }));
+}
+
+/** Párrafos en TEXTO PLANO (sin viñeta): la columna "Evaluación" del Formato B no lleva bullets. */
+function parrafosTextoPlano(items: readonly string[], placeholderVacio = '—'): Paragraph[] {
+  if (items.length === 0) return [new Paragraph({ children: [new TextRun(placeholderVacio)] })];
+  return items.map((t) => new Paragraph({ children: [new TextRun(t)] }));
+}
+
+/** Quita un marcador de lista inicial ('- ', '– ', '• ') para no duplicarlo con la viñeta del párrafo. */
+function sinVinetaInicial(texto: string): string {
+  return texto.replace(/^\s*[-–•]\s+/, '');
+}
+
+/** Sub-viñetas oficiales del OA (su `detalle`): sangradas un nivel bajo la descripción del OA. */
+function subVinetasOa(detalle: readonly string[]): Paragraph[] {
+  return detalle.map(
+    (d) => new Paragraph({ text: sinVinetaInicial(d), bullet: { level: 1 }, spacing: { after: 20 } }),
+  );
 }
 
 function vacio(): Paragraph {
   return new Paragraph({ children: [new TextRun('')] });
 }
 
-function celda(children: Paragraph[], opc: { fill?: string; ancho?: number; colSpan?: number } = {}): TableCell {
+function celda(
+  children: Array<Paragraph | Table>,
+  opc: { fill?: string; ancho?: number; colSpan?: number } = {},
+): TableCell {
   return new TableCell({
     children,
     verticalAlign: VerticalAlign.TOP,

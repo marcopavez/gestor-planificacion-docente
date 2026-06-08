@@ -54,7 +54,7 @@ function plan(over: Partial<PlanificacionUnidad> = {}): PlanificacionUnidad {
     asignatura: 'Matemática',
     nivel: '1º básico',
     unidad: 'Unidad 1',
-    oa: [{ codigo: 'MA01 OA 03', categoria: 'basal', descripcion: 'Leer números hasta el 20.', habilidades: [] }],
+    oa: [{ codigo: 'MA01 OA 03', categoria: 'basal', descripcion: 'Leer números hasta el 20.', detalle: [], habilidades: [] }],
     experiencias: ['Cuentan colecciones de objetos.'],
     indicadores_evaluacion: [{ oa: 'MA01 OA 03', texto: 'Leen números del 0 al 20.', fuente: 'ia_borrador' }],
     evaluacion: { tipo: [], instrumentos: [] },
@@ -81,7 +81,7 @@ describe('planificacionGateV2 (H-2.4)', () => {
 
   it('(b) bloquea si un OA referenciado no existe en el corpus (CA-2.4)', () => {
     const r = planificacionGateV2({
-      plan: plan({ oa: [{ codigo: 'MA01 OA 99', categoria: 'basal', descripcion: 'inexistente', habilidades: [] }] }),
+      plan: plan({ oa: [{ codigo: 'MA01 OA 99', categoria: 'basal', descripcion: 'inexistente', detalle: [], habilidades: [] }] }),
       plantilla: plantilla(),
       oaCodigosCorpus: CORPUS,
       catalogos: catalogosFull(),

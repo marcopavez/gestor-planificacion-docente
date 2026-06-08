@@ -150,6 +150,7 @@ function mapearADominio(
     nivel,
     descripcion: oa.descripcion,
     eje: oa.eje ?? undefined,
+    detalle: oa.detalle ?? [],
     indicadores: oa.indicadores,
     vigenciaDesde: null,
     vigenciaHasta: null,

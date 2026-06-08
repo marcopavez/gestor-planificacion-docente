@@ -19,8 +19,8 @@ function unidad(): PlanificacionUnidad {
     duracion_semanas: 1,
     horas_pedagogicas: 2, // 2 × 45 = 90 min → coherente con 1 clase de 90 min
     oa: [
-      { codigo: 'MA01 OA 03', categoria: 'basal', descripcion: 'Leer números del 0 al 20.', habilidades: ['Representar'] },
-      { codigo: 'MA01 OA 04', categoria: 'basal', descripcion: 'Comparar y ordenar números del 0 al 20.', habilidades: [] },
+      { codigo: 'MA01 OA 03', categoria: 'basal', descripcion: 'Leer números del 0 al 20.', detalle: [], habilidades: ['Representar'] },
+      { codigo: 'MA01 OA 04', categoria: 'basal', descripcion: 'Comparar y ordenar números del 0 al 20.', detalle: [], habilidades: [] },
     ],
     experiencias: ['Cuentan colecciones.'],
     indicadores_evaluacion: [
@@ -169,7 +169,7 @@ describe('gates deterministas de la cascada (H-0.7)', () => {
 
   it('citationGate bloquea un OA citado inexistente en el corpus', () => {
     const u = unidad();
-    u.oa.push({ codigo: 'MA01 OA 77', categoria: 'complementario', descripcion: 'OA inventado.', habilidades: [] });
+    u.oa.push({ codigo: 'MA01 OA 77', categoria: 'complementario', descripcion: 'OA inventado.', detalle: [], habilidades: [] });
     const r = citationGate({ unidad: u, clase: clase(), prueba: prueba(), deck: deck(), corpus });
     expect(r.ok).toBe(false);
     expect(r.hallazgos.some((h) => h.regla === 'oa_existe' && h.ref === 'MA01 OA 77')).toBe(true);
@@ -189,7 +189,7 @@ describe('gates deterministas de la cascada (H-0.7)', () => {
 
   it('citationGate solo marca (no bloquea) los OAT transversales', () => {
     const u = unidad();
-    u.oa.push({ codigo: 'OAT 9', categoria: 'transversal', descripcion: 'Resolver problemas reflexivamente.', habilidades: [] });
+    u.oa.push({ codigo: 'OAT 9', categoria: 'transversal', descripcion: 'Resolver problemas reflexivamente.', detalle: [], habilidades: [] });
     const r = citationGate({ unidad: u, clase: clase(), prueba: prueba(), deck: deck(), corpus });
     expect(r.ok).toBe(true);
     expect(r.hallazgos.some((h) => h.regla === 'oa_transversal' && h.severidad === 'marca')).toBe(true);

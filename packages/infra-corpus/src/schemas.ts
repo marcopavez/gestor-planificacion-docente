@@ -2,8 +2,10 @@
 // Zod del corpus file-based REAL (corpus/curriculum/*.json + _manifest.json).
 // OJO: la clave del array de OA en los archivos reales es `objetivos_aprendizaje` (NO `oa`);
 // la spec Fase 1 §4.2 quedó desincronizada. Esta es la forma autoritativa (la del disco).
-// z.object() descarta claves desconocidas (numero, detalle, fuente, vigencia, ejes, _fuente…):
+// z.object() descarta claves desconocidas (numero, fuente, vigencia, ejes, _fuente…):
 // solo modelamos lo que el repositorio necesita; lo demás es metadato de procedencia.
+// `detalle` SÍ se modela: son las sub-viñetas oficiales del OA (el corpus de Lenguaje las trae) y
+// el documento real las sangra bajo la descripción — antes se perdían al descartarlas aquí.
 
 import { z } from 'zod';
 
@@ -21,6 +23,11 @@ export const OaCorpusSchema = z.object({
   // En el corpus real `eje` aparece como string, ausente o explícitamente null → toleramos los tres.
   eje: z.string().nullish(),
   indicadores: z
+    .array(z.string())
+    .nullish()
+    .transform((v) => v ?? []),
+  // Sub-viñetas oficiales del OA (texto fijo del currículum); ausente/null en la mayoría de bloques.
+  detalle: z
     .array(z.string())
     .nullish()
     .transform((v) => v ?? []),

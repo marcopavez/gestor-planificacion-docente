@@ -12,6 +12,8 @@ export const OaReferenciado = z.object({
   // 'priorizado' = Formato B (DUA); basal/complementario/transversal = Formato A.
   categoria: z.enum(['basal', 'complementario', 'transversal', 'priorizado']),
   descripcion: z.string(),
+  // Sub-viñetas oficiales del OA (texto fijo del currículum); el documento real las sangra bajo la descripción.
+  detalle: z.array(z.string()).default([]),
   habilidades: z.array(z.string()).default([]),
 });
 

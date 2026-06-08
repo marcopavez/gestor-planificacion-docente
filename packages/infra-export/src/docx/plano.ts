@@ -23,6 +23,8 @@ import { listaCampo, seleccionCheckbox, valorEscalarCampo } from '@faro/domain';
 export interface OpcionCheck {
   readonly etiqueta: string;
   readonly marcado: boolean;
+  // Opción de texto libre del catálogo ("Otro"/"Otros"): se renderiza con una línea para escribir.
+  readonly abierto?: boolean;
 }
 
 /** Bloque de contenido renderizable; discriminado por `tipo`. */
@@ -39,11 +41,12 @@ export type BloquePlano =
     }
   // Formato A: OA agrupados por categoría (Basal/Complementario/Transversal). Cada grupo es una fila
   // con la categoría a la izquierda (celda alta, sombreada) y la lista "OAxx: descripción" a la derecha.
+  // `detalle` = sub-viñetas oficiales del OA (texto fijo del currículum), sangradas bajo la descripción.
   | {
       readonly tipo: 'tabla_oa_a';
       readonly grupos: ReadonlyArray<{
         categoria: string;
-        oas: ReadonlyArray<{ codigo: string; descripcion: string }>;
+        oas: ReadonlyArray<{ codigo: string; descripcion: string; detalle: readonly string[] }>;
       }>;
     }
   // Formato B: una fila por OA — columnas [OA Priorizado, Habilidades, Experiencias, Evaluación].
@@ -52,10 +55,18 @@ export type BloquePlano =
       readonly filas: ReadonlyArray<{
         codigo: string; // forma corta (OA3), para mostrar en negrita junto a la descripción
         descripcion: string;
+        detalle: readonly string[]; // sub-viñetas oficiales del OA, sangradas bajo la descripción
         habilidades: readonly string[];
         experiencias: readonly string[];
         evaluacion: readonly string[];
       }>;
+    }
+  // Tabla de celdas-etiqueta (layout 'tabla_etiquetada' del Formato A): UNA fila por campo, con la
+  // etiqueta del campo en la celda izquierda (sombreada, negrita) y su contenido en la derecha. La
+  // celda-etiqueta ES el rótulo del campo (no se duplica el banner crema apilado del PDF real).
+  | {
+      readonly tipo: 'tabla_etiquetada';
+      readonly filas: ReadonlyArray<{ etiqueta: string; contenido: BloquePlano }>;
     };
 
 export interface SeccionPlano {
@@ -116,16 +127,20 @@ export function planoDocumento(
   const secciones = [...plantilla.secciones]
     .sort((a, b) => a.orden - b.orden)
     .map((seccion) => bloquesDeSeccion(plan, plantilla, seccion, catalogos));
-  return { titulo: plantilla.nombre, tema: temaDocumento(plantilla), secciones };
+  return { titulo: plantilla.nombre, tema: temaDocumento(plan, plantilla), secciones };
 }
 
 /** Resuelve el tema con sus defaults (sin `tema` → vertical, sin membrete, título = nombre). */
-function temaDocumento(plantilla: PlantillaPlanificacion): TemaPlano {
+function temaDocumento(plan: PlanificacionUnidad, plantilla: PlantillaPlanificacion): TemaPlano {
   const t = plantilla.tema;
+  const tituloBase = t?.titulo ?? [plantilla.nombre];
+  // El Formato A añade el nombre de la unidad como línea extra del título (data-driven); el B no.
+  const titulo =
+    t?.incluirUnidadEnTitulo === true && plan.unidad.length > 0 ? [...tituloBase, plan.unidad] : tituloBase;
   return {
     orientacion: t?.orientacion ?? 'vertical',
     ...(t?.header !== undefined ? { header: t.header } : {}),
-    titulo: t?.titulo ?? [plantilla.nombre],
+    titulo,
     ...(t?.tituloBanda !== undefined ? { tituloBanda: t.tituloBanda } : {}),
     ...(t?.colorEtiqueta !== undefined ? { colorEtiqueta: t.colorEtiqueta } : {}),
     ...(t?.colorCategoria !== undefined ? { colorCategoria: t.colorCategoria } : {}),
@@ -139,6 +154,14 @@ function bloquesDeSeccion(
   catalogos: CatalogosPlanificacion,
 ): SeccionPlano {
   const campos = [...seccion.campos].sort((a, b) => a.orden - b.orden);
+
+  // Layout 'tabla_etiquetada': UNA fila por campo (etiqueta del campo + su contenido). No se agrupan
+  // campos consecutivos; la celda-etiqueta ES el rótulo (se oculta el título de sección — ocultarTitulo).
+  if (seccion.layout === 'tabla_etiquetada') {
+    const filas = campos.map((c) => ({ etiqueta: c.etiqueta, contenido: contenidoDeCampo(plan, c, catalogos) }));
+    return seccionPlano(seccion, plantilla, [{ tipo: 'tabla_etiquetada', filas }]);
+  }
+
   const bloques: BloquePlano[] = [];
 
   let i = 0;
@@ -207,14 +230,44 @@ function bloquesDeSeccion(
     i++; // tipo no renderizable: lo saltamos sin romper el orden
   }
 
+  return seccionPlano(seccion, plantilla, bloques);
+}
+
+/** Ensambla el `SeccionPlano` con su LOOK y la regla de visibilidad del título (ocultarTitulo). */
+function seccionPlano(
+  seccion: SeccionPlantillaType,
+  plantilla: PlantillaPlanificacion,
+  bloques: BloquePlano[],
+): SeccionPlano {
   return {
     clave: seccion.clave,
     titulo: seccion.titulo,
-    mostrarTitulo: seccion.titulo !== plantilla.nombre,
+    // ocultarTitulo fuerza ocultar (celda-etiqueta ya rotula; o subtítulo que el PDF real no trae).
+    mostrarTitulo: seccion.ocultarTitulo !== true && seccion.titulo !== plantilla.nombre,
     ...(seccion.tema?.banda !== undefined ? { bandaColor: seccion.tema.banda } : {}),
     ...(seccion.tema?.cabecera !== undefined ? { cabeceraColor: seccion.tema.cabecera } : {}),
     bloques,
   };
+}
+
+/**
+ * BloquePlano de UN campo según su tipo (lo que ese campo produciría apilado): el contenido de cada
+ * fila de una sección 'tabla_etiquetada'. texto_largo→parrafo, checkbox_set→checkbox, lista→lista.
+ */
+function contenidoDeCampo(
+  plan: PlanificacionUnidad,
+  campo: CampoPlantillaType,
+  catalogos: CatalogosPlanificacion,
+): BloquePlano {
+  switch (campo.tipo) {
+    case 'checkbox_set':
+      return { tipo: 'checkbox', titulo: campo.etiqueta, opciones: opcionesCheck(plan, campo, catalogos) };
+    case 'lista':
+      return { tipo: 'lista', items: listaCampo(plan, campo) };
+    default:
+      // texto_largo / escalares: párrafo simple (en una celda-etiqueta no se vuelve a sombrear).
+      return { tipo: 'parrafo', texto: formatearEscalar(valorEscalarCampo(plan, campo.clave)) };
+  }
 }
 
 function opcionesCheck(
@@ -227,6 +280,7 @@ function opcionesCheck(
   return catalogos[campo.catalogo as ClaveCatalogo].map((o) => ({
     etiqueta: o.etiqueta,
     marcado: marcadas.has(o.etiqueta),
+    ...(o.abierto === true ? { abierto: true } : {}),
   }));
 }
 
@@ -235,11 +289,14 @@ function tablaOaA(plan: PlanificacionUnidad): BloquePlano {
   // fila: la categoría a la izquierda (celda alta) y sus OA apilados a la derecha — calca el PDF real
   // (no hay líneas entre los OA de una misma categoría).
   const orden = [...plan.oa].sort((a, b) => indiceCategoria(a.categoria) - indiceCategoria(b.categoria));
-  const grupos: Array<{ categoria: string; oas: Array<{ codigo: string; descripcion: string }> }> = [];
+  const grupos: Array<{
+    categoria: string;
+    oas: Array<{ codigo: string; descripcion: string; detalle: readonly string[] }>;
+  }> = [];
   for (const oa of orden) {
     const etiqueta = ETIQUETA_CATEGORIA[oa.categoria] ?? oa.categoria;
     const ultimo = grupos[grupos.length - 1];
-    const fila = { codigo: codigoCorto(oa.codigo), descripcion: oa.descripcion };
+    const fila = { codigo: codigoCorto(oa.codigo), descripcion: oa.descripcion, detalle: oa.detalle ?? [] };
     if (ultimo !== undefined && ultimo.categoria === etiqueta) ultimo.oas.push(fila);
     else grupos.push({ categoria: etiqueta, oas: [fila] });
   }
@@ -257,6 +314,7 @@ function tablaOaB(plan: PlanificacionUnidad): BloquePlano {
     filas: plan.oa.map((o, idx) => ({
       codigo: codigoCorto(o.codigo),
       descripcion: o.descripcion,
+      detalle: o.detalle ?? [],
       habilidades: o.habilidades,
       experiencias: idx === 0 ? plan.experiencias : [],
       evaluacion,

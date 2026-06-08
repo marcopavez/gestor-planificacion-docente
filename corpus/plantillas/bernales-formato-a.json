@@ -20,7 +20,8 @@
     "titulo": ["PLANIFICACIÓN DE UNIDAD"],
     "tituloBanda": "C1E3F5",
     "colorEtiqueta": "FFFFCC",
-    "colorCategoria": "DAE9F7"
+    "colorCategoria": "DAE9F7",
+    "incluirUnidadEnTitulo": true
   },
   "secciones": [
     {
@@ -34,24 +35,27 @@
         { "clave": "duracion_semanas", "etiqueta": "Duración (semanas)", "tipo": "numero", "requerido": false, "origen": "input", "orden": 4 },
         { "clave": "horas_pedagogicas", "etiqueta": "Horas Pedagógicas", "tipo": "numero", "requerido": false, "origen": "input", "orden": 5 },
         { "clave": "fecha_inicio", "etiqueta": "Fecha de Inicio", "tipo": "fecha", "requerido": false, "origen": "input", "orden": 6 },
-        { "clave": "fecha_termino", "etiqueta": "Fecha de término", "tipo": "fecha", "requerido": false, "origen": "input", "orden": 7 },
-        { "clave": "unidad", "etiqueta": "Unidad", "tipo": "texto", "requerido": true, "origen": "input", "orden": 8 }
+        { "clave": "fecha_termino", "etiqueta": "Fecha de término", "tipo": "fecha", "requerido": false, "origen": "input", "orden": 7 }
       ]
     },
     {
       "clave": "proposito",
       "titulo": "Propósito de la unidad",
       "orden": 1,
+      "layout": "tabla_etiquetada",
+      "ocultarTitulo": true,
       "campos": [
-        { "clave": "proposito", "etiqueta": "¿Para qué aprenderán estos contenidos, habilidades y actitudes los estudiantes?", "tipo": "texto_largo", "requerido": false, "origen": "ia", "orden": 0 }
+        { "clave": "proposito", "etiqueta": "PROPÓSITO DE LA UNIDAD", "tipo": "texto_largo", "requerido": false, "origen": "ia", "orden": 0 }
       ]
     },
     {
       "clave": "habilidades_siglo_xxi",
       "titulo": "Habilidades del Siglo XXI",
       "orden": 2,
+      "layout": "tabla_etiquetada",
+      "ocultarTitulo": true,
       "campos": [
-        { "clave": "habilidades_siglo_xxi", "etiqueta": "Habilidades del Siglo XXI", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "habilidades_siglo_xxi", "orden": 0 }
+        { "clave": "habilidades_siglo_xxi", "etiqueta": "HABILIDADES DEL SIGLO XXI", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "habilidades_siglo_xxi", "orden": 0 }
       ]
     },
     {
@@ -61,11 +65,11 @@
       "layout": "matriz",
       "tema": { "banda": "FFFFCC", "cabecera": "DAE9F7" },
       "campos": [
-        { "clave": "metodologias_activas", "etiqueta": "Metodologías Activas", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "metodologias_activas", "orden": 0 },
-        { "clave": "estrategias_ensenanza", "etiqueta": "Estrategias de Enseñanza para el Logro de Aprendizajes Profundos", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "estrategias_ensenanza", "orden": 1 },
-        { "clave": "micropracticas", "etiqueta": "Microprácticas", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "micropracticas", "orden": 2 },
-        { "clave": "estrategias_eval_formativa", "etiqueta": "Estrategias de Evaluación Formativa", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "estrategias_eval_formativa", "orden": 3 },
-        { "clave": "estrategias_eval_sumativa", "etiqueta": "Estrategias de Evaluación Sumativa", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "estrategias_eval_sumativa", "orden": 4 }
+        { "clave": "metodologias_activas", "etiqueta": "METODOLOGÍAS ACTIVAS", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "metodologias_activas", "orden": 0 },
+        { "clave": "estrategias_ensenanza", "etiqueta": "ESTRATEGIAS DE ENSEÑANZA PARA EL LOGRO DE APRENDIZAJES PROFUNDOS", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "estrategias_ensenanza", "orden": 1 },
+        { "clave": "micropracticas", "etiqueta": "MICROPRÁCTICAS", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "micropracticas", "orden": 2 },
+        { "clave": "estrategias_eval_formativa", "etiqueta": "ESTRATEGIAS DE EVALUACIÓN FORMATIVA", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "estrategias_eval_formativa", "orden": 3 },
+        { "clave": "estrategias_eval_sumativa", "etiqueta": "ESTRATEGIAS DE EVALUACIÓN SUMATIVA", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "estrategias_eval_sumativa", "orden": 4 }
       ]
     },
     {
@@ -81,20 +85,24 @@
       "clave": "experiencias",
       "titulo": "Experiencia de Aprendizaje / Actividades",
       "orden": 5,
+      "layout": "tabla_etiquetada",
+      "ocultarTitulo": true,
       "campos": [
-        { "clave": "experiencias", "etiqueta": "Experiencia de Aprendizaje / Actividades", "tipo": "lista", "requerido": false, "origen": "ia", "orden": 0 }
+        { "clave": "experiencias", "etiqueta": "EXPERIENCIA DE APRENDIZAJE/ACTIVIDADES", "tipo": "lista", "requerido": false, "origen": "ia", "orden": 0 }
       ]
     },
     {
       "clave": "evaluacion",
       "titulo": "Evaluación",
       "orden": 6,
+      "layout": "tabla_etiquetada",
+      "ocultarTitulo": true,
       "campos": [
-        { "clave": "tipo_aprendizaje", "etiqueta": "Tipo de Aprendizaje a Evaluar", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "tipo_aprendizaje", "orden": 0 },
-        { "clave": "indicadores", "etiqueta": "Indicadores de Evaluación", "tipo": "lista", "requerido": false, "origen": "ia", "orden": 1 },
-        { "clave": "tipo_evaluacion", "etiqueta": "Tipo de Evaluación", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "tipo_evaluacion", "orden": 2 },
-        { "clave": "instrumentos_evaluacion", "etiqueta": "Instrumentos de Evaluación", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "instrumentos_evaluacion", "orden": 3 },
-        { "clave": "recursos_espacios", "etiqueta": "Recursos / Espacios para el Aprendizaje", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "recursos_espacios", "orden": 4 }
+        { "clave": "tipo_aprendizaje", "etiqueta": "TIPO DE APRENDIZAJE A EVALUAR", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "tipo_aprendizaje", "orden": 0 },
+        { "clave": "indicadores", "etiqueta": "INDICADORES DE EVALUACIÓN", "tipo": "lista", "requerido": false, "origen": "ia", "orden": 1 },
+        { "clave": "tipo_evaluacion", "etiqueta": "TIPO DE EVALUACIÓN", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "tipo_evaluacion", "orden": 2 },
+        { "clave": "instrumentos_evaluacion", "etiqueta": "INSTRUMENTOS DE EVALUACIÓN", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "instrumentos_evaluacion", "orden": 3 },
+        { "clave": "recursos_espacios", "etiqueta": "RECURSOS/ESPACIOS PARA EL APRENDIZAJE", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "recursos_espacios", "orden": 4 }
       ]
     }
   ]

@@ -126,15 +126,22 @@ export class GenerarPlanificacionUseCase {
     }
 
     const corpusVersionId = oaCorpus[0]?.corpusVersionId ?? '';
-    // Categoría por formato: B (DUA) → 'priorizado'; A (denso) → 'basal' (el corpus no trae la
-    // distinción basal/complementario por OA, así que es el default razonable; el docente la ajusta).
-    const categoria = payload.plantilla === 'B' ? 'priorizado' : 'basal';
     const oaRef: OaReferenciadoType[] = payload.oaCodigos.map((codigo) => {
       const oa = porCodigo.get(codigo) as ObjetivoAprendizaje;
+      // Categoría POR OA: B (DUA) → 'priorizado'. A (denso) → un OAT (código 'OAT n') es 'transversal';
+      // el resto queda 'basal'. La distinción basal/complementario NO se deriva del corpus, así que
+      // 'basal' es el default y el docente la ajusta en HIL.
+      const categoria =
+        payload.plantilla === 'B'
+          ? 'priorizado'
+          : /OAT/i.test(oa.codigo)
+            ? 'transversal'
+            : 'basal';
       return {
         codigo: oa.codigo, // verbatim del corpus
         categoria,
         descripcion: oa.descripcion, // verbatim del corpus (la IA no lo redacta — RF-2.5)
+        detalle: [...(oa.detalle ?? [])], // sub-viñetas oficiales del OA (texto fijo); copia mutable (el oaRef las exige así)
         habilidades: [], // el corpus no expone habilidades por OA; el docente las completa en HIL
       };
     });

@@ -49,6 +49,19 @@ export function planificacionGateV2(e: EntradaPlanificacionGateV2): ResultadoGat
     }
   }
 
+  // (a.2) 'unidad' es requerida en AMBOS formatos. El Formato A ya no la lista como campo de la grilla
+  //       (vive en el título — tema.incluirUnidadEnTitulo), así que (a) no la cubre; la exigimos aquí a
+  //       nivel de dominio para no depender solo del guard de la UI.
+  if (e.plan.unidad.trim().length === 0) {
+    h.push({
+      gate: GATE,
+      regla: 'unidad_requerida',
+      severidad: 'bloquea',
+      mensaje: 'La planificación no tiene nombre de unidad.',
+      ref: 'unidad',
+    });
+  }
+
   // (b) Cada OA del documento existe en el corpus para (asignatura, nivel) — CA-2.4.
   const codigosCorpus = new Set(e.oaCodigosCorpus);
   for (const oa of e.plan.oa) {

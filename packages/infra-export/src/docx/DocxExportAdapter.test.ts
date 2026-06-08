@@ -49,9 +49,15 @@ const planA: PlanificacionUnidad = {
   duracion_semanas: 7,
   horas_pedagogicas: 42,
   oa: [
-    { codigo: 'MA01 OA 03', categoria: 'basal', descripcion: 'Leer números del 0 al 20.', habilidades: ['Representar'] },
-    { codigo: 'MA01 OA 01', categoria: 'complementario', descripcion: 'Contar números del 0 al 100.', habilidades: [] },
-    { codigo: 'OAT 9', categoria: 'transversal', descripcion: 'Resolver problemas de manera reflexiva.', habilidades: [] },
+    {
+      codigo: 'MA01 OA 03',
+      categoria: 'basal',
+      descripcion: 'Leer números del 0 al 20.',
+      detalle: ['Contar de 1 en 1.', 'Identificar el cero.'],
+      habilidades: ['Representar'],
+    },
+    { codigo: 'MA01 OA 01', categoria: 'complementario', descripcion: 'Contar números del 0 al 100.', detalle: [], habilidades: [] },
+    { codigo: 'OAT 9', categoria: 'transversal', descripcion: 'Resolver problemas de manera reflexiva.', detalle: [], habilidades: [] },
   ],
   experiencias: ['Cuentan colecciones de hasta 20 objetos.', 'Comparan dos cantidades.'],
   indicadores_evaluacion: [{ oa: 'MA01 OA 03', texto: 'Leen números del 0 al 20.', fuente: 'ia_borrador' }],
@@ -73,8 +79,8 @@ const planB: PlanificacionUnidad = {
   unidad: 'Bloque 1',
   periodo: '1er semestre',
   oa: [
-    { codigo: 'LE03 OA 05', categoria: 'priorizado', descripcion: 'Leer y comprender textos breves.', habilidades: ['Comprender'] },
-    { codigo: 'LE03 OA 06', categoria: 'priorizado', descripcion: 'Leer independientemente textos no literarios.', habilidades: [] },
+    { codigo: 'LE03 OA 05', categoria: 'priorizado', descripcion: 'Leer y comprender textos breves.', detalle: [], habilidades: ['Comprender'] },
+    { codigo: 'LE03 OA 06', categoria: 'priorizado', descripcion: 'Leer independientemente textos no literarios.', detalle: [], habilidades: [] },
   ],
   experiencias: ['Leen un cuento en voz alta.'],
   indicadores_evaluacion: [
@@ -89,10 +95,11 @@ const tmp = mkdtempSync(join(tmpdir(), 'faro-docx-'));
 afterAll(() => rmSync(tmp, { recursive: true, force: true }));
 
 /**
- * Extrae word/document.xml de un .docx (zip) SIN dependencias externas (jszip/fflate no están en el
- * árbol). Lee el directorio central del zip y descomprime (deflate) la entrada del documento.
+ * Extrae una parte (p. ej. word/document.xml o word/styles.xml) de un .docx (zip) SIN dependencias
+ * externas (jszip/fflate no están en el árbol). Lee el directorio central del zip y descomprime
+ * (deflate) la entrada pedida.
  */
-function documentXml(buf: Buffer): string {
+function parteXml(buf: Buffer, parte: string): string {
   let eocd = -1;
   for (let i = buf.length - 22; i >= 0; i--) {
     if (buf.readUInt32LE(i) === 0x06054b50) {
@@ -111,7 +118,7 @@ function documentXml(buf: Buffer): string {
     const commentLen = buf.readUInt16LE(off + 32);
     const localOff = buf.readUInt32LE(off + 42);
     const nombre = buf.toString('utf8', off + 46, off + 46 + nameLen);
-    if (nombre === 'word/document.xml') {
+    if (nombre === parte) {
       const lhNameLen = buf.readUInt16LE(localOff + 26);
       const lhExtraLen = buf.readUInt16LE(localOff + 28);
       const ini = localOff + 30 + lhNameLen + lhExtraLen;
@@ -120,8 +127,10 @@ function documentXml(buf: Buffer): string {
     }
     off += 46 + nameLen + extraLen + commentLen;
   }
-  throw new Error('word/document.xml no encontrado');
+  throw new Error(`${parte} no encontrado`);
 }
+
+const documentXml = (buf: Buffer): string => parteXml(buf, 'word/document.xml');
 
 describe('codigoCorto (display de códigos de OA — solo display)', () => {
   it('quita el prefijo de asignatura y los ceros a la izquierda', () => {
@@ -188,13 +197,18 @@ describe('DocxExportAdapter / planoDocumento (H-2.5)', () => {
     expect(plano.secciones.find((s) => s.clave === 'encabezado')?.mostrarTitulo).toBe(false);
   });
 
-  it('RF-2.11 (Formato A): la Evaluación APILA sus checkbox_set (no inventa una matriz por adyacencia)', () => {
+  it('RF-2.11 (Formato A): la Evaluación NO inventa una matriz por adyacencia (sus campos son filas etiquetadas)', () => {
     const plano = planoDocumento(planA, plantillaA, catalogos);
     const evaluacion = plano.secciones.find((s) => s.clave === 'evaluacion');
     expect(evaluacion).toBeDefined();
-    // La Evaluación tiene varios checkbox_set, pero el PDF real los apila (no lado a lado).
+    // La Evaluación es 'tabla_etiquetada' (una fila por campo), nunca una matriz lado a lado.
     expect(evaluacion?.bloques.some((b) => b.tipo === 'checkbox_matriz')).toBe(false);
-    expect(evaluacion?.bloques.some((b) => b.tipo === 'checkbox')).toBe(true);
+    const etiquetada = evaluacion?.bloques.find((b) => b.tipo === 'tabla_etiquetada');
+    expect(etiquetada?.tipo).toBe('tabla_etiquetada');
+    // Sus checkbox_set viven como contenido 'checkbox' DENTRO de las filas (no apilados sueltos).
+    if (etiquetada?.tipo === 'tabla_etiquetada') {
+      expect(etiquetada.filas.some((f) => f.contenido.tipo === 'checkbox')).toBe(true);
+    }
     // En todo el documento hay UNA sola matriz: la Diversificación (la única con layout 'matriz').
     const matrices = plano.secciones.flatMap((s) => s.bloques).filter((b) => b.tipo === 'checkbox_matriz');
     expect(matrices).toHaveLength(1);
@@ -258,6 +272,23 @@ describe('DocxExportAdapter / planoDocumento (H-2.5)', () => {
     expect(xml).toContain('OAT9:'); // transversal corto (de "OAT 9")
     expect(xml).not.toContain('MA01 OA 03'); // el código largo NO se muestra (solo display corto)
     expect(/<\/w:tbl>\s*<w:tbl>/.test(xml)).toBe(false); // sin tablas adyacentes (no se fusionan)
+    // FIDELIDAD: bordes NEGROS (no gris 808080), fuente Arial por defecto, y el nombre de la unidad
+    // como línea extra del título (incluirUnidadEnTitulo del Formato A).
+    expect(xml).toContain('w:color="000000"'); // bordes de tabla negros
+    expect(xml).not.toContain('w:color="808080"'); // ya no hay bordes grises
+    expect(xml).toContain('Unidad 1: Números hasta el 20'); // la unidad va en el título (A)
+    // Las sub-viñetas oficiales del OA (su detalle) se renderizan sangradas bajo la descripción.
+    expect(xml).toContain('Contar de 1 en 1.');
+    expect(xml).toContain('Identificar el cero.');
+  });
+
+  it('render .docx (Formato A): la fuente por defecto es Arial (sans), no Times New Roman (serif)', async () => {
+    const buf = await Packer.toBuffer(construirDocumento(planoDocumento(planA, plantillaA, catalogos)));
+    // La fuente por defecto (rFonts) vive en word/styles.xml, no en document.xml: la aseveramos ahí
+    // para que el test falle de verdad si se quita el estilo default (si no, Word caería a Times serif).
+    const styles = parteXml(buf, 'word/styles.xml');
+    expect(styles).toContain('Arial');
+    expect(documentXml(buf)).not.toContain('Times New Roman');
   });
 
   it('render .docx (Formato B): portrait, cabecera naranja, DUA en línea y sin tablas pegadas', async () => {
@@ -267,5 +298,76 @@ describe('DocxExportAdapter / planoDocumento (H-2.5)', () => {
     expect(xml).toContain('Proveer múltiples medios de Representación'); // Principio DUA en línea
     expect(xml).toContain('OA5'); // código corto (de "LE03 OA 05")
     expect(/<\/w:tbl>\s*<w:tbl>/.test(xml)).toBe(false);
+    // La columna Evaluación va en TEXTO PLANO (sin viñeta): "Evaluación Formativa" sale en un párrafo
+    // simple (<w:p><w:r><w:t>…), no en un ListParagraph con numeración como las experiencias.
+    expect(xml).toContain('<w:p><w:r><w:t xml:space="preserve">Evaluación Formativa</w:t>');
+  });
+
+  // La banda decorativa SOLO se dibuja si la plantilla define header.bandaColor (granate en el B; el A
+  // no la trae → no se inventa una regla negra). El membrete vive en el part del header de página, no en
+  // word/document.xml, así que la presencia/ausencia se asevera en el IR (data-driven, RF-2.3).
+  it('banda decorativa del membrete: solo el Formato B la declara (granate); el A no', () => {
+    const planoA = planoDocumento(planA, plantillaA, catalogos);
+    const planoB = planoDocumento(planB, plantillaB, catalogos);
+    expect(planoA.tema.header?.bandaColor).toBeUndefined(); // el A no dibuja banda
+    expect(planoB.tema.header?.bandaColor).toBe('612322'); // el B sí (granate institucional)
+  });
+});
+
+// tabla_etiquetada se prueba con una plantilla mínima hecha a mano (independiente del preset real):
+// el contenido de cada campo va en la celda derecha y la celda-etiqueta NO se duplica como banner.
+describe('layout tabla_etiquetada (celdas-etiqueta: una fila por campo)', () => {
+  const plantillaEtq: PlantillaPlanificacion = SchemaPlantillaPlanificacion.parse({
+    id: 'etq-test',
+    formato: 'A',
+    nombre: 'Plan Etiquetado',
+    establecimiento: 'Escuela Demo',
+    version: '1',
+    secciones: [
+      {
+        clave: 'detalle',
+        titulo: 'Detalle',
+        orden: 0,
+        layout: 'tabla_etiquetada',
+        ocultarTitulo: true,
+        tema: {},
+        campos: [
+          { clave: 'proposito', etiqueta: 'Propósito', tipo: 'texto_largo', requerido: false, origen: 'ia', orden: 0 },
+          {
+            clave: 'habilidades_siglo_xxi',
+            etiqueta: 'Habilidades del Siglo XXI',
+            tipo: 'checkbox_set',
+            requerido: false,
+            origen: 'ia',
+            catalogo: 'habilidades_siglo_xxi',
+            orden: 1,
+          },
+          { clave: 'experiencias', etiqueta: 'Experiencias', tipo: 'lista', requerido: false, origen: 'ia', orden: 2 },
+        ],
+      },
+    ],
+  });
+
+  it('produce un bloque tabla_etiquetada con una fila por campo (etiqueta + contenido)', () => {
+    const plano = planoDocumento(planA, plantillaEtq, catalogos);
+    const bloque = plano.secciones.flatMap((s) => s.bloques).find((b) => b.tipo === 'tabla_etiquetada');
+    expect(bloque?.tipo).toBe('tabla_etiquetada');
+    if (bloque?.tipo === 'tabla_etiquetada') {
+      expect(bloque.filas.map((f) => f.etiqueta)).toEqual(['Propósito', 'Habilidades del Siglo XXI', 'Experiencias']);
+      // Cada fila mapea su tipo: texto_largo→parrafo, checkbox_set→checkbox, lista→lista.
+      expect(bloque.filas[0]?.contenido.tipo).toBe('parrafo');
+      expect(bloque.filas[1]?.contenido.tipo).toBe('checkbox');
+      expect(bloque.filas[2]?.contenido.tipo).toBe('lista');
+    }
+    // ocultarTitulo: la sección no muestra su título (la celda-etiqueta ya rotula cada campo).
+    expect(plano.secciones.find((s) => s.clave === 'detalle')?.mostrarTitulo).toBe(false);
+  });
+
+  it('render .docx: el rótulo del campo NO se duplica (celda-etiqueta + contenido sin banner)', async () => {
+    const xml = documentXml(await Packer.toBuffer(construirDocumento(planoDocumento(planA, plantillaEtq, catalogos))));
+    // "Propósito" aparece UNA vez (la celda-etiqueta), no dos (etiqueta + título de checkbox/banner).
+    const ocurrencias = xml.split('Propósito').length - 1;
+    expect(ocurrencias).toBe(1);
+    expect(xml).toContain('Leer y comparar números hasta el 20 con material concreto.'); // el propósito en la celda derecha
   });
 });

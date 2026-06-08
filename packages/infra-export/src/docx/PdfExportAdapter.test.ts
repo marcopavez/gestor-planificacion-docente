@@ -45,7 +45,9 @@ const plan: PlanificacionUnidad = {
   proposito: 'Propósito.',
   duracion_semanas: 6,
   horas_pedagogicas: 36,
-  oa: [{ codigo: 'MA01 OA 03', categoria: 'basal', descripcion: 'Leer números del 0 al 20.', habilidades: [] }],
+  oa: [
+    { codigo: 'MA01 OA 03', categoria: 'basal', descripcion: 'Leer números del 0 al 20.', detalle: [], habilidades: [] },
+  ],
   experiencias: ['Cuentan objetos.'],
   indicadores_evaluacion: [{ oa: 'MA01 OA 03', texto: 'Leen números.', fuente: 'ia_borrador' }],
   evaluacion: { tipo: [], instrumentos: [] },

@@ -35,9 +35,12 @@ export const FormatoPlantilla = z.enum(['A', 'B']);
  * 'apilado' (default) = uno debajo del otro. Es explícito en la plantilla, no se infiere por
  * adyacencia: la "Evaluación" tiene varios checkbox_set pero el PDF real los apila (RF-2.11);
  * 'lista_en_linea' = numerada en una sola línea (los "Principios DUA" del Formato B: no son
- * checkboxes en el PDF real, sino "1 … 2 … 3 …" en una línea).
+ * checkboxes en el PDF real, sino "1 … 2 … 3 …" en una línea);
+ * 'tabla_etiquetada' = tabla de celdas-etiqueta: UNA fila por CAMPO, con la etiqueta del campo en la
+ * celda izquierda (sombreada, en negrita) y su contenido en la derecha (párrafo / checkboxes / lista
+ * según el tipo). La celda-etiqueta ES el rótulo, así que reemplaza al banner crema apilado del PDF real.
  */
-export const LayoutSeccion = z.enum(['matriz', 'apilado', 'lista_en_linea']);
+export const LayoutSeccion = z.enum(['matriz', 'apilado', 'lista_en_linea', 'tabla_etiquetada']);
 
 /**
  * Color de sombreado como hex RGB de 6 dígitos SIN '#' (formato que espera la lib `docx`):
@@ -82,6 +85,7 @@ export const TemaPlantilla = z.object({
   tituloBanda: ColorHex.optional(), // sombreado de la banda full-width tras el título (celeste en A)
   colorEtiqueta: ColorHex.optional(), // sombreado de celdas-etiqueta de la grilla del encabezado (crema en A)
   colorCategoria: ColorHex.optional(), // sombreado de la columna de categoría de la tabla de OA (celeste en A)
+  incluirUnidadEnTitulo: z.boolean().optional(), // el A mete el nombre de la unidad como línea extra del título; el B no
 });
 
 // `catalogo` referencia una de las 11 claves de corpus/catalogos/planificacion.json (DRY: derivado
@@ -104,6 +108,9 @@ export const SeccionPlantilla = z.object({
   orden: z.number().int().nonnegative(),
   // Ausente → 'apilado'. Solo la sección que el PDF muestra como matriz lo declara 'matriz'.
   layout: LayoutSeccion.optional(),
+  // No mostrar el título de la sección: en 'tabla_etiquetada' del A la celda-etiqueta ya rotula; en la
+  // tabla OA del B evita inventar un subtítulo que el PDF real no trae (RF-2.11).
+  ocultarTitulo: z.boolean().optional(),
   tema: TemaSeccion.optional(),
   campos: z.array(CampoPlantilla).min(1),
 });
