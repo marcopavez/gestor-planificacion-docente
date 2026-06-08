@@ -26,6 +26,7 @@ describe('OaRepositoryCorpus.porAsignaturaNivel (RF-1.4, CA-1.2)', () => {
     // file-based: id sintetizado = código; vigencias = null (decreto [VERIFICAR]); INV-4.
     expect(primero?.id).toBe('MA01 OA 01');
     expect(primero?.corpusVersionId).toBe('corpus@2026.1');
+    expect(primero?.eje).toBe('Números y operaciones'); // eje curricular mapeado desde el corpus
     expect(primero?.vigenciaDesde).toBeNull();
     expect(primero?.vigenciaHasta).toBeNull();
     expect(Array.isArray(primero?.indicadores)).toBe(true);
@@ -37,6 +38,7 @@ describe('OaRepositoryCorpus.porAsignaturaNivel (RF-1.4, CA-1.2)', () => {
     expect(oats[0]?.codigo).toBe('OAT 1');
     expect(oats[31]?.codigo).toBe('OAT 32');
     expect(oats[0]?.asignatura).toBe('Transversal');
+    expect(oats[0]?.eje).toBe('física'); // en los OAT el eje es la dimensión
   });
 
   it('lanza error tipado si la combinación (asignatura, nivel) no existe (CA-1.2)', async () => {

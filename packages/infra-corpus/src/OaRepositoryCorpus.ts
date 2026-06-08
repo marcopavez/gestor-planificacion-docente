@@ -134,7 +134,7 @@ export class OaRepositoryCorpus implements OaRepository {
  * Mapea un OA del corpus file-based a la entidad de dominio. El corpus no trae los campos
  * DB-only obligatorios → se sintetizan: id = código (no hay PK de DB), asignatura/nivel del
  * archivo, corpusVersionId del manifiesto, vigencias = null (la fecha del decreto está [VERIFICAR]).
- * `eje` no existe en la entidad de dominio, así que no se mapea.
+ * `eje` (string|null|ausente en el corpus) se normaliza a string|undefined.
  */
 function mapearADominio(
   oa: ArchivoCorpus['objetivos_aprendizaje'][number],
@@ -149,6 +149,7 @@ function mapearADominio(
     asignatura,
     nivel,
     descripcion: oa.descripcion,
+    eje: oa.eje ?? undefined,
     indicadores: oa.indicadores,
     vigenciaDesde: null,
     vigenciaHasta: null,

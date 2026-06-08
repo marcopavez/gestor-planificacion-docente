@@ -15,7 +15,7 @@ export async function GET() {
         id: m.id,
         asignatura: m.asignatura,
         nivel: m.nivel,
-        oa: corpus.oa.map((oa) => ({ codigo: oa.codigo, descripcion: oa.descripcion })),
+        oa: corpus.oa.map((oa) => ({ codigo: oa.codigo, descripcion: oa.descripcion, eje: oa.eje })),
       };
     }),
   );

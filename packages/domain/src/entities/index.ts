@@ -56,6 +56,9 @@ export interface ObjetivoAprendizaje {
   readonly asignatura: string;
   readonly nivel: string; // p.ej. '1° básico'
   readonly descripcion: string;
+  // Eje curricular (asignatura) o dimensión (OAT); opcional: el corpus puede no traerlo.
+  // Lo usa el Formato A para agrupar OA (basal/complementario/transversal por eje).
+  readonly eje?: string;
   readonly indicadores: string[];
   readonly vigenciaDesde: Date | null;
   readonly vigenciaHasta: Date | null;

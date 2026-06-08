@@ -14,6 +14,7 @@ import { raizRepo } from './raiz';
 export interface OaCorpusItem {
   readonly codigo: string;
   readonly descripcion: string;
+  readonly eje?: string; // eje curricular / dimensión (OAT); ausente si el corpus no lo trae
   readonly indicadores: readonly string[];
 }
 
@@ -43,6 +44,6 @@ export async function cargarCorpus(m: MateriaDemo): Promise<CorpusMateria> {
     asignatura: m.asignatura,
     nivel: m.nivel,
     corpusVersionId: oas[0]?.corpusVersionId ?? '',
-    oa: oas.map((oa) => ({ codigo: oa.codigo, descripcion: oa.descripcion, indicadores: oa.indicadores })),
+    oa: oas.map((oa) => ({ codigo: oa.codigo, descripcion: oa.descripcion, eje: oa.eje, indicadores: oa.indicadores })),
   };
 }
