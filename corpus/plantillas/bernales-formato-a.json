@@ -1,0 +1,82 @@
+{
+  "id": "bernales-formato-a",
+  "formato": "A",
+  "nombre": "Planificación de Unidad",
+  "establecimiento": "Escuela General José Alejandro Bernales D-114",
+  "version": "1",
+  "_fuente": "docs/planificaciones-primera-unidad-primero-basico.pdf (Planificación de Unidad — denso). Estructura reconstruida fiel al PDF; etiquetas verbatim.",
+  "secciones": [
+    {
+      "clave": "encabezado",
+      "titulo": "Planificación de Unidad",
+      "orden": 0,
+      "campos": [
+        { "clave": "establecimiento", "etiqueta": "Establecimiento", "tipo": "encabezado", "requerido": true, "origen": "fijo", "orden": 0 },
+        { "clave": "unidad", "etiqueta": "Unidad", "tipo": "texto", "requerido": true, "origen": "input", "orden": 1 },
+        { "clave": "docente", "etiqueta": "Docente", "tipo": "texto", "requerido": true, "origen": "input", "orden": 2 },
+        { "clave": "curso", "etiqueta": "Curso", "tipo": "texto", "requerido": true, "origen": "input", "orden": 3 },
+        { "clave": "asignatura", "etiqueta": "Asignatura", "tipo": "texto", "requerido": true, "origen": "input", "orden": 4 },
+        { "clave": "duracion_semanas", "etiqueta": "Duración (semanas)", "tipo": "numero", "requerido": false, "origen": "input", "orden": 5 },
+        { "clave": "horas_pedagogicas", "etiqueta": "Horas Pedagógicas", "tipo": "numero", "requerido": false, "origen": "input", "orden": 6 },
+        { "clave": "fecha_inicio", "etiqueta": "Fecha de Inicio", "tipo": "fecha", "requerido": false, "origen": "input", "orden": 7 },
+        { "clave": "fecha_termino", "etiqueta": "Fecha de término", "tipo": "fecha", "requerido": false, "origen": "input", "orden": 8 }
+      ]
+    },
+    {
+      "clave": "proposito",
+      "titulo": "Propósito de la unidad",
+      "orden": 1,
+      "campos": [
+        { "clave": "proposito", "etiqueta": "¿Para qué aprenderán estos contenidos, habilidades y actitudes los estudiantes?", "tipo": "texto_largo", "requerido": false, "origen": "ia", "orden": 0 }
+      ]
+    },
+    {
+      "clave": "habilidades_siglo_xxi",
+      "titulo": "Habilidades del Siglo XXI",
+      "orden": 2,
+      "campos": [
+        { "clave": "habilidades_siglo_xxi", "etiqueta": "Habilidades del Siglo XXI", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "habilidades_siglo_xxi", "orden": 0 }
+      ]
+    },
+    {
+      "clave": "diversificacion",
+      "titulo": "Diversificación de la Enseñanza",
+      "orden": 3,
+      "campos": [
+        { "clave": "metodologias_activas", "etiqueta": "Metodologías Activas", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "metodologias_activas", "orden": 0 },
+        { "clave": "estrategias_ensenanza", "etiqueta": "Estrategias de Enseñanza para el Logro de Aprendizajes Profundos", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "estrategias_ensenanza", "orden": 1 },
+        { "clave": "micropracticas", "etiqueta": "Microprácticas", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "micropracticas", "orden": 2 },
+        { "clave": "estrategias_eval_formativa", "etiqueta": "Estrategias de Evaluación Formativa", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "estrategias_eval_formativa", "orden": 3 },
+        { "clave": "estrategias_eval_sumativa", "etiqueta": "Estrategias de Evaluación Sumativa", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "estrategias_eval_sumativa", "orden": 4 }
+      ]
+    },
+    {
+      "clave": "objetivos_aprendizaje",
+      "titulo": "Objetivos de Aprendizaje",
+      "orden": 4,
+      "campos": [
+        { "clave": "objetivos_aprendizaje", "etiqueta": "Objetivos de Aprendizaje (Basal · Complementario · Transversal)", "tipo": "tabla_oa", "requerido": true, "origen": "fijo", "orden": 0 }
+      ]
+    },
+    {
+      "clave": "experiencias",
+      "titulo": "Experiencia de Aprendizaje / Actividades",
+      "orden": 5,
+      "campos": [
+        { "clave": "experiencias", "etiqueta": "Experiencia de Aprendizaje / Actividades", "tipo": "lista", "requerido": false, "origen": "ia", "orden": 0 }
+      ]
+    },
+    {
+      "clave": "evaluacion",
+      "titulo": "Evaluación",
+      "orden": 6,
+      "campos": [
+        { "clave": "tipo_aprendizaje", "etiqueta": "Tipo de Aprendizaje a Evaluar", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "tipo_aprendizaje", "orden": 0 },
+        { "clave": "indicadores", "etiqueta": "Indicadores de Evaluación", "tipo": "lista", "requerido": false, "origen": "ia", "orden": 1 },
+        { "clave": "tipo_evaluacion", "etiqueta": "Tipo de Evaluación", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "tipo_evaluacion", "orden": 2 },
+        { "clave": "instrumentos_evaluacion", "etiqueta": "Instrumentos de Evaluación", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "instrumentos_evaluacion", "orden": 3 },
+        { "clave": "recursos_espacios", "etiqueta": "Recursos / Espacios para el Aprendizaje", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "recursos_espacios", "orden": 4 }
+      ]
+    }
+  ]
+}

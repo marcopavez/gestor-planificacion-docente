@@ -4,7 +4,12 @@
 // composition root (DI) vive en apps/* (INV-5). Sin red ni DB (INV-1).
 
 export { OaRepositoryCorpus } from './OaRepositoryCorpus.js';
-export { ArchivoCorpusInvalidoError, BloqueCorpusNoEncontradoError } from './errors.js';
+export { PlantillaRepositoryCorpus } from './PlantillaRepositoryCorpus.js';
+export {
+  ArchivoCorpusInvalidoError,
+  BloqueCorpusNoEncontradoError,
+  CorpusVersionDesconocidaError,
+} from './errors.js';
 export {
   ArchivoCorpusSchema,
   ManifiestoSchema,
