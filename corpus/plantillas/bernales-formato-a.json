@@ -42,6 +42,7 @@
       "clave": "diversificacion",
       "titulo": "Diversificación de la Enseñanza",
       "orden": 3,
+      "layout": "matriz",
       "campos": [
         { "clave": "metodologias_activas", "etiqueta": "Metodologías Activas", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "metodologias_activas", "orden": 0 },
         { "clave": "estrategias_ensenanza", "etiqueta": "Estrategias de Enseñanza para el Logro de Aprendizajes Profundos", "tipo": "checkbox_set", "requerido": false, "origen": "ia", "catalogo": "estrategias_ensenanza", "orden": 1 },

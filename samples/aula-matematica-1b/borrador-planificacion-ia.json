@@ -1,0 +1,26 @@
+{
+  "_nota": "Muestra demo del borrador de IA para el flujo de planificación híbrida (H-2.3). La sirve SamplesLlm en modo demo (sin API key). Atado a Matemática 1º básico (la materia del demo).",
+  "proposito": "Que las y los estudiantes lean, comparen, compongan y descompongan números hasta el 20 mediante experiencias concretas, pictóricas y simbólicas que les den sentido en su vida cotidiana.",
+  "experiencias": [
+    "Cuentan colecciones de hasta 20 objetos e identifican y escriben el número correspondiente.",
+    "Comparan dos cantidades con material concreto y deciden cuál es mayor.",
+    "Componen y descomponen números hasta 20 con tapitas, nombrando la descomposición.",
+    "Agrupan palitos de a 10 (una decena) y cuentan las unidades sueltas.",
+    "Descubren y continúan patrones con sonidos, figuras y números hasta el 20."
+  ],
+  "indicadores": [
+    { "oa": "MA01 OA 03", "texto": "Leen en voz alta números del 0 al 20." },
+    { "oa": "MA01 OA 04", "texto": "Comparan dos cantidades hasta 20 usando las expresiones 'mayor que' y 'menor que'." },
+    { "oa": "MA01 OA 06", "texto": "Componen un número hasta 20 a partir de dos sumandos, con material concreto." },
+    { "oa": "MA01 OA 08", "texto": "Agrupan una colección de a 10 e identifican la decena y las unidades sueltas." },
+    { "oa": "MA01 OA 11", "texto": "Identifican el elemento que falta o que sigue en un patrón repetitivo." }
+  ],
+  "seleccion_checkboxes": {
+    "habilidades_siglo_xxi": ["Creatividad", "Pensamiento Crítico", "Colaboración"],
+    "metodologias_activas": ["Aprendizaje cooperativo", "Gamificación"],
+    "tipo_aprendizaje": ["Conceptual", "Procedimental"],
+    "tipo_evaluacion": ["Formativa", "Sumativa"],
+    "instrumentos_evaluacion": ["Lista de cotejo", "Escala de apreciación"],
+    "recursos_espacios": ["Texto del estudiante", "Patio"]
+  }
+}

@@ -114,6 +114,18 @@ describe('DocxExportAdapter / planoDocumento (H-2.5)', () => {
     }
   });
 
+  it('RF-2.11 (Formato A): la Evaluación APILA sus checkbox_set (no inventa una matriz por adyacencia)', () => {
+    const plano = planoDocumento(planA, plantillaA, catalogos);
+    const evaluacion = plano.secciones.find((s) => s.clave === 'evaluacion');
+    expect(evaluacion).toBeDefined();
+    // La Evaluación tiene varios checkbox_set, pero el PDF real los apila (no lado a lado).
+    expect(evaluacion?.bloques.some((b) => b.tipo === 'checkbox_matriz')).toBe(false);
+    expect(evaluacion?.bloques.some((b) => b.tipo === 'checkbox')).toBe(true);
+    // En todo el documento hay UNA sola matriz: la Diversificación (la única con layout 'matriz').
+    const matrices = plano.secciones.flatMap((s) => s.bloques).filter((b) => b.tipo === 'checkbox_matriz');
+    expect(matrices).toHaveLength(1);
+  });
+
   it('CA-2.2 (Formato B): tabla de 4 columnas, una fila por OA', () => {
     const plano = planoDocumento(planB, plantillaB, catalogos);
     const tablaOa = plano.secciones.flatMap((s) => s.bloques).find((b) => b.tipo === 'tabla_oa_b');

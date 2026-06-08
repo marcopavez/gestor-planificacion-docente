@@ -29,6 +29,14 @@ export const OrigenCampo = z.enum(['fijo', 'input', 'ia']);
 /** Formato real soportado: A (denso) o B (DUA). */
 export const FormatoPlantilla = z.enum(['A', 'B']);
 
+/**
+ * Cómo se disponen los checkbox_set de una sección en el export:
+ * 'matriz' = lado a lado en columnas (la "Diversificación de la Enseñanza" del Formato A);
+ * 'apilado' (default) = uno debajo del otro. Es explícito en la plantilla, no se infiere por
+ * adyacencia: la "Evaluación" tiene varios checkbox_set pero el PDF real los apila (RF-2.11).
+ */
+export const LayoutSeccion = z.enum(['matriz', 'apilado']);
+
 // `catalogo` referencia una de las 11 claves de corpus/catalogos/planificacion.json (DRY: derivado
 // del schema de catálogos, no una lista paralela que se desincronice).
 const ClaveCatalogoRef = SchemaCatalogosPlanificacion.keyof();
@@ -47,6 +55,8 @@ export const SeccionPlantilla = z.object({
   clave: z.string().min(1),
   titulo: z.string().min(1),
   orden: z.number().int().nonnegative(),
+  // Ausente → 'apilado'. Solo la sección que el PDF muestra como matriz lo declara 'matriz'.
+  layout: LayoutSeccion.optional(),
   campos: z.array(CampoPlantilla).min(1),
 });
 
@@ -92,3 +102,4 @@ export type SeccionPlantillaType = z.infer<typeof SeccionPlantilla>;
 export type TipoCampoType = z.infer<typeof TipoCampo>;
 export type OrigenCampoType = z.infer<typeof OrigenCampo>;
 export type FormatoPlantillaType = z.infer<typeof FormatoPlantilla>;
+export type LayoutSeccionType = z.infer<typeof LayoutSeccion>;

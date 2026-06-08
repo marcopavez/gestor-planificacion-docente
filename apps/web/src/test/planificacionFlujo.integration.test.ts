@@ -163,6 +163,17 @@ describe('Flujo de planificación e2e (pglite real, sin Next)', () => {
     const detalle2 = await getRevision(new Request('http://t/'), { params: Promise.resolve({ id: documentoId }) });
     const body2 = (await detalle2.json()) as { contenido: { proposito?: string } };
     expect(body2.contenido.proposito).toBe('PROPÓSITO EDITADO POR EL DOCENTE.');
+
+    // Los OA son datos fijos (RF-2.5/CA-2.3): alterarlos en una edición se rechaza (422).
+    const conOaAlterado = {
+      ...(body2.contenido as Record<string, unknown>),
+      oa: (plan as { oa: Array<Record<string, unknown>> }).oa.map((o, i) => (i === 0 ? { ...o, descripcion: 'OA REESCRITO POR EL CLIENTE' } : o)),
+    };
+    const putOa = await putDocumento(
+      new Request('http://t/', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(conOaAlterado) }),
+      { params: Promise.resolve({ id: documentoId }) },
+    );
+    expect(putOa.status).toBe(422);
   });
 
   it('CA-2.5: a aprobado solo con autor (enviar → aprobar)', async () => {
@@ -183,6 +194,16 @@ describe('Flujo de planificación e2e (pglite real, sin Next)', () => {
     expect(conAutor.status).toBe(200);
     const doc = ((await conAutor.json()) as { documento: { estadoRevision: string } }).documento;
     expect(doc.estadoRevision).toBe('aprobado');
+  });
+
+  it('INV-3: un documento aprobado ya no se puede editar (409)', async () => {
+    const detalle = await getRevision(new Request('http://t/'), { params: Promise.resolve({ id: documentoId }) });
+    const plan = ((await detalle.json()) as { contenido: Record<string, unknown> }).contenido;
+    const put = await putDocumento(
+      new Request('http://t/', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...plan, proposito: 'INTENTO POST-APROBACIÓN' }) }),
+      { params: Promise.resolve({ id: documentoId }) },
+    );
+    expect(put.status).toBe(409);
   });
 
   it('CA-2.1: exporta un .docx no vacío (refleja la edición)', async () => {

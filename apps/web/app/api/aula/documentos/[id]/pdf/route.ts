@@ -27,7 +27,7 @@ export async function GET(
     if (!prep.ok) return NextResponse.json({ error: prep.error }, { status: prep.status });
 
     const { pdfExport } = produccion();
-    const archivo = await pdfExport.aPdf(prep.plan, prep.plantilla, prep.catalogos);
+    const archivo = await pdfExport.aPdf(prep.plan, prep.plantilla, prep.catalogos, id);
     const data = await readFile(archivo.ruta);
 
     return new NextResponse(new Uint8Array(data), {

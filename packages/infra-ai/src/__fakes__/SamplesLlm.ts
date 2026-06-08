@@ -7,7 +7,13 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { LlmPort } from '@faro/domain';
-import { SchemaClaseDeck, SchemaPlanificacionClase, SchemaPlanificacionUnidad, SchemaPrueba } from '@faro/domain';
+import {
+  SchemaBorradorPlanificacionIa,
+  SchemaClaseDeck,
+  SchemaPlanificacionClase,
+  SchemaPlanificacionUnidad,
+  SchemaPrueba,
+} from '@faro/domain';
 
 export function crearSamplesLlm(samplesDir: string): LlmPort {
   const archivoPorSchema = new Map<unknown, string>([
@@ -15,6 +21,8 @@ export function crearSamplesLlm(samplesDir: string): LlmPort {
     [SchemaPlanificacionClase, 'planificacion-clase.json'],
     [SchemaPrueba, 'prueba.json'],
     [SchemaClaseDeck, 'clase-deck.json'],
+    // Generación híbrida (H-2.7): el borrador de IA del flujo de planificación.
+    [SchemaBorradorPlanificacionIa, 'borrador-planificacion-ia.json'],
   ]);
 
   return {

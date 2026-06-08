@@ -62,6 +62,13 @@ describe('PdfExportAdapter (H-2.6)', () => {
     expect(args).toEqual(['--headless', '--norestore', '--convert-to', 'pdf', '--outdir', '/x/out', '/x/doc.docx']);
   });
 
+  it('con un perfil dedicado, aísla el UserInstallation (conversiones concurrentes no chocan)', () => {
+    const { args } = construirComandoSoffice('soffice', '/x/doc.docx', '/x/out', '/tmp/perfil');
+    const envFlag = args.find((a) => a.startsWith('-env:UserInstallation='));
+    expect(envFlag).toBeDefined();
+    expect(envFlag).toContain('file:'); // ruta como file:// URL
+  });
+
   it('deriva la ruta del .pdf desde el .docx (mismo basename, en outDir)', () => {
     expect(rutaPdfEsperada('/x/out', '/a/b/planificacion-mate.docx')).toBe(join('/x/out', 'planificacion-mate.pdf'));
   });

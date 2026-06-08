@@ -94,15 +94,19 @@ export interface ExportPort {
 // El layout se deriva 1:1 de la `definicion` de la plantilla activa (calca las tablas del PDF real);
 // los catálogos proveen las opciones de cada checkbox_set. `.pdf` = render del mismo .docx (LibreOffice).
 export interface ExportPlanificacionPort {
+  // idDocumento (opcional) hace único el nombre de archivo en disco: dos documentos con la misma
+  // asignatura/nivel/formato no se pisan al exportar a la carpeta compartida (H-2.7, fix de colisión).
   aDocx(
     plan: PlanificacionUnidad,
     plantilla: PlantillaPlanificacion,
     catalogos: CatalogosPlanificacion,
+    idDocumento?: string,
   ): Promise<ArchivoExportado>;
   aPdf(
     plan: PlanificacionUnidad,
     plantilla: PlantillaPlanificacion,
     catalogos: CatalogosPlanificacion,
+    idDocumento?: string,
   ): Promise<ArchivoExportado>;
 }
 

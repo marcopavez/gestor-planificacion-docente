@@ -60,6 +60,7 @@ export default function PaginaPlanificacion() {
   const [periodo, setPeriodo] = useState('');
 
   // Generación / revisión
+  const [jobId, setJobId] = useState<string | null>(null);
   const [documentoId, setDocumentoId] = useState<string | null>(null);
   const [plan, setPlan] = useState<PlanificacionUnidad | null>(null);
   const [gates, setGates] = useState<ReporteGates | null>(null);
@@ -128,46 +129,63 @@ export default function PaginaPlanificacion() {
         const j = (await res.json()) as { error?: string };
         throw new Error(j.error ?? `POST → ${res.status}`);
       }
-      const { jobId } = (await res.json()) as { jobId: string };
+      const { jobId: nuevoJob } = (await res.json()) as { jobId: string };
       setPaso('generando');
-      void sondear(jobId);
+      setJobId(nuevoJob); // dispara el efecto de polling (con limpieza al desmontar)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'No se pudo generar.');
     }
   }, [establecimiento, asignatura, nivel, unidad, formato, oaSel, docente, periodo]);
 
-  const sondear = useCallback(async (jobId: string) => {
-    for (let i = 0; i < 60; i++) {
-      await new Promise((r) => setTimeout(r, 1500));
-      try {
-        const r = await getJson<{
-          estado: string;
-          documentoId?: string;
-          contenido?: PlanificacionUnidad;
-          resultadoGates?: ReporteGates;
-          estadoRevision?: string;
-          error?: string | null;
-        }>(`/api/aula/planificacion/${jobId}`);
-        if (r.estado === 'fallido') {
-          setError(r.error ?? 'La generación falló.');
-          setPaso('form');
-          return;
+  // Polling del job dentro de un efecto: se cancela (AbortController + bandera) al desmontar o al
+  // cambiar de job, evitando setState sobre un componente desmontado y fetches huérfanos.
+  useEffect(() => {
+    if (jobId === null) return;
+    const ctrl = new AbortController();
+    let cancelado = false;
+    void (async () => {
+      for (let i = 0; i < 60 && !cancelado; i++) {
+        await new Promise((r) => setTimeout(r, 1500));
+        if (cancelado) return;
+        try {
+          const res = await fetch(`/api/aula/planificacion/${jobId}`, { signal: ctrl.signal });
+          if (!res.ok) continue;
+          const r = (await res.json()) as {
+            estado: string;
+            documentoId?: string;
+            contenido?: PlanificacionUnidad;
+            resultadoGates?: ReporteGates;
+            estadoRevision?: string;
+            error?: string | null;
+          };
+          if (cancelado) return;
+          if (r.estado === 'fallido') {
+            setError(r.error ?? 'La generación falló.');
+            setPaso('form');
+            return;
+          }
+          if (r.estado === 'hecho' && r.documentoId && r.contenido) {
+            setDocumentoId(r.documentoId);
+            setPlan(r.contenido);
+            setGates(r.resultadoGates ?? null);
+            setEstadoRevision(r.estadoRevision ?? 'borrador');
+            setPaso('revision');
+            return;
+          }
+        } catch {
+          // abortado o error transitorio: seguimos (o salimos si fue cancelado)
         }
-        if (r.estado === 'hecho' && r.documentoId && r.contenido) {
-          setDocumentoId(r.documentoId);
-          setPlan(r.contenido);
-          setGates(r.resultadoGates ?? null);
-          setEstadoRevision(r.estadoRevision ?? 'borrador');
-          setPaso('revision');
-          return;
-        }
-      } catch {
-        // seguimos sondeando
       }
-    }
-    setError('La generación tardó demasiado; reintenta.');
-    setPaso('form');
-  }, []);
+      if (!cancelado) {
+        setError('La generación tardó demasiado; reintenta.');
+        setPaso('form');
+      }
+    })();
+    return () => {
+      cancelado = true;
+      ctrl.abort();
+    };
+  }, [jobId]);
 
   const guardar = useCallback(async () => {
     if (documentoId === null || plan === null) return;

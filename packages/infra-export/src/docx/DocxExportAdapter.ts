@@ -53,13 +53,14 @@ export class DocxExportAdapter {
     plan: PlanificacionUnidad,
     plantilla: PlantillaPlanificacion,
     catalogos: CatalogosPlanificacion,
+    idDocumento?: string,
   ): Promise<ArchivoExportado> {
     const plano = planoDocumento(plan, plantilla, catalogos);
     const doc = construirDocumento(plano);
 
     const data = await Packer.toBuffer(doc);
     await mkdir(this.dirSalida, { recursive: true });
-    const ruta = join(this.dirSalida, `${nombreArchivo(plan)}.docx`);
+    const ruta = join(this.dirSalida, `${nombreArchivo(plan, idDocumento)}.docx`);
     await writeFile(ruta, data);
 
     this.log.info({ ruta, bytes: data.length, secciones: plano.secciones.length }, 'export.docx');
@@ -140,7 +141,9 @@ function renderBloque(b: BloquePlano): Array<Paragraph | Table> {
             fila([
               celda(parrafosTexto(f.oa)),
               celda(parrafosTexto(f.habilidades)),
-              celda(parrafosLista(f.experiencias)),
+              // Las experiencias son a nivel de bloque (no por OA en v2): se listan en la 1ª fila y el
+              // resto va en blanco (no '—', que sugeriría "sin experiencias para este OA").
+              celda(parrafosLista(f.experiencias, '')),
               celda(parrafosLista(f.evaluacion)),
             ]),
           ),
@@ -159,8 +162,8 @@ function parrafosTexto(texto: string, bold = false): Paragraph[] {
   return [new Paragraph({ children: [new TextRun({ text: texto, bold })] })];
 }
 
-function parrafosLista(items: readonly string[]): Paragraph[] {
-  if (items.length === 0) return [new Paragraph({ children: [new TextRun('—')] })];
+function parrafosLista(items: readonly string[], placeholderVacio = '—'): Paragraph[] {
+  if (items.length === 0) return [new Paragraph({ children: [new TextRun(placeholderVacio)] })];
   return items.map((t) => new Paragraph({ text: t, bullet: { level: 0 } }));
 }
 
@@ -176,9 +179,14 @@ function tabla(rows: TableRow[]): Table {
   return new Table({ rows, width: { size: 100, type: WidthType.PERCENTAGE }, borders: BORDES_TABLA, alignment: AlignmentType.CENTER });
 }
 
-/** Nombre de archivo seguro a partir de asignatura/nivel/formato (sin tildes ni símbolos). */
-function nombreArchivo(plan: PlanificacionUnidad): string {
-  const base = `planificacion-${plan.asignatura}-${plan.nivel}-formato-${plan.plantilla}`;
+/**
+ * Nombre de archivo seguro a partir de asignatura/nivel/formato (sin tildes ni símbolos). Se le
+ * adjunta `idDocumento` para que dos documentos distintos con la misma asignatura/nivel/formato no
+ * compartan ruta en la carpeta de salida y se pisen al exportar concurrentemente.
+ */
+function nombreArchivo(plan: PlanificacionUnidad, idDocumento?: string): string {
+  const sufijo = idDocumento !== undefined ? `-${idDocumento}` : '';
+  const base = `planificacion-${plan.asignatura}-${plan.nivel}-formato-${plan.plantilla}${sufijo}`;
   const slug = base
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')

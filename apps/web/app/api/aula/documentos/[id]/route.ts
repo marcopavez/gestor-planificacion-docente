@@ -5,6 +5,7 @@
 
 import { NextResponse } from 'next/server';
 import { SchemaPlanificacionUnidad, planificacionGateV2 } from '@faro/domain';
+import type { OaReferenciadoType } from '@faro/domain';
 import { crearLoggerHijo } from '@faro/observability';
 import { produccion } from '@/lib/produccion';
 import { responderError500 } from '@/lib/respuestaError';
@@ -42,6 +43,23 @@ export async function PUT(
     if (doc.tipo !== 'planificacion_unidad') {
       return NextResponse.json({ error: `El documento '${id}' no es una planificación de unidad.` }, { status: 400 });
     }
+    // HIL: solo se edita lo que está en revisión; un documento finalizado no se muta (INV-3).
+    if (doc.estadoRevision === 'aprobado' || doc.estadoRevision === 'rechazado') {
+      return NextResponse.json(
+        { error: `No se puede editar un documento en estado '${doc.estadoRevision}'.` },
+        { status: 409 },
+      );
+    }
+
+    // Los OA son datos fijos del corpus (RF-2.5/CA-2.3): no son editables. Rechazamos cualquier
+    // alteración de los OA respecto al documento generado (el cliente no puede reescribirlos).
+    const guardado = SchemaPlanificacionUnidad.safeParse(doc.contenido);
+    if (guardado.success && !mismosOa(guardado.data.oa, plan.oa)) {
+      return NextResponse.json(
+        { error: 'Los Objetivos de Aprendizaje son datos fijos del corpus y no se pueden modificar.' },
+        { status: 422 },
+      );
+    }
 
     const plantilla = await plantillas.activaPara(plan.establecimiento, plan.plantilla);
     if (plantilla === null) {
@@ -52,8 +70,9 @@ export async function PUT(
     }
     const catalogos = await catalogoRepo.catalogos();
 
-    // Revalidación: los OA no son editables en la UI (datos fijos), así que la verdad del corpus para
-    // el gate son sus propios códigos; se reevalúan requeridos, cobertura y checkboxes fuera de catálogo.
+    // Revalidación: como acabamos de garantizar que los OA no cambiaron respecto a la generación
+    // (que los validó contra el corpus), sus propios códigos son la verdad para el gate; se
+    // reevalúan requeridos, cobertura y checkboxes fuera de catálogo.
     const reporte = planificacionGateV2({
       plan,
       plantilla,
@@ -66,4 +85,13 @@ export async function PUT(
   } catch (e) {
     return responderError500(log, e, { id }, 'PUT /documentos/[id] falló');
   }
+}
+
+/** ¿Son los mismos OA (código + descripción + categoría, mismo orden)? Los OA son inmutables. */
+function mismosOa(a: readonly OaReferenciadoType[], b: readonly OaReferenciadoType[]): boolean {
+  if (a.length !== b.length) return false;
+  return a.every((oa, i) => {
+    const otro = b[i];
+    return otro !== undefined && oa.codigo === otro.codigo && oa.descripcion === otro.descripcion && oa.categoria === otro.categoria;
+  });
 }

@@ -115,30 +115,27 @@ async function main(): Promise<void> {
 
   log.info({ workerId, modo, samplesDir }, 'worker: iniciado (H-PA.8)');
 
-  // Loop principal: procesa jobs de cascada y de planificación hasta recibir señal de apagado.
+  // Loop principal: en CADA iteración intenta ambas colas (cascada y planificación) para que una
+  // cola con trabajo continuo no inanice a la otra; el backoff solo aplica si AMBAS están vacías.
   while (corriendo) {
     const r = await useCase.ejecutarSiguiente(workerId);
-    if (r.tipo !== 'sin_trabajo') {
-      switch (r.tipo) {
-        case 'hecho':
-          log.info({ jobId: r.jobId, documentoRaizId: r.documentoRaizId }, 'worker: cascada hecha');
-          break;
-        case 'reintenta':
-          log.warn({ jobId: r.jobId, error: r.error }, 'worker: cascada reencolada para reintento');
-          break;
-        case 'fallido':
-          log.error({ jobId: r.jobId, error: r.error }, 'worker: cascada fallida (reintentos agotados)');
-          break;
-      }
-      continue;
+    switch (r.tipo) {
+      case 'sin_trabajo':
+        break;
+      case 'hecho':
+        log.info({ jobId: r.jobId, documentoRaizId: r.documentoRaizId }, 'worker: cascada hecha');
+        break;
+      case 'reintenta':
+        log.warn({ jobId: r.jobId, error: r.error }, 'worker: cascada reencolada para reintento');
+        break;
+      case 'fallido':
+        log.error({ jobId: r.jobId, error: r.error }, 'worker: cascada fallida (reintentos agotados)');
+        break;
     }
 
-    // Sin cascada pendiente: intenta la cola de planificación (H-2.7).
     const rp = await planificacionUseCase.ejecutarSiguiente(workerId);
     switch (rp.tipo) {
       case 'sin_trabajo':
-        // Ambas colas vacías: backoff fijo para no saturar la DB.
-        await esperar(INTERVALO_VACIO_MS);
         break;
       case 'hecho':
         log.info({ jobId: rp.jobId, documentoId: rp.documentoId }, 'worker: planificación hecha');
@@ -149,6 +146,11 @@ async function main(): Promise<void> {
       case 'fallido':
         log.error({ jobId: rp.jobId, error: rp.error }, 'worker: planificación fallida');
         break;
+    }
+
+    // Backoff fijo solo si ambas colas quedaron vacías (no saturar la DB cuando no hay trabajo).
+    if (r.tipo === 'sin_trabajo' && rp.tipo === 'sin_trabajo') {
+      await esperar(INTERVALO_VACIO_MS);
     }
   }
 

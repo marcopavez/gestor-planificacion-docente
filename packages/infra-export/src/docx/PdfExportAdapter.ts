@@ -9,8 +9,10 @@
 
 import { execFile } from 'node:child_process';
 import { existsSync } from 'node:fs';
-import { stat } from 'node:fs/promises';
+import { mkdtemp, rm, stat } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { basename, delimiter, join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
 import type {
   ArchivoExportado,
@@ -54,13 +56,19 @@ export function resolverSofficeBin(env: NodeJS.ProcessEnv = process.env): string
   return null;
 }
 
-/** Comando + args para convertir un .docx a .pdf con LibreOffice headless. Testeable sin ejecutar. */
+/**
+ * Comando + args para convertir un .docx a .pdf con LibreOffice headless. Testeable sin ejecutar.
+ * `profileDir` (opcional) aísla el perfil de usuario de LibreOffice por invocación: sin él, dos
+ * conversiones concurrentes comparten perfil y una falla por el lock del perfil.
+ */
 export function construirComandoSoffice(
   bin: string,
   docxPath: string,
   outDir: string,
+  profileDir?: string,
 ): { bin: string; args: string[] } {
-  return { bin, args: ['--headless', '--norestore', '--convert-to', 'pdf', '--outdir', outDir, docxPath] };
+  const perfil = profileDir !== undefined ? [`-env:UserInstallation=${pathToFileURL(profileDir).href}`] : [];
+  return { bin, args: ['--headless', '--norestore', ...perfil, '--convert-to', 'pdf', '--outdir', outDir, docxPath] };
 }
 
 /** Ruta del .pdf que LibreOffice escribe (mismo basename del .docx, extensión .pdf, en outDir). */
@@ -84,22 +92,29 @@ export class PdfExportAdapter {
     plan: PlanificacionUnidad,
     plantilla: PlantillaPlanificacion,
     catalogos: CatalogosPlanificacion,
+    idDocumento?: string,
   ): Promise<ArchivoExportado> {
     const bin = resolverSofficeBin();
     if (bin === null) throw new MotorPdfNoDisponibleError();
 
     // El .pdf es el .docx renderizado: generamos el .docx primero (cero divergencia).
-    const docx = await this.docx.aDocx(plan, plantilla, catalogos);
-    const { args } = construirComandoSoffice(bin, docx.ruta, this.dirSalida);
+    const docx = await this.docx.aDocx(plan, plantilla, catalogos, idDocumento);
 
-    await execFileP(bin, args, { timeout: 120_000 });
+    // Perfil de usuario aislado por invocación → conversiones concurrentes no chocan por el lock.
+    const profileDir = await mkdtemp(join(tmpdir(), 'faro-soffice-'));
+    try {
+      const { args } = construirComandoSoffice(bin, docx.ruta, this.dirSalida, profileDir);
+      await execFileP(bin, args, { timeout: 120_000 });
 
-    const ruta = rutaPdfEsperada(this.dirSalida, docx.ruta);
-    if (!existsSync(ruta)) {
-      throw new Error(`LibreOffice no produjo el PDF esperado en ${ruta}.`);
+      const ruta = rutaPdfEsperada(this.dirSalida, docx.ruta);
+      if (!existsSync(ruta)) {
+        throw new Error(`LibreOffice no produjo el PDF esperado en ${ruta}.`);
+      }
+      const { size } = await stat(ruta);
+      this.log.info({ ruta, bytes: size }, 'export.pdf');
+      return { ruta, mime: MIME_PDF, bytes: size };
+    } finally {
+      await rm(profileDir, { recursive: true, force: true });
     }
-    const { size } = await stat(ruta);
-    this.log.info({ ruta, bytes: size }, 'export.pdf');
-    return { ruta, mime: MIME_PDF, bytes: size };
   }
 }

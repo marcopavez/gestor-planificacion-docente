@@ -100,7 +100,9 @@ function bloquesDeSeccion(
       continue;
     }
 
-    // Corre de checkbox_set consecutivos → matriz multi-columna (la Diversificación de 5 columnas).
+    // Corre de checkbox_set consecutivos. Solo se renderiza como matriz multi-columna si la SECCIÓN
+    // lo declara (layout='matriz', p. ej. la Diversificación); si no, cada set se apila por separado
+    // (no se inventa una matriz por mera adyacencia — RF-2.11; la Evaluación apila sus checkbox_set).
     if (campo.tipo === 'checkbox_set') {
       const columnas: Array<{ titulo: string; opciones: OpcionCheck[] }> = [];
       while (i < campos.length && campos[i] !== undefined && campos[i]!.tipo === 'checkbox_set') {
@@ -108,11 +110,11 @@ function bloquesDeSeccion(
         columnas.push({ titulo: c.etiqueta, opciones: opcionesCheck(plan, c, catalogos) });
         i++;
       }
-      bloques.push(
-        columnas.length > 1
-          ? { tipo: 'checkbox_matriz', columnas }
-          : { tipo: 'checkbox', titulo: columnas[0]!.titulo, opciones: columnas[0]!.opciones },
-      );
+      if (seccion.layout === 'matriz' && columnas.length > 1) {
+        bloques.push({ tipo: 'checkbox_matriz', columnas });
+      } else {
+        for (const c of columnas) bloques.push({ tipo: 'checkbox', titulo: c.titulo, opciones: c.opciones });
+      }
       continue;
     }
 
