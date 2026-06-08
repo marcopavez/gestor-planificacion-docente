@@ -121,6 +121,10 @@ export interface NormaRepository {
 
 export interface OaRepository {
   porAsignaturaCurso(asignatura: string, curso: string, corpusVersionId: string): Promise<ObjetivoAprendizaje[]>;
+  // RF-1.4 / RF-2.5: OA reales de las Bases por (asignatura, nivel) para que la planificación
+  // los ofrezca como datos fijos. La versión vigente del corpus la resuelve el adapter
+  // (file-based: del manifiesto; DB: la corpus_version publicada). Error tipado si no existe.
+  porAsignaturaNivel(asignatura: string, nivel: string): Promise<ObjetivoAprendizaje[]>;
   porIds(ids: readonly string[]): Promise<ObjetivoAprendizaje[]>;
 }
 

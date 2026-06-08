@@ -2,10 +2,21 @@
 // Adapter Drizzle para OaRepository (RF-PA.3, RF-PA.2).
 // INV-5: importa de @faro/domain (puerto) y del schema local; nunca al revés.
 
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, desc, eq, inArray } from 'drizzle-orm';
 import type { OaRepository, ObjetivoAprendizaje } from '@faro/domain';
 import type { DrizzleDb } from '../db.js';
-import { objetivoAprendizaje } from '../schema/index.js';
+import { corpusVersion, objetivoAprendizaje } from '../schema/index.js';
+
+/** No hay ninguna corpus_version publicada para resolver la consulta por (asignatura, nivel). */
+export class CorpusNoPublicadoError extends Error {
+  constructor() {
+    super(
+      'No hay una corpus_version publicada vigente para resolver porAsignaturaNivel; ' +
+        'publica una corpus_version (ADR-004) o usa OaRepositoryCorpus (file-based).',
+    );
+    this.name = 'CorpusNoPublicadoError';
+  }
+}
 
 // Tipo de fila inferido del schema Drizzle para el mapeo interno.
 type OaRow = typeof objetivoAprendizaje.$inferSelect;
@@ -54,6 +65,22 @@ export class OaRepositoryDrizzle implements OaRepository {
       );
 
     return rows.map(filaADominio);
+  }
+
+  /**
+   * RF-1.4: deriva de porAsignaturaCurso usando la corpus_version PUBLICADA más reciente
+   * (el snapshot activo — ADR-004). Si no hay ninguna publicada, lanza error tipado claro.
+   */
+  async porAsignaturaNivel(asignatura: string, nivel: string): Promise<ObjetivoAprendizaje[]> {
+    const [version] = await this.db
+      .select({ id: corpusVersion.id })
+      .from(corpusVersion)
+      .where(eq(corpusVersion.estado, 'publicada'))
+      .orderBy(desc(corpusVersion.publicadaAt))
+      .limit(1);
+
+    if (version === undefined) throw new CorpusNoPublicadoError();
+    return this.porAsignaturaCurso(asignatura, nivel, version.id);
   }
 
   async porIds(ids: readonly string[]): Promise<ObjetivoAprendizaje[]> {

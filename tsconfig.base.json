@@ -20,6 +20,7 @@
       "@faro/infra-db": ["./packages/infra-db/src/index.ts"],
       "@faro/infra-ai": ["./packages/infra-ai/src/index.ts"],
       "@faro/infra-export": ["./packages/infra-export/src/index.ts"],
+      "@faro/infra-corpus": ["./packages/infra-corpus/src/index.ts"],
       "@faro/observability": ["./packages/observability/src/index.ts"],
       "@faro/config": ["./packages/config/src/index.ts"]
     }

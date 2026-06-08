@@ -11,6 +11,7 @@
     { "path": "./packages/infra-db" },
     { "path": "./packages/infra-ai" },
     { "path": "./packages/infra-export" },
+    { "path": "./packages/infra-corpus" },
     { "path": "./apps/worker" },
     { "path": "./apps/ingest" }
   ]
