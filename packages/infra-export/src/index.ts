@@ -8,3 +8,13 @@ export { PptxExportAdapter } from './pptx/PptxExportAdapter.js';
 export { DocxExportAdapter, construirDocumento, MIME_DOCX } from './docx/DocxExportAdapter.js';
 export { planoDocumento } from './docx/plano.js';
 export type { DocumentoPlano, SeccionPlano, BloquePlano, OpcionCheck } from './docx/plano.js';
+
+// --- Export a .pdf (H-2.6): .docx → PDF vía LibreOffice headless ---
+export {
+  PdfExportAdapter,
+  MotorPdfNoDisponibleError,
+  MIME_PDF,
+  resolverSofficeBin,
+  construirComandoSoffice,
+  rutaPdfEsperada,
+} from './docx/PdfExportAdapter.js';
