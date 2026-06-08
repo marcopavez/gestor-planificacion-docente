@@ -275,7 +275,7 @@ function Resultados({ salida }: { salida: Salida }): React.ReactElement {
           {unidad.indicadores_evaluacion.map((ind, i) => (
             <li key={i}>
               {ind.texto}{' '}
-              <span style={{ fontSize: 11, padding: '1px 6px', borderRadius: 999, background: ind.fuente === 'programa_estudio' ? '#dafbe1' : '#ffeef0' }}>
+              <span style={{ fontSize: 11, padding: '1px 6px', borderRadius: 999, background: ind.fuente === 'oficial' ? '#dafbe1' : '#ffeef0' }}>
                 {ind.fuente}
               </span>
             </li>

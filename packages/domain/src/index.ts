@@ -99,8 +99,18 @@ export type { ItemPruebaType, Prueba } from './schemas/prueba.js';
 export { SchemaReglamentoAuditoria } from './schemas/reglamentoAuditoria.js';
 export type { ReglamentoAuditoria } from './schemas/reglamentoAuditoria.js';
 
-// --- Schemas de la cascada M0 Aula (spec 02-aula-cascada) ---
+// --- Schemas de la planificación (spec 02-planificacion) ---
 export { SchemaPlanificacionUnidad, OaReferenciado, IndicadorEvaluacion } from './schemas/planificacionUnidad.js';
+export {
+  SchemaCatalogosPlanificacion,
+  SchemaArchivoCatalogos,
+  OpcionCatalogo,
+} from './schemas/catalogosPlanificacion.js';
+export type {
+  CatalogosPlanificacion,
+  ClaveCatalogo,
+  OpcionCatalogoType,
+} from './schemas/catalogosPlanificacion.js';
 
 // --- Planificación Anual (RF-PA.4 — §4.3 plan-fase-1) ---
 export { SchemaPlanificacionAnual, SchemaUnidadPlanificada } from './schemas/planificacionAnual.js';

@@ -1,0 +1,61 @@
+{
+  "asignatura": "Transversal",
+  "nivel": "Básica",
+  "codigoAsignaturaNivel": "OAT",
+  "fuente": {
+    "documento": "Bases Curriculares 1º a 6º Básico (MINEDUC) — Objetivos de Aprendizaje Transversales",
+    "pdf": "docs/bases-curriculares-primera-a-sexto-basico.pdf",
+    "paginasPdf": "31-33 (numeración interna del documento: pp. 28-31)",
+    "verificado": "Texto verbatim extraído con pdfplumber; 32 OAT en 8 dimensiones. Cross-check OAT 9 y OAT 25 contra el sample del colegio: OK."
+  },
+  "vigencia": {
+    "desde": null,
+    "hasta": null,
+    "nota": "[VERIFICAR] decreto y fecha que aprueban estas Bases Curriculares antes de fijar vigencia_desde."
+  },
+  "nota": "Los OAT no se asocian a una asignatura ni a un nivel: son metas comprensivas y generales para toda la Educación Básica (1º a 6º). Se exponen como un bloque transversal del corpus para que la planificación (Formato A) los referencie como datos fijos, no inventados por IA.",
+  "dimensiones": [
+    "física",
+    "afectiva",
+    "cognitiva",
+    "socio-cultural",
+    "moral",
+    "espiritual",
+    "Proactividad y trabajo",
+    "Tecnologías de información y comunicación (TIC)"
+  ],
+  "objetivos_aprendizaje": [
+    { "codigo": "OAT 1", "numero": 1, "eje": "física", "descripcion": "Favorecer el desarrollo físico personal y el autocuidado, en el contexto de la valoración de la vida y el propio cuerpo, mediante hábitos de higiene, prevención de riesgos y hábitos de vida saludable.", "indicadores": [] },
+    { "codigo": "OAT 2", "numero": 2, "eje": "física", "descripcion": "Practicar actividad física adecuada a sus intereses y aptitudes.", "indicadores": [] },
+    { "codigo": "OAT 3", "numero": 3, "eje": "afectiva", "descripcion": "Adquirir un sentido positivo ante la vida, una sana autoestima y confianza en sí mismo, basada en el conocimiento personal, tanto de sus potencialidades como de sus limitaciones.", "indicadores": [] },
+    { "codigo": "OAT 4", "numero": 4, "eje": "afectiva", "descripcion": "Comprender y apreciar la importancia que tienen las dimensiones afectiva, espiritual, ética y social para un sano desarrollo sexual.", "indicadores": [] },
+    { "codigo": "OAT 5", "numero": 5, "eje": "afectiva", "descripcion": "Apreciar la importancia social, afectiva y espiritual de la familia para el desarrollo integral de cada uno de sus miembros y de toda la sociedad.", "indicadores": [] },
+    { "codigo": "OAT 6", "numero": 6, "eje": "cognitiva", "descripcion": "Identificar, procesar y sintetizar información de diversas fuentes y organizar la información relevante acerca de un tópico o problema.", "indicadores": [] },
+    { "codigo": "OAT 7", "numero": 7, "eje": "cognitiva", "descripcion": "Organizar, clasificar, analizar, interpretar y sintetizar la información y establecer relaciones entre las distintas asignaturas del aprendizaje.", "indicadores": [] },
+    { "codigo": "OAT 8", "numero": 8, "eje": "cognitiva", "descripcion": "Exponer ideas, opiniones, convicciones, sentimientos y experiencias de manera coherente y fundamentada, haciendo uso de diversas y variadas formas de expresión.", "indicadores": [] },
+    { "codigo": "OAT 9", "numero": 9, "eje": "cognitiva", "descripcion": "Resolver problemas de manera reflexiva en el ámbito escolar, familiar y social, tanto utilizando modelos y rutinas como aplicando de manera creativa conceptos y criterios.", "indicadores": [] },
+    { "codigo": "OAT 10", "numero": 10, "eje": "cognitiva", "descripcion": "Diseñar, planificar y realizar proyectos.", "indicadores": [] },
+    { "codigo": "OAT 11", "numero": 11, "eje": "socio-cultural", "descripcion": "Valorar la vida en sociedad como una dimensión esencial del crecimiento de la persona, y actuar de acuerdo con valores y normas de convivencia cívica, pacífica y democrática, conociendo sus derechos y responsabilidades, y asumiendo compromisos consigo mismo y con los otros.", "indicadores": [] },
+    { "codigo": "OAT 12", "numero": 12, "eje": "socio-cultural", "descripcion": "Valorar el compromiso en las relaciones entre las personas y al acordar contratos: en la amistad, en el amor, en el matrimonio, en el trabajo y al emprender proyectos.", "indicadores": [] },
+    { "codigo": "OAT 13", "numero": 13, "eje": "socio-cultural", "descripcion": "Participar solidaria y responsablemente en las actividades y proyectos de la familia, del establecimiento y de la comunidad.", "indicadores": [] },
+    { "codigo": "OAT 14", "numero": 14, "eje": "socio-cultural", "descripcion": "Conocer y valorar la historia y sus actores, las tradiciones, los símbolos, el patrimonio territorial y cultural de la nación, en el contexto de un mundo crecientemente globalizado e interdependiente.", "indicadores": [] },
+    { "codigo": "OAT 15", "numero": 15, "eje": "socio-cultural", "descripcion": "Reconocer y respetar la igualdad de derechos entre hombres y mujeres y apreciar la importancia de desarrollar relaciones que potencien su participación equitativa en la vida económica familiar, social y cultural.", "indicadores": [] },
+    { "codigo": "OAT 16", "numero": 16, "eje": "socio-cultural", "descripcion": "Proteger el entorno natural y sus recursos como contexto de desarrollo humano.", "indicadores": [] },
+    { "codigo": "OAT 17", "numero": 17, "eje": "moral", "descripcion": "Ejercer de modo responsable grados crecientes de libertad y autonomía personal, de acuerdo a valores como la justicia, la verdad, la solidaridad y la honestidad, el respeto, el bien común y la generosidad.", "indicadores": [] },
+    { "codigo": "OAT 18", "numero": 18, "eje": "moral", "descripcion": "Conocer, respetar y defender la igualdad de derechos esenciales de todas las personas, sin distinción de sexo, edad, condición física, etnia, religión o situación económica, y actuar en concordancia con el principio ético que reconoce que todos los “seres humanos nacen libres e iguales en dignidad y derechos y, dotados de razón y conciencia, deben comportarse fraternalmente los unos con los otros” (Declaración Universal de Derechos Humanos, Artículo 1º).", "indicadores": [] },
+    { "codigo": "OAT 19", "numero": 19, "eje": "moral", "descripcion": "Valorar el carácter único de cada ser humano y, por lo tanto, la diversidad que se manifiesta entre las personas, y desarrollar la capacidad de empatía con los otros.", "indicadores": [] },
+    { "codigo": "OAT 20", "numero": 20, "eje": "moral", "descripcion": "Reconocer y respetar la diversidad cultural, religiosa y étnica y las ideas y creencias distintas de las propias en los espacios escolares, familiares y comunitarios, reconociendo el diálogo como fuente de crecimiento, superación de diferencias y acercamiento a la verdad.", "indicadores": [] },
+    { "codigo": "OAT 21", "numero": 21, "eje": "espiritual", "descripcion": "Reconocer la finitud humana.", "indicadores": [] },
+    { "codigo": "OAT 22", "numero": 22, "eje": "espiritual", "descripcion": "Reconocer y reflexionar sobre la dimensión trascendente y/o religiosa de la vida humana.", "indicadores": [] },
+    { "codigo": "OAT 23", "numero": 23, "eje": "Proactividad y trabajo", "descripcion": "Demostrar interés por conocer la realidad y utilizar el conocimiento.", "indicadores": [] },
+    { "codigo": "OAT 24", "numero": 24, "eje": "Proactividad y trabajo", "descripcion": "Practicar la iniciativa personal, la creatividad y el espíritu emprendedor en los ámbitos personal, escolar y comunitario.", "indicadores": [] },
+    { "codigo": "OAT 25", "numero": 25, "eje": "Proactividad y trabajo", "descripcion": "Trabajar en equipo de manera responsable, construyendo relaciones basadas en la confianza mutua.", "indicadores": [] },
+    { "codigo": "OAT 26", "numero": 26, "eje": "Proactividad y trabajo", "descripcion": "Comprender y valorar la perseverancia, el rigor y el cumplimiento, por un lado, y la flexibilidad, la originalidad, la aceptación de consejos y críticas y el asumir riesgos, por el otro, como aspectos fundamentales en el desarrollo y la consumación exitosa de tareas y trabajos.", "indicadores": [] },
+    { "codigo": "OAT 27", "numero": 27, "eje": "Proactividad y trabajo", "descripcion": "Reconocer la importancia del trabajo –manual e intelectual– como forma de desarrollo personal, familiar, social y de contribución al bien común, valorando la dignidad esencial de todo trabajo y el valor eminente de la persona que lo realiza.", "indicadores": [] },
+    { "codigo": "OAT 28", "numero": 28, "eje": "Tecnologías de información y comunicación (TIC)", "descripcion": "Buscar, acceder y evaluar la calidad y la pertinencia de la información de diversas fuentes virtuales.", "indicadores": [] },
+    { "codigo": "OAT 29", "numero": 29, "eje": "Tecnologías de información y comunicación (TIC)", "descripcion": "Utilizar TIC que resuelvan las necesidades de información, comunicación, expresión y creación dentro del entorno educativo y social inmediato.", "indicadores": [] },
+    { "codigo": "OAT 30", "numero": 30, "eje": "Tecnologías de información y comunicación (TIC)", "descripcion": "Utilizar aplicaciones para presentar, representar, analizar y modelar información y situaciones, comunicar ideas y argumentos, comprender y resolver problemas de manera eficiente y efectiva, aprovechando múltiples medios (texto, imagen, audio y video).", "indicadores": [] },
+    { "codigo": "OAT 31", "numero": 31, "eje": "Tecnologías de información y comunicación (TIC)", "descripcion": "Participar en redes virtuales de comunicación y en redes ciudadanas de participación e información, con aportes creativos y pertinentes.", "indicadores": [] },
+    { "codigo": "OAT 32", "numero": 32, "eje": "Tecnologías de información y comunicación (TIC)", "descripcion": "Hacer un uso consciente y responsable de las tecnologías de la información y la comunicación, aplicando criterios de autocuidado y cuidado de los otros en la comunicación virtual, y respetando el derecho a la privacidad y la propiedad intelectual.", "indicadores": [] }
+  ]
+}
