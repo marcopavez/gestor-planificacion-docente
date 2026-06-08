@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { crearLoggerHijo } from '@faro/observability';
 import { describe, expect, it } from 'vitest';
-import { BloqueCorpusNoEncontradoError } from './errors.js';
+import { BloqueCorpusNoEncontradoError, CorpusVersionDesconocidaError } from './errors.js';
 import { OaRepositoryCorpus } from './OaRepositoryCorpus.js';
 
 // Raíz del repo desde packages/infra-corpus/src → ../../../
@@ -48,6 +48,19 @@ describe('OaRepositoryCorpus.porAsignaturaNivel (RF-1.4, CA-1.2)', () => {
 
   it('expone corpusVersionId = corpus@<version del manifiesto> (INV-4)', async () => {
     expect(await crearRepo().corpusVersionId()).toBe('corpus@2026.1');
+  });
+});
+
+describe('OaRepositoryCorpus.porAsignaturaCurso (compat con el puerto)', () => {
+  it('delega en porAsignaturaNivel si la versión pedida coincide con la disponible', async () => {
+    const oas = await crearRepo().porAsignaturaCurso('Matemática', '1º básico', 'corpus@2026.1');
+    expect(oas).toHaveLength(20);
+  });
+
+  it('lanza error tipado si se pide una corpus_version que el corpus file-based no expone (INV-4)', async () => {
+    await expect(
+      crearRepo().porAsignaturaCurso('Matemática', '1º básico', 'corpus@otra-version'),
+    ).rejects.toBeInstanceOf(CorpusVersionDesconocidaError);
   });
 });
 

@@ -5,6 +5,7 @@
 // y el mismo corpus_version inmutable (INV-4/INV-5). Solo lectura, server-side.
 
 import { join } from 'node:path';
+import type { OaRepository } from '@faro/domain';
 import { OaRepositoryCorpus } from '@faro/infra-corpus';
 import { crearLoggerHijo } from '@faro/observability';
 import type { MateriaDemo } from './materias';
@@ -23,9 +24,11 @@ export interface CorpusMateria {
   readonly oa: readonly OaCorpusItem[];
 }
 
-// Una sola instancia del repo por proceso (cachea manifiesto + archivos parseados).
-let repo: OaRepositoryCorpus | null = null;
-function obtenerRepo(): OaRepositoryCorpus {
+// Una sola instancia del repo por proceso (cachea manifiesto + archivos parseados). Se tipa como
+// el puerto OaRepository para no acoplar la web al adapter concreto (INV-5): solo la construcción
+// conoce OaRepositoryCorpus.
+let repo: OaRepository | null = null;
+function obtenerRepo(): OaRepository {
   if (repo === null) {
     repo = new OaRepositoryCorpus(join(raizRepo(), 'corpus'), crearLoggerHijo('infra-corpus'));
   }
@@ -33,16 +36,13 @@ function obtenerRepo(): OaRepositoryCorpus {
 }
 
 export async function cargarCorpus(m: MateriaDemo): Promise<CorpusMateria> {
-  const r = obtenerRepo();
-  // El repo resuelve el archivo por el manifiesto (asignatura+nivel) y sella corpus_version.
-  const [oas, corpusVersionId] = await Promise.all([
-    r.porAsignaturaNivel(m.asignatura, m.nivel),
-    r.corpusVersionId(),
-  ]);
+  // El repo resuelve el archivo por el manifiesto (asignatura+nivel) y sella corpus_version en cada
+  // OA; derivamos el corpus_version de las entidades en vez de un método del adapter concreto.
+  const oas = await obtenerRepo().porAsignaturaNivel(m.asignatura, m.nivel);
   return {
     asignatura: m.asignatura,
     nivel: m.nivel,
-    corpusVersionId,
+    corpusVersionId: oas[0]?.corpusVersionId ?? '',
     oa: oas.map((oa) => ({ codigo: oa.codigo, descripcion: oa.descripcion, indicadores: oa.indicadores })),
   };
 }

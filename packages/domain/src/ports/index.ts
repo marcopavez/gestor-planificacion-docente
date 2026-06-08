@@ -23,6 +23,7 @@ import type {
   PlanificacionAnualGuardada,
   UnidadPlanificada,
 } from '../schemas/planificacionAnual.js';
+import type { FormatoPlantillaType, PlantillaPlanificacion } from '../schemas/plantilla.js';
 
 // --- Recuperación (RAG) ---
 
@@ -126,6 +127,15 @@ export interface OaRepository {
   // (file-based: del manifiesto; DB: la corpus_version publicada). Error tipado si no existe.
   porAsignaturaNivel(asignatura: string, nivel: string): Promise<ObjetivoAprendizaje[]>;
   porIds(ids: readonly string[]): Promise<ObjetivoAprendizaje[]>;
+}
+
+// --- Plantillas de planificación (RF-2.4 — data-driven; el adapter file-based vive en infra-corpus) ---
+
+export interface PlantillaRepository {
+  porId(id: string): Promise<PlantillaPlanificacion | null>;
+  // La plantilla activa de un establecimiento para un formato (A/B). null si no hay una configurada.
+  activaPara(establecimiento: string, formato: FormatoPlantillaType): Promise<PlantillaPlanificacion | null>;
+  listar(): Promise<PlantillaPlanificacion[]>;
 }
 
 export interface DocumentoRepository {

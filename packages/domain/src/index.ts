@@ -30,6 +30,7 @@ export type {
   NormaRepository,
   OaRepository,
   PlanificacionAnualRepository,
+  PlantillaRepository,
   RerankerPort,
   ReposTransaccion,
   ResultadoVerificacion,
@@ -111,6 +112,22 @@ export type {
   ClaveCatalogo,
   OpcionCatalogoType,
 } from './schemas/catalogosPlanificacion.js';
+export {
+  SchemaPlantillaPlanificacion,
+  CampoPlantilla,
+  SeccionPlantilla,
+  TipoCampo,
+  OrigenCampo,
+  FormatoPlantilla,
+} from './schemas/plantilla.js';
+export type {
+  PlantillaPlanificacion,
+  CampoPlantillaType,
+  SeccionPlantillaType,
+  TipoCampoType,
+  OrigenCampoType,
+  FormatoPlantillaType,
+} from './schemas/plantilla.js';
 
 // --- Planificación Anual (RF-PA.4 — §4.3 plan-fase-1) ---
 export { SchemaPlanificacionAnual, SchemaUnidadPlanificada } from './schemas/planificacionAnual.js';

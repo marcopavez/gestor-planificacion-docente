@@ -9,7 +9,11 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { OaRepository, ObjetivoAprendizaje } from '@faro/domain';
 import type { Logger } from '@faro/observability';
-import { ArchivoCorpusInvalidoError, BloqueCorpusNoEncontradoError } from './errors.js';
+import {
+  ArchivoCorpusInvalidoError,
+  BloqueCorpusNoEncontradoError,
+  CorpusVersionDesconocidaError,
+} from './errors.js';
 import { ArchivoCorpusSchema, ManifiestoSchema, type ArchivoCorpus, type Manifiesto } from './schemas.js';
 
 export class OaRepositoryCorpus implements OaRepository {
@@ -35,11 +39,20 @@ export class OaRepositoryCorpus implements OaRepository {
   }
 
   /**
-   * Compatibilidad con el puerto: el corpus file-based tiene una sola versión (la del manifiesto),
-   * así que el `corpusVersionId` del puerto se omite (TS permite implementar con menos parámetros)
-   * y `curso` se trata como `nivel`. Para consultas nuevas usa `porAsignaturaNivel`.
+   * Compatibilidad con el puerto. El corpus file-based tiene una sola versión (la del manifiesto)
+   * y no guarda histórico, así que validamos que la versión pedida sea la disponible y NO la
+   * ignoramos en silencio (evita un caller que crea estar leyendo otra versión — INV-4). `curso`
+   * se trata como `nivel`. Para consultas nuevas usa `porAsignaturaNivel` (no exige versión).
    */
-  async porAsignaturaCurso(asignatura: string, curso: string): Promise<ObjetivoAprendizaje[]> {
+  async porAsignaturaCurso(
+    asignatura: string,
+    curso: string,
+    corpusVersionId: string,
+  ): Promise<ObjetivoAprendizaje[]> {
+    const disponible = await this.corpusVersionId();
+    if (corpusVersionId !== disponible) {
+      throw new CorpusVersionDesconocidaError(corpusVersionId, disponible);
+    }
     return this.porAsignaturaNivel(asignatura, curso);
   }
 

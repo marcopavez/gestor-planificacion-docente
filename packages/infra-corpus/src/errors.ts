@@ -15,6 +15,23 @@ export class BloqueCorpusNoEncontradoError extends Error {
   }
 }
 
+/**
+ * Se pidió a `porAsignaturaCurso` una corpus_version que el corpus file-based no puede servir:
+ * el adapter expone una sola versión (la del manifiesto) y no guarda histórico (INV-4).
+ */
+export class CorpusVersionDesconocidaError extends Error {
+  constructor(
+    public readonly solicitada: string,
+    public readonly disponible: string,
+  ) {
+    super(
+      `El corpus file-based solo expone la versión '${disponible}', pero se solicitó '${solicitada}'. ` +
+        `Usa porAsignaturaNivel (no exige versión) o la versión vigente.`,
+    );
+    this.name = 'CorpusVersionDesconocidaError';
+  }
+}
+
 /** El archivo referenciado por el manifiesto no parsea contra el schema del corpus (RF-1.6). */
 export class ArchivoCorpusInvalidoError extends Error {
   constructor(
