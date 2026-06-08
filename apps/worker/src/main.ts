@@ -8,9 +8,15 @@
 
 import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { CascadaAulaUseCase, ProcesarTrabajoCascadaUseCase } from '@faro/application';
+import {
+  CascadaAulaUseCase,
+  GenerarPlanificacionUseCase,
+  ProcesarTrabajoCascadaUseCase,
+  ProcesarTrabajoPlanificacionUseCase,
+} from '@faro/application';
 import type { ClockPort } from '@faro/domain';
 import { crearLlm } from '@faro/infra-ai';
+import { CatalogoRepositoryCorpus, PlantillaRepositoryCorpus } from '@faro/infra-corpus';
 import {
   crearDb,
   JobRepositoryDrizzle,
@@ -68,16 +74,34 @@ async function main(): Promise<void> {
     crearLoggerHijo('infra-ai'),
   );
 
+  const oas = new OaRepositoryDrizzle(db);
   const useCase = new ProcesarTrabajoCascadaUseCase({
     // jobs top-level: tomarSiguiente/reintentar/marcarFallido corren fuera de la unidad de trabajo.
     jobs: new JobRepositoryDrizzle(db),
     planes: new PlanificacionAnualRepositoryDrizzle(db),
-    oas: new OaRepositoryDrizzle(db),
+    oas,
     // uow: persiste los 4 documentos + 4 trazas + marcarHecho en UNA transacción (atomicidad).
     uow: new UnidadDeTrabajoDrizzle(db),
     export: new PptxExportAdapter(join(raizRepo(), 'generated'), crearLoggerHijo('infra-export')),
     cascada: new CascadaAulaUseCase(llm),
     clock: relojSistema,
+  });
+
+  // --- Cola de planificación híbrida (H-2.7), en paralelo a la cascada (no la toca) ---
+  // Datos fijos: OA desde la DB (corpus_version publicada); plantillas y catálogos file-based.
+  const corpusDir = join(raizRepo(), 'corpus');
+  const catalogos = await new CatalogoRepositoryCorpus(corpusDir, crearLoggerHijo('infra-corpus')).catalogos();
+  const generarPlanificacion = new GenerarPlanificacionUseCase({
+    oas,
+    plantillas: new PlantillaRepositoryCorpus(corpusDir, crearLoggerHijo('infra-corpus')),
+    llm,
+    catalogos,
+  });
+  const planificacionUseCase = new ProcesarTrabajoPlanificacionUseCase({
+    jobs: new JobRepositoryDrizzle(db),
+    generar: generarPlanificacion,
+    catalogos,
+    uow: new UnidadDeTrabajoDrizzle(db),
   });
 
   let corriendo = true;
@@ -91,22 +115,39 @@ async function main(): Promise<void> {
 
   log.info({ workerId, modo, samplesDir }, 'worker: iniciado (H-PA.8)');
 
-  // Loop principal: procesa jobs hasta recibir señal de apagado.
+  // Loop principal: procesa jobs de cascada y de planificación hasta recibir señal de apagado.
   while (corriendo) {
     const r = await useCase.ejecutarSiguiente(workerId);
-    switch (r.tipo) {
+    if (r.tipo !== 'sin_trabajo') {
+      switch (r.tipo) {
+        case 'hecho':
+          log.info({ jobId: r.jobId, documentoRaizId: r.documentoRaizId }, 'worker: cascada hecha');
+          break;
+        case 'reintenta':
+          log.warn({ jobId: r.jobId, error: r.error }, 'worker: cascada reencolada para reintento');
+          break;
+        case 'fallido':
+          log.error({ jobId: r.jobId, error: r.error }, 'worker: cascada fallida (reintentos agotados)');
+          break;
+      }
+      continue;
+    }
+
+    // Sin cascada pendiente: intenta la cola de planificación (H-2.7).
+    const rp = await planificacionUseCase.ejecutarSiguiente(workerId);
+    switch (rp.tipo) {
       case 'sin_trabajo':
-        // Cola vacía: backoff fijo para no saturar la DB.
+        // Ambas colas vacías: backoff fijo para no saturar la DB.
         await esperar(INTERVALO_VACIO_MS);
         break;
       case 'hecho':
-        log.info({ jobId: r.jobId, documentoRaizId: r.documentoRaizId }, 'worker: job hecho');
+        log.info({ jobId: rp.jobId, documentoId: rp.documentoId }, 'worker: planificación hecha');
         break;
       case 'reintenta':
-        log.warn({ jobId: r.jobId, error: r.error }, 'worker: job reencolado para reintento');
+        log.warn({ jobId: rp.jobId, error: rp.error }, 'worker: planificación reencolada para reintento');
         break;
       case 'fallido':
-        log.error({ jobId: r.jobId, error: r.error }, 'worker: job fallido (reintentos agotados)');
+        log.error({ jobId: rp.jobId, error: rp.error }, 'worker: planificación fallida');
         break;
     }
   }

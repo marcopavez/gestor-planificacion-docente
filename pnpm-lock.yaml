@@ -123,6 +123,9 @@ importers:
       '@faro/infra-ai':
         specifier: workspace:*
         version: link:../../packages/infra-ai
+      '@faro/infra-corpus':
+        specifier: workspace:*
+        version: link:../../packages/infra-corpus
       '@faro/infra-db':
         specifier: workspace:*
         version: link:../../packages/infra-db

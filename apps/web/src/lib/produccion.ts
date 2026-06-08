@@ -10,6 +10,7 @@
 // No usamos cargarEnv() de @faro/config porque exige ANTHROPIC_API_KEY (la generación corre en el
 // worker, no en la web). Validamos SOLO DATABASE_URL localmente, como apps/ingest/src/main.ts.
 
+import { join } from 'node:path';
 import { z } from 'zod';
 import {
   CrearPlanificacionAnualUseCase,
@@ -17,6 +18,8 @@ import {
   RevisarDocumentoUseCase,
 } from '@faro/application';
 import type { ClockPort } from '@faro/domain';
+import { CatalogoRepositoryCorpus, PlantillaRepositoryCorpus } from '@faro/infra-corpus';
+import { DocxExportAdapter, PdfExportAdapter } from '@faro/infra-export';
 import {
   crearDb,
   CorpusVersionRepositoryDrizzle,
@@ -25,6 +28,8 @@ import {
   OaRepositoryDrizzle,
   PlanificacionAnualRepositoryDrizzle,
 } from '@faro/infra-db';
+import { crearLoggerHijo } from '@faro/observability';
+import { raizRepo } from './raiz';
 
 // Tipo de la conexión cacheada (la inferimos de crearDb para no asumir su forma).
 type Conexion = ReturnType<typeof crearDb>;
@@ -69,11 +74,24 @@ export function produccion() {
   const documentos = new DocumentoRepositoryDrizzle(db);
   const jobs = new JobRepositoryDrizzle(db);
 
+  // Adapters file-based (plantillas/catálogos) + export (.docx/.pdf) para el flujo de planificación
+  // (H-2.7). Las plantillas/catálogos son config de archivo; el export es bajo demanda en la web.
+  const corpusDir = join(raizRepo(), 'corpus');
+  const dirExport = join(raizRepo(), 'generated');
+  const logExport = crearLoggerHijo('infra-export');
+  const plantillas = new PlantillaRepositoryCorpus(corpusDir, crearLoggerHijo('infra-corpus'));
+  const catalogoRepo = new CatalogoRepositoryCorpus(corpusDir, crearLoggerHijo('infra-corpus'));
+
   return {
     // Repositorios (lectura / encolado) — los handlers leen puertos, no Drizzle.
     planes,
     documentos,
     jobs,
+    plantillas,
+    catalogoRepo,
+    // Export bajo demanda de la planificación (.docx / .pdf vía LibreOffice).
+    docxExport: new DocxExportAdapter(dirExport, logExport),
+    pdfExport: new PdfExportAdapter(dirExport, logExport),
     // Use cases (escritura con gate) — encapsulan la lógica de dominio.
     crearPlan: new CrearPlanificacionAnualUseCase(planes, oas, corpus, relojSistema),
     listarPlanes: new ListarPlanificacionAnualUseCase(planes),

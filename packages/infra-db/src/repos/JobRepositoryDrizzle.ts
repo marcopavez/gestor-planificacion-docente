@@ -4,7 +4,14 @@
 // El flujo es cascada-desde-unidad: el job referencia la unidad_planificada, no un documento.
 
 import { eq, sql } from 'drizzle-orm';
-import type { EstadoJob, JobRepository, TrabajoCascada } from '@faro/domain';
+import type {
+  EstadoJob,
+  JobRepository,
+  PayloadPlanificacion,
+  TrabajoCascada,
+  TrabajoPlanificacion,
+} from '@faro/domain';
+import { SchemaPayloadPlanificacion } from '@faro/domain';
 import type { DbOTx } from '../db.js';
 import { jobGeneracion } from '../schema/index.js';
 
@@ -31,6 +38,21 @@ export class JobRepositoryDrizzle implements JobRepository {
       .returning({ id: jobGeneracion.id });
 
     if (!row) throw new Error('No se pudo encolar el job de cascada');
+    return row.id;
+  }
+
+  async encolarPlanificacion(payload: PayloadPlanificacion): Promise<string> {
+    const [row] = await this.db
+      .insert(jobGeneracion)
+      .values({
+        tipoTrabajo: 'planificacion',
+        estado: 'pendiente',
+        // El payload (petición del docente) viaja en jsonb; el worker lo valida al tomarlo.
+        payload: payload as unknown as Record<string, unknown>,
+      })
+      .returning({ id: jobGeneracion.id });
+
+    if (!row) throw new Error('No se pudo encolar el job de planificación');
     return row.id;
   }
 
@@ -79,7 +101,7 @@ export class JobRepositoryDrizzle implements JobRepository {
       // usamos sql`` para la cláusula de bloqueo (aceptado por el proyecto per ADR-003).
       const rows = await tx.execute<{ id: string; unidad_planificada_id: string }>(
         sql`SELECT id, unidad_planificada_id FROM job_generacion
-            WHERE estado = 'pendiente'
+            WHERE estado = 'pendiente' AND tipo_trabajo = 'cascada_unidad'
             ORDER BY created_at ASC
             LIMIT 1
             FOR UPDATE SKIP LOCKED`,
@@ -110,6 +132,39 @@ export class JobRepositoryDrizzle implements JobRepository {
         unidadPlanificadaId: row.unidad_planificada_id,
         intentos: actualizado.intentos,
       };
+    });
+  }
+
+  /** Análogo a tomarSiguiente para la cola 'planificacion' (H-2.7): valida el payload jsonb al tomarlo. */
+  async tomarSiguientePlanificacion(workerId: string): Promise<TrabajoPlanificacion | null> {
+    return this.db.transaction(async (tx) => {
+      const rows = await tx.execute<{ id: string; payload: unknown }>(
+        sql`SELECT id, payload FROM job_generacion
+            WHERE estado = 'pendiente' AND tipo_trabajo = 'planificacion'
+            ORDER BY created_at ASC
+            LIMIT 1
+            FOR UPDATE SKIP LOCKED`,
+      );
+
+      const row = (rows as unknown as { rows: Array<{ id: string; payload: unknown }> }).rows[0];
+      if (!row) return null;
+
+      const [actualizado] = await tx
+        .update(jobGeneracion)
+        .set({
+          estado: 'en_proceso',
+          lockedBy: workerId,
+          lockedAt: new Date(),
+          intentos: sql`${jobGeneracion.intentos} + 1`,
+        })
+        .where(eq(jobGeneracion.id, row.id))
+        .returning({ intentos: jobGeneracion.intentos });
+
+      if (!actualizado) throw new Error('No se pudo bloquear el job de planificación tomado');
+
+      // El payload se validó al encolar; lo revalidamos aquí (defensa: jsonb es opaco).
+      const payload = SchemaPayloadPlanificacion.parse(row.payload);
+      return { id: row.id, payload, intentos: actualizado.intentos };
     });
   }
 

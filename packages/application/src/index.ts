@@ -47,6 +47,11 @@ export type {
   MetaPlanificacion,
   ResultadoGenerarPlanificacion,
 } from './planificacion/GenerarPlanificacionUseCase.js';
+export { ProcesarTrabajoPlanificacionUseCase } from './planificacion/ProcesarTrabajoPlanificacionUseCase.js';
+export type {
+  DependenciasProcesarPlanificacion,
+  ResultadoProcesarPlanificacion,
+} from './planificacion/ProcesarTrabajoPlanificacionUseCase.js';
 
 // --- CRUD de PlanificacionAnual (H-PA.5) ---
 export { CrearPlanificacionAnualUseCase } from './planificacion/CrearPlanificacionAnualUseCase.js';

@@ -38,6 +38,7 @@ export type {
   RetrievalPort,
   SalidaEstructurada,
   TrabajoCascada,
+  TrabajoPlanificacion,
   TrazaRepository,
   UnidadDeTrabajo,
   UsoTokens,

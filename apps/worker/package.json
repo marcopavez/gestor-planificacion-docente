@@ -14,6 +14,7 @@
     "@faro/config": "workspace:*",
     "@faro/domain": "workspace:*",
     "@faro/infra-ai": "workspace:*",
+    "@faro/infra-corpus": "workspace:*",
     "@faro/infra-db": "workspace:*",
     "@faro/infra-export": "workspace:*",
     "@faro/observability": "workspace:*"

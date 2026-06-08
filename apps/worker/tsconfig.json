@@ -9,6 +9,7 @@
       "@faro/config": ["../../packages/config/src/index.ts"],
       "@faro/domain": ["../../packages/domain/src/index.ts"],
       "@faro/infra-ai": ["../../packages/infra-ai/src/index.ts"],
+      "@faro/infra-corpus": ["../../packages/infra-corpus/src/index.ts"],
       "@faro/infra-db": ["../../packages/infra-db/src/index.ts"],
       "@faro/infra-export": ["../../packages/infra-export/src/index.ts"],
       "@faro/observability": ["../../packages/observability/src/index.ts"]
@@ -19,6 +20,7 @@
     { "path": "../../packages/config" },
     { "path": "../../packages/domain" },
     { "path": "../../packages/infra-ai" },
+    { "path": "../../packages/infra-corpus" },
     { "path": "../../packages/infra-db" },
     { "path": "../../packages/infra-export" },
     { "path": "../../packages/observability" }

@@ -4,6 +4,7 @@
 // delega en el repo para que la web y el resto del monorepo compartan la misma fuente de verdad
 // y el mismo corpus_version inmutable (INV-4/INV-5). Solo lectura, server-side.
 
+import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { OaRepository } from '@faro/domain';
 import { OaRepositoryCorpus } from '@faro/infra-corpus';
@@ -46,4 +47,33 @@ export async function cargarCorpus(m: MateriaDemo): Promise<CorpusMateria> {
     corpusVersionId: oas[0]?.corpusVersionId ?? '',
     oa: oas.map((oa) => ({ codigo: oa.codigo, descripcion: oa.descripcion, eje: oa.eje, indicadores: oa.indicadores })),
   };
+}
+
+export interface BloqueCorpus {
+  readonly asignatura: string;
+  readonly nivel: string;
+}
+
+// Forma mínima del manifiesto que la UI necesita para poblar los selectores (asignatura/nivel).
+interface ManifiestoMin {
+  bloques?: Array<{ asignatura?: unknown; nivel?: unknown }>;
+}
+
+/** Lista los bloques (asignatura, nivel) disponibles en el corpus, leyendo el manifiesto. */
+export async function listarBloquesCorpus(): Promise<BloqueCorpus[]> {
+  const ruta = join(raizRepo(), 'corpus', 'curriculum', '_manifest.json');
+  const crudo = JSON.parse(await readFile(ruta, 'utf8')) as ManifiestoMin;
+  const bloques = crudo.bloques ?? [];
+  return bloques
+    .filter((b): b is { asignatura: string; nivel: string } => typeof b.asignatura === 'string' && typeof b.nivel === 'string')
+    .map((b) => ({ asignatura: b.asignatura, nivel: b.nivel }));
+}
+
+/** OA (código + descripción) de un par (asignatura, nivel) para que la UI ofrezca su selección. */
+export async function cargarOaPorAsignaturaNivel(
+  asignatura: string,
+  nivel: string,
+): Promise<OaCorpusItem[]> {
+  const oas = await obtenerRepo().porAsignaturaNivel(asignatura, nivel);
+  return oas.map((oa) => ({ codigo: oa.codigo, descripcion: oa.descripcion, eje: oa.eje, indicadores: oa.indicadores }));
 }

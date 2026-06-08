@@ -26,6 +26,7 @@ import type {
 import type { FormatoPlantillaType, PlantillaPlanificacion } from '../schemas/plantilla.js';
 import type { PlanificacionUnidad } from '../schemas/planificacionUnidad.js';
 import type { CatalogosPlanificacion } from '../schemas/catalogosPlanificacion.js';
+import type { PayloadPlanificacion } from '../schemas/generarPlanificacion.js';
 
 // --- Recuperación (RAG) ---
 
@@ -191,6 +192,14 @@ export interface TrabajoCascada {
   readonly intentos: number; // ya incrementado por tomarSiguiente (cuenta el intento en curso)
 }
 
+// Un trabajo de generación de planificación híbrida (RF-2.14, H-2.7). El payload lleva la petición
+// completa del docente; el documento aún no existe al encolar (lo crea el worker).
+export interface TrabajoPlanificacion {
+  readonly id: string;
+  readonly payload: PayloadPlanificacion;
+  readonly intentos: number; // ya incrementado por tomarSiguientePlanificacion (cuenta el intento en curso)
+}
+
 // Estado de un job de la cola, leído por la web para hacer polling del avance (H-PA.9).
 // documentoId = id del documento raíz de la cascada (la unidad generada) cuando estado='hecho'.
 export interface EstadoJob {
@@ -204,8 +213,13 @@ export interface EstadoJob {
 export interface JobRepository {
   // Encola una corrida de la cascada para una unidad; devuelve el id del job creado.
   encolarCascadaUnidad(unidadPlanificadaId: string): Promise<string>;
+  // Encola una generación de planificación híbrida (RF-2.14); devuelve el id del job creado.
+  encolarPlanificacion(payload: PayloadPlanificacion): Promise<string>;
   // FOR UPDATE SKIP LOCKED — ADR-003. Marca el job 'en_proceso' e incrementa intentos atómicamente.
+  // Filtra por tipo de trabajo 'cascada_unidad' (coexiste con la cola de planificación, H-2.7).
   tomarSiguiente(workerId: string): Promise<TrabajoCascada | null>;
+  // Análogo a tomarSiguiente para los jobs 'planificacion' (su propia cola por tipo de trabajo).
+  tomarSiguientePlanificacion(workerId: string): Promise<TrabajoPlanificacion | null>;
   // Estado del job para el polling de la web; null si el id no existe (H-PA.9).
   obtenerEstado(jobId: string): Promise<EstadoJob | null>;
   // Éxito: estado='hecho' y documento_id = id del documento raíz de la cascada (la unidad generada).
