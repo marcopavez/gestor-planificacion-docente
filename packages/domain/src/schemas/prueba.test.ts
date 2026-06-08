@@ -44,7 +44,6 @@ describe('SchemaPrueba', () => {
   });
 
   it('rechaza si falta asignatura', () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { asignatura: _omit, ...sinAsignatura } = pruebaValida;
     const resultado = SchemaPrueba.safeParse(sinAsignatura);
     expect(resultado.success).toBe(false);
