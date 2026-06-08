@@ -129,6 +129,18 @@ export type {
   FormatoPlantillaType,
 } from './schemas/plantilla.js';
 
+// --- Generación híbrida de la planificación (spec 02-planificacion §1.2, H-2.3) ---
+export {
+  SchemaPayloadPlanificacion,
+  SchemaSeleccionCheckboxes,
+  SchemaBorradorPlanificacionIa,
+} from './schemas/generarPlanificacion.js';
+export type {
+  PayloadPlanificacion,
+  SeleccionCheckboxes,
+  BorradorPlanificacionIa,
+} from './schemas/generarPlanificacion.js';
+
 // --- Planificación Anual (RF-PA.4 — §4.3 plan-fase-1) ---
 export { SchemaPlanificacionAnual, SchemaUnidadPlanificada } from './schemas/planificacionAnual.js';
 export type {

@@ -5,6 +5,7 @@
 
 export { OaRepositoryCorpus } from './OaRepositoryCorpus.js';
 export { PlantillaRepositoryCorpus } from './PlantillaRepositoryCorpus.js';
+export { CatalogoRepositoryCorpus } from './CatalogoRepositoryCorpus.js';
 export {
   ArchivoCorpusInvalidoError,
   BloqueCorpusNoEncontradoError,
