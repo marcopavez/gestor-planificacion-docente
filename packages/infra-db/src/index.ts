@@ -36,7 +36,7 @@ export { crearDb } from './db.js';
 export type { DrizzleDb, EnvDb } from './db.js';
 
 // --- Adapters de repositorios (implementan los puertos de @faro/domain — INV-5) ---
-export { OaRepositoryDrizzle } from './repos/OaRepositoryDrizzle.js';
+export { OaRepositoryDrizzle, CorpusNoPublicadoError } from './repos/OaRepositoryDrizzle.js';
 export { DocumentoRepositoryDrizzle } from './repos/DocumentoRepositoryDrizzle.js';
 export { TrazaRepositoryDrizzle } from './repos/TrazaRepositoryDrizzle.js';
 export { JobRepositoryDrizzle } from './repos/JobRepositoryDrizzle.js';

@@ -59,7 +59,7 @@ export async function ejecutarCascadaDemo(input: EntradaCascadaDemo): Promise<Sa
     throw new Error(`Materia desconocida: ${input.materiaId}`);
   }
 
-  const corpus = cargarCorpus(materia);
+  const corpus = await cargarCorpus(materia);
   const samplesDir = join(raizRepo(), 'samples', materia.samplesDir);
   const { llm, modo } = construirLlm(samplesDir);
 

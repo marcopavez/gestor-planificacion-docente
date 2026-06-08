@@ -68,6 +68,9 @@ importers:
       '@faro/infra-ai':
         specifier: workspace:*
         version: link:../../packages/infra-ai
+      '@faro/infra-corpus':
+        specifier: workspace:*
+        version: link:../../packages/infra-corpus
       '@faro/infra-db':
         specifier: workspace:*
         version: link:../../packages/infra-db
@@ -163,6 +166,18 @@ importers:
       '@anthropic-ai/sdk':
         specifier: ^0.102.0
         version: 0.102.0(zod@4.4.3)
+      '@faro/domain':
+        specifier: workspace:*
+        version: link:../domain
+      '@faro/observability':
+        specifier: workspace:*
+        version: link:../observability
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+
+  packages/infra-corpus:
+    dependencies:
       '@faro/domain':
         specifier: workspace:*
         version: link:../domain

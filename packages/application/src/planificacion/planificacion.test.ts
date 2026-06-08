@@ -147,6 +147,7 @@ function crearFakeCorpusRepo(version: CorpusVersion | null): CorpusVersionReposi
 function crearFakeOaRepo(oas: ObjetivoAprendizaje[]): OaRepository {
   return {
     porAsignaturaCurso: vi.fn().mockResolvedValue(oas),
+    porAsignaturaNivel: vi.fn().mockResolvedValue(oas),
     porIds: vi.fn().mockResolvedValue([]),
   };
 }
