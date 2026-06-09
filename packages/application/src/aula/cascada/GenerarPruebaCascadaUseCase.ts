@@ -1,5 +1,5 @@
 // packages/application/src/aula/cascada/GenerarPruebaCascadaUseCase.ts
-// RF-2.7: produce la Prueba (sumativa, Decreto 67) a partir de la unidad, en full-context.
+// RF-2.7: produce la Prueba (evaluación FORMATIVA por defecto) a partir de la unidad, en full-context.
 // Distinta de GenerarPruebaUseCase (esqueleto H-0.8, ruta DB/RAG): aquí no hay repos ni cola.
 
 import type { LlmPort, PlanificacionUnidad, Prueba } from '@faro/domain';

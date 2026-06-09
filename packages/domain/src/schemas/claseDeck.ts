@@ -37,6 +37,8 @@ export const TemaDeckInfantil = z.object({
     acento: ColorHex, // realces
     fondo: ColorHex, // fondo de slide
     texto: ColorHex, // cuerpo
+    // Color semántico del ENUNCIADO de preguntas (rojo en los PPT reales del colegio).
+    consigna: ColorHex,
   }),
   fuente: z.object({
     titulo: z.string(), // nombre de fuente del título
@@ -62,27 +64,29 @@ export const SchemaClaseDeck = z.object({
 });
 
 /**
- * Temas placeholder por tramo de edad (Fase 3). PLACEHOLDER: valores a calibrar luego con las
- * referencias de estilo del dueño — NO son el diseño final, solo defaults razonables por tramo.
+ * Temas por tramo de edad (Fase 3). Las paletas '1-2' y '3-4' están CALIBRADAS contra los PPT/guías
+ * reales del colegio (color de consigna rojo E2231A, fuentes del sistema — NO Google Fonts). El tramo
+ * '5-6' queda con valores provisionales hasta tener referencias.
  */
 export const TEMAS_DECK_INFANTIL: Record<'1-2' | '3-4' | '5-6', TemaDeckInfantilType> = {
-  // PLACEHOLDER — 1º-2º básico, estilo pastel.
+  // 1º-2º básico — deck a COLOR, cálido; paleta derivada de las guías de 1°.
   '1-2': {
-    paleta: { primario: 'FF8FB1', secundario: '7FD1FF', acento: 'FFD166', fondo: 'FFF7FB', texto: '3A2E39' },
+    paleta: { primario: '1F6F8B', secundario: 'FFC04D', acento: 'F5A623', fondo: 'FDF6E3', texto: '3A3A3A', consigna: 'E2231A' },
     fuente: { titulo: 'Comic Sans MS', cuerpo: 'Comic Sans MS' },
-    tamano: { titulo: 40, cuerpo: 28 },
+    tamano: { titulo: 48, cuerpo: 30 },
     estilo: 'pastel',
   },
-  // PLACEHOLDER — 3º-4º básico, colores primarios.
+  // 3º-4º básico — pastel-cálido; paleta derivada de los PPT de 3°.
   '3-4': {
-    paleta: { primario: '2E86DE', secundario: '27AE60', acento: 'F39C12', fondo: 'F4FAFF', texto: '1B2A3A' },
+    paleta: { primario: '1F6F8B', secundario: 'AEE3F2', acento: 'F2994A', fondo: 'BEE9F5', texto: '2B2B2B', consigna: 'E2231A' },
     fuente: { titulo: 'Verdana', cuerpo: 'Verdana' },
-    tamano: { titulo: 36, cuerpo: 24 },
-    estilo: 'primarios',
+    tamano: { titulo: 44, cuerpo: 26 },
+    estilo: 'pastel',
   },
-  // PLACEHOLDER — 5º-6º básico, paleta naturaleza.
+  // 5º-6º básico — paleta naturaleza provisional. [VERIFICAR: faltan referencias 5-6]
+  // Se añade consigna:'E2231A' por consistencia de tipo con los otros tramos.
   '5-6': {
-    paleta: { primario: '16A085', secundario: '8E44AD', acento: 'E67E22', fondo: 'F7FBF9', texto: '20303A' },
+    paleta: { primario: '16A085', secundario: '8E44AD', acento: 'E67E22', fondo: 'F7FBF9', texto: '20303A', consigna: 'E2231A' },
     fuente: { titulo: 'Calibri', cuerpo: 'Calibri' },
     tamano: { titulo: 34, cuerpo: 22 },
     estilo: 'naturaleza',

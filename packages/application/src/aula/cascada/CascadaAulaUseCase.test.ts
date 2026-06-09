@@ -68,7 +68,8 @@ const claseMuestra = {
 const pruebaMuestra = {
   asignatura: 'Tecnología',
   curso: '2º básico',
-  perfil_nivel: '2B',
+  tipo_evaluacion: 'formativa',
+  perfil_nivel: '1-2',
   tabla_especificaciones: [{ oa: 'TE02 OA 01', n_items: 1, puntaje: 2 }],
   items: [
     {
@@ -81,11 +82,10 @@ const pruebaMuestra = {
         { texto: 'Un lápiz', correcta: true },
       ],
       puntaje: 2,
+      retroalimentacion: 'Si dudan, recuerden que un objeto tecnológico lo crea el ser humano para resolver una necesidad.',
     },
   ],
   pauta_correccion: 'Cada ítem vale 2 puntos.',
-  alineada_reglamento: false,
-  version_nee_dua: false,
 };
 
 const deckMuestra = {
@@ -132,7 +132,7 @@ describe('CascadaAulaUseCase (RF-2.5–2.8, e2e sin API key)', () => {
     expect(r.unidad.asignatura).toBe('Tecnología');
     expect(r.unidad.nivel).toBe('2º básico');
     expect(r.clase.clases.length).toBeGreaterThanOrEqual(1);
-    expect(r.prueba.perfil_nivel).toBe('2B');
+    expect(r.prueba.perfil_nivel).toBe('1-2');
     expect(r.deck.slides).toHaveLength(3);
     // 4 llamadas al LLM (unidad, clase, prueba, deck), todas de redacción.
     expect(llamadas).toEqual(['redaccion', 'redaccion', 'redaccion', 'redaccion']);

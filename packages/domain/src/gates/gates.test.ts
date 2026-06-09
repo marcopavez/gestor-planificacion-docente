@@ -56,7 +56,8 @@ function prueba(): Prueba {
   return {
     asignatura: 'Matemática',
     curso: '1º básico',
-    perfil_nivel: '1B',
+    tipo_evaluacion: 'formativa',
+    perfil_nivel: '1-2',
     tabla_especificaciones: [
       { oa: 'MA01 OA 03', n_items: 1, puntaje: 2 },
       { oa: 'MA01 OA 04', n_items: 1, puntaje: 2 },
@@ -86,8 +87,6 @@ function prueba(): Prueba {
       },
     ],
     pauta_correccion: 'Cada ítem 2 puntos.',
-    alineada_reglamento: false,
-    version_nee_dua: false,
   };
 }
 
@@ -167,6 +166,67 @@ describe('gates deterministas de la cascada (H-0.7)', () => {
     const r = pedagogicalGate({ ...p, items });
     expect(r.ok).toBe(false);
     expect(r.hallazgos.some((h) => h.regla === 'item_en_tabla' && h.ref === 'MA01 OA 20')).toBe(true);
+  });
+
+  it('pedagogicalGate NO bloquea por puntajes cuando la prueba formativa no tiene ponderación', () => {
+    const p = prueba();
+    // Quitamos puntaje de todos los ítems y de la tabla → caso formativo sin ponderación.
+    const items = p.items.map(({ puntaje: _p, ...resto }) => resto);
+    const tabla = p.tabla_especificaciones.map(({ puntaje: _p, ...resto }) => resto);
+    const r = pedagogicalGate({ ...p, items, tabla_especificaciones: tabla });
+    expect(r.ok).toBe(true);
+    expect(r.hallazgos.some((h) => h.regla === 'puntajes_cuadran')).toBe(false);
+  });
+
+  it('pedagogicalGate bloquea un ítem "ordenar" con secuencia con duplicados', () => {
+    const p = prueba();
+    // Prueba formativa sin ponderación (puntajes omitidos) para aislar la validación del tipo.
+    const items: Prueba['items'] = [
+      {
+        oa: 'MA01 OA 03',
+        habilidad: 'aplicar',
+        tipo: 'ordenar',
+        enunciado: 'Ordena.',
+        secuencia_correcta: ['1', '1', '2'], // duplicado → inválido
+      },
+    ];
+    const tabla = [{ oa: 'MA01 OA 03', n_items: 1 }];
+    const r = pedagogicalGate({ ...p, items, tabla_especificaciones: tabla });
+    expect(r.ok).toBe(false);
+    expect(r.hallazgos.some((h) => h.regla === 'una_correcta')).toBe(true);
+  });
+
+  it('pedagogicalGate acepta un ítem "ordenar" con secuencia válida', () => {
+    const p = prueba();
+    const items: Prueba['items'] = [
+      {
+        oa: 'MA01 OA 03',
+        habilidad: 'aplicar',
+        tipo: 'ordenar',
+        enunciado: 'Ordena de menor a mayor.',
+        secuencia_correcta: ['1', '2', '3'],
+      },
+    ];
+    const tabla = [{ oa: 'MA01 OA 03', n_items: 1 }];
+    const r = pedagogicalGate({ ...p, items, tabla_especificaciones: tabla });
+    expect(r.ok).toBe(true);
+  });
+
+  it('pedagogicalGate bloquea un ítem "terminos_pareados" sin pares', () => {
+    const p = prueba();
+    const items: Prueba['items'] = [
+      {
+        oa: 'MA01 OA 03',
+        habilidad: 'comprender',
+        tipo: 'terminos_pareados',
+        enunciado: 'Une.',
+        pares: [], // vacío → inválido
+      },
+    ];
+    const tabla = [{ oa: 'MA01 OA 03', n_items: 1 }];
+    const r = pedagogicalGate({ ...p, items, tabla_especificaciones: tabla });
+    expect(r.ok).toBe(false);
+    expect(r.hallazgos.some((h) => h.regla === 'una_correcta')).toBe(true);
   });
 
   it('citationGate bloquea un OA citado inexistente en el corpus', () => {

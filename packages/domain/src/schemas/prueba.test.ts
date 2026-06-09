@@ -8,6 +8,7 @@ import { SchemaPrueba } from './prueba.js';
 const pruebaValida = {
   asignatura: 'Matemática',
   curso: '1° básico',
+  tipo_evaluacion: 'formativa' as const,
   tabla_especificaciones: [{ oa: 'MA01 OA 03', n_items: 2, puntaje: 4 }],
   items: [
     {
@@ -21,6 +22,7 @@ const pruebaValida = {
         { texto: '5', correcta: false },
       ],
       puntaje: 2,
+      retroalimentacion: 'Si fallas, vuelve a contar con material concreto.',
     },
     {
       oa: 'MA01 OA 03',
@@ -32,9 +34,7 @@ const pruebaValida = {
     },
   ],
   pauta_correccion: 'Ver rúbrica adjunta.',
-  alineada_reglamento: true,
-  version_nee_dua: false,
-  perfil_nivel: '1B' as const,
+  perfil_nivel: '1-2' as const,
 };
 
 describe('SchemaPrueba', () => {
@@ -43,9 +43,88 @@ describe('SchemaPrueba', () => {
     expect(resultado.success).toBe(true);
   });
 
+  it('aplica tipo_evaluacion="formativa" por defecto si se omite', () => {
+    const { tipo_evaluacion: _omit, ...sinTipo } = pruebaValida;
+    const resultado = SchemaPrueba.safeParse(sinTipo);
+    expect(resultado.success).toBe(true);
+    if (resultado.success) {
+      expect(resultado.data.tipo_evaluacion).toBe('formativa');
+    }
+  });
+
+  it('acepta una prueba formativa sin puntajes (ponderación opcional)', () => {
+    const sinPuntajes = {
+      ...pruebaValida,
+      tabla_especificaciones: [{ oa: 'MA01 OA 03', n_items: 2 }],
+      items: pruebaValida.items.map(({ puntaje: _p, ...resto }) => resto),
+    };
+    const resultado = SchemaPrueba.safeParse(sinPuntajes);
+    expect(resultado.success).toBe(true);
+  });
+
+  it('acepta un ítem de tipo "ordenar" con secuencia_correcta', () => {
+    const conOrdenar = {
+      ...pruebaValida,
+      items: [
+        {
+          oa: 'MA01 OA 03',
+          habilidad: 'aplicar' as const,
+          tipo: 'ordenar' as const,
+          enunciado: 'Ordena de menor a mayor.',
+          secuencia_correcta: ['1', '2', '3'],
+          retroalimentacion: 'Compara de a pares.',
+        },
+      ],
+    };
+    const resultado = SchemaPrueba.safeParse(conOrdenar);
+    expect(resultado.success).toBe(true);
+  });
+
+  it('acepta un ítem de tipo "terminos_pareados" con pares', () => {
+    const conPareados = {
+      ...pruebaValida,
+      items: [
+        {
+          oa: 'MA01 OA 03',
+          habilidad: 'comprender' as const,
+          tipo: 'terminos_pareados' as const,
+          enunciado: 'Une cada número con su nombre.',
+          pares: [
+            { columnaA: '2', columnaB: 'dos' },
+            { columnaA: '3', columnaB: 'tres' },
+          ],
+        },
+      ],
+    };
+    const resultado = SchemaPrueba.safeParse(conPareados);
+    expect(resultado.success).toBe(true);
+  });
+
+  it('acepta un ítem de tipo "pictorico" con imagen como descripción placeholder', () => {
+    const conPictorico = {
+      ...pruebaValida,
+      items: [
+        {
+          oa: 'MA01 OA 03',
+          habilidad: 'recordar' as const,
+          tipo: 'pictorico' as const,
+          enunciado: 'Marca el grupo con más objetos.',
+          imagen: 'Dos grupos de manzanas: uno con 3, otro con 5.',
+        },
+      ],
+    };
+    const resultado = SchemaPrueba.safeParse(conPictorico);
+    expect(resultado.success).toBe(true);
+  });
+
   it('rechaza si falta asignatura', () => {
     const { asignatura: _omit, ...sinAsignatura } = pruebaValida;
     const resultado = SchemaPrueba.safeParse(sinAsignatura);
+    expect(resultado.success).toBe(false);
+  });
+
+  it('rechaza un perfil_nivel del enum antiguo (1B/2B/3B)', () => {
+    const resultado = SchemaPrueba.safeParse({ ...pruebaValida, perfil_nivel: '1B' });
     expect(resultado.success).toBe(false);
   });
 

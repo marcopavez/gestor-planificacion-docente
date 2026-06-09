@@ -1,7 +1,8 @@
 {
   "asignatura": "Matemática",
   "curso": "1º básico",
-  "perfil_nivel": "1B",
+  "tipo_evaluacion": "formativa",
+  "perfil_nivel": "1-2",
   "tabla_especificaciones": [
     { "oa": "MA01 OA 03", "n_items": 4, "puntaje": 8 },
     { "oa": "MA01 OA 04", "n_items": 3, "puntaje": 6 },
@@ -177,7 +178,5 @@
       "puntaje": 2
     }
   ],
-  "pauta_correccion": "Cada ítem vale 2 puntos (16 ítems, total 32). Ítems de selección múltiple y verdadero/falso: 2 puntos si la alternativa marcada es la correcta, 0 si no. Completación: 2 puntos si escribe la respuesta_correcta indicada. La prueba se lee en voz alta por la docente (perfil 1º básico, pre-lectores). Se sugiere acompañar con apoyo visual proyectado.",
-  "alineada_reglamento": false,
-  "version_nee_dua": false
+  "pauta_correccion": "Evaluación formativa: el foco es retroalimentar, no calificar. Como referencia, cada ítem puede valer 2 puntos (16 ítems). Ítems de selección múltiple y verdadero/falso: correcto si la alternativa marcada es la correcta. Completación: correcto si escribe la respuesta_correcta indicada. La evaluación se lee en voz alta por la docente (tramo 1-2, pre-lectores). Se sugiere acompañar con apoyo visual proyectado."
 }

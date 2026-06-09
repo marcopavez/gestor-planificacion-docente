@@ -150,6 +150,7 @@ describe('PptxExportAdapter (RF-2.8, CA-2.12)', () => {
             { texto: 'El 7', correcta: true },
           ],
           notas_docente: 'Levantar la mano y elegir.',
+          sugerencia_imagen: 'dos grupos de fichas, uno con 3 y otro con 7',
         },
         {
           momento: 'desarrollo',
@@ -180,11 +181,14 @@ describe('PptxExportAdapter (RF-2.8, CA-2.12)', () => {
     const notasXml = todasLasNotas(buf);
 
     // El LOOK viene del tema: aparecen su color primario (títulos), el fondo y la fuente.
-    expect(slidesXml).toContain(tema.paleta.primario); // FF8FB1 (rosado pastel)
-    expect(slidesXml).toContain(tema.paleta.fondo); // FFF7FB
+    expect(slidesXml).toContain(tema.paleta.primario); // 1F6F8B (azul cálido del tramo 1-2)
+    expect(slidesXml).toContain(tema.paleta.fondo); // FDF6E3
     expect(slidesXml).toContain('Comic Sans MS'); // fuente del tema 1-2
     // El azul institucional ya NO aparece (es render infantil, no el de la cascada).
     expect(slidesXml).not.toContain('1A237E');
+
+    // F3-3(a): el ENUNCIADO de 'pregunta'/'elige' va en el color consigna (rojo) de los PPT reales.
+    expect(slidesXml).toContain(tema.paleta.consigna); // E2231A
 
     // Los slides de interacción listan las opciones en la slide del alumno…
     expect(slidesXml).toContain('El 7');
@@ -193,5 +197,39 @@ describe('PptxExportAdapter (RF-2.8, CA-2.12)', () => {
     expect(slidesXml).not.toContain('Respuesta correcta');
     expect(notasXml).toContain('Respuesta correcta: El 7');
     expect(notasXml).toContain('Respuesta correcta: Cinco círculos');
+
+    // F3-3(b): cuando hay `sugerencia_imagen`, la slide muestra un placeholder VISIBLE "IMAGEN: …"
+    // (además de conservarlo en las notas del orador).
+    expect(slidesXml).toContain('IMAGEN: dos grupos de fichas, uno con 3 y otro con 7');
+    expect(notasXml).toContain('Sugerencia de imagen: dos grupos de fichas, uno con 3 y otro con 7');
+  });
+
+  // BACKWARD-COMPAT del placeholder: un deck SIN `tema` NO dibuja el recuadro "IMAGEN: …" en la slide
+  // (el camino institucional sigue mandando la sugerencia solo a las notas del orador).
+  it('sin tema: la sugerencia_imagen sigue solo en notas, sin caja "IMAGEN:" en la slide', async () => {
+    const deck: ClaseDeck = SchemaClaseDeck.parse({
+      titulo: 'Clase institucional',
+      asignatura: 'Matemática',
+      nivel: '1º básico',
+      oa: ['MA01 OA 03'],
+      slides: [
+        {
+          momento: 'inicio',
+          tipo: 'contenido',
+          titulo: 'Conteo',
+          contenido: ['Contemos del 0 al 10.'],
+          notas_docente: 'Rutina de conteo.',
+          sugerencia_imagen: 'una recta numérica del 0 al 10',
+        },
+      ],
+    });
+    const dir = join(tmpdir(), 'faro-pptx-test');
+    const adapter = new PptxExportAdapter(dir, logger);
+
+    const archivo = await adapter.exportarPptx(deck);
+    const buf = await readFile(archivo.ruta);
+
+    expect(todasLasSlides(buf)).not.toContain('IMAGEN:');
+    expect(todasLasNotas(buf)).toContain('Sugerencia de imagen: una recta numérica del 0 al 10');
   });
 });

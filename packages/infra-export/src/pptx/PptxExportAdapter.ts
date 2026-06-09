@@ -124,6 +124,35 @@ export class PptxExportAdapter implements ExportPort {
       : s.notas_docente;
   }
 
+  /**
+   * Placeholder de imagen VISIBLE (Fase 3, solo render infantil): cuando el slide trae
+   * `sugerencia_imagen`, se dibuja una caja con borde punteado (color acento del tema) rotulada
+   * "IMAGEN: <sugerencia>". No se inserta una imagen real; es una guía para el docente en la lámina.
+   * La sugerencia sigue además en las notas del orador (this.notas).
+   */
+  private placeholderImagen(
+    slide: ReturnType<Pptx['addSlide']>,
+    s: SlideDeckType,
+    tema: TemaDeckInfantilType,
+  ): void {
+    const sugerencia = s.sugerencia_imagen?.trim();
+    if (!sugerencia) return;
+    // y+h debe caber en el layout 16:9 (10" x 5.625"): y:4.3 + h:1.0 = 5.3" (antes 5.0+1.2=6.2 se salía).
+    slide.addText(`IMAGEN: ${sugerencia}`, {
+      x: 1.0,
+      y: 4.3,
+      w: 8,
+      h: 1.0,
+      fontSize: 14,
+      fontFace: tema.fuente.cuerpo,
+      align: 'center',
+      valign: 'middle',
+      color: tema.paleta.acento,
+      // Borde punteado en color acento para que la caja se vea como un recuadro de "falta imagen".
+      line: { color: tema.paleta.acento, width: 1.5, dashType: 'dash' },
+    });
+  }
+
   // --- Render infantil data-driven (Fase 3): la paleta/fuente/tamaño salen del `tema` del deck ---
 
   /** Portada infantil: usa la paleta y fuente del tema; mantiene el sello de borrador (HIL — INV-3). */
@@ -239,6 +268,7 @@ export class PptxExportAdapter implements ExportPort {
         },
       );
     }
+    this.placeholderImagen(slide, s, tema);
     slide.addNotes(this.notas(s));
   }
 
@@ -270,6 +300,7 @@ export class PptxExportAdapter implements ExportPort {
         lineSpacingMultiple: 1.3,
       });
     }
+    this.placeholderImagen(slide, s, tema);
     slide.addNotes(this.notas(s));
   }
 
@@ -277,6 +308,7 @@ export class PptxExportAdapter implements ExportPort {
   private slideInteraccion(pptx: Pptx, s: SlideDeckType, tema: TemaDeckInfantilType): void {
     const slide = pptx.addSlide();
     slide.background = { color: tema.paleta.fondo };
+    // El ENUNCIADO de la pregunta va en color consigna (rojo) como en los PPT reales del colegio.
     slide.addText(s.titulo, {
       x: 0.5,
       y: 0.9,
@@ -286,7 +318,7 @@ export class PptxExportAdapter implements ExportPort {
       fontFace: tema.fuente.titulo,
       bold: true,
       align: 'center',
-      color: tema.paleta.primario,
+      color: tema.paleta.consigna,
     });
     if (s.opciones.length > 0) {
       // Solo el texto de cada opción: NO se revela la correcta en la lámina del alumno (va en notas).
@@ -305,6 +337,7 @@ export class PptxExportAdapter implements ExportPort {
         },
       );
     }
+    this.placeholderImagen(slide, s, tema);
     // La respuesta correcta y las notas docentes van en el orador (HIL); nunca en la slide del alumno.
     const correctas = s.opciones.filter((o) => o.correcta).map((o) => o.texto);
     const lineaCorrecta = correctas.length > 0 ? `Respuesta correcta: ${correctas.join(', ')}` : '';

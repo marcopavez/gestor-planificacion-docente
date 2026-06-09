@@ -21,7 +21,8 @@ const { ClaudeCodeLlmAdapter } = await import('./ClaudeCodeLlmAdapter.js');
 const pruebaValida: Prueba = {
   asignatura: 'Matemática',
   curso: '1º básico',
-  perfil_nivel: '1B',
+  tipo_evaluacion: 'formativa',
+  perfil_nivel: '1-2',
   tabla_especificaciones: [{ oa: 'MA01 OA 03', n_items: 1, puntaje: 2 }],
   items: [
     {
@@ -34,11 +35,10 @@ const pruebaValida: Prueba = {
         { texto: '7', correcta: true },
       ],
       puntaje: 2,
+      retroalimentacion: 'Si se equivocan, cuenten las estrellas una por una en voz alta.',
     },
   ],
   pauta_correccion: 'Ítem único, 2 puntos si marca 7.',
-  alineada_reglamento: false,
-  version_nee_dua: false,
 };
 
 // Logger doble silencioso: el adapter solo lo usa para info/warn/error.

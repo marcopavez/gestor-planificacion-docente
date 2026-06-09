@@ -62,11 +62,24 @@ describe('SchemaClaseDeck (Fase 3 — aditivo, backward-compatible)', () => {
   });
 });
 
-describe('TEMAS_DECK_INFANTIL (placeholder por tramo)', () => {
+describe('TEMAS_DECK_INFANTIL (calibrado 1-2/3-4; 5-6 provisional)', () => {
   it('define los 3 tramos con el estilo correcto', () => {
+    // 1-2 y 3-4 calibrados contra los PPT/guías reales (ambos 'pastel'-cálido); 5-6 sigue 'naturaleza'.
     expect(TEMAS_DECK_INFANTIL['1-2'].estilo).toBe('pastel');
-    expect(TEMAS_DECK_INFANTIL['3-4'].estilo).toBe('primarios');
+    expect(TEMAS_DECK_INFANTIL['3-4'].estilo).toBe('pastel');
     expect(TEMAS_DECK_INFANTIL['5-6'].estilo).toBe('naturaleza');
+  });
+
+  it('todos los tramos definen el color de consigna (rojo de enunciado de los PPT reales)', () => {
+    (Object.values(TEMAS_DECK_INFANTIL) as TemaDeckInfantilType[]).forEach((tema) => {
+      expect(tema.paleta.consigna).toBe('E2231A');
+    });
+  });
+
+  it('usa fuentes del sistema (no Google Fonts)', () => {
+    expect(TEMAS_DECK_INFANTIL['1-2'].fuente.titulo).toBe('Comic Sans MS');
+    expect(TEMAS_DECK_INFANTIL['3-4'].fuente.titulo).toBe('Verdana');
+    expect(TEMAS_DECK_INFANTIL['5-6'].fuente.titulo).toBe('Calibri');
   });
 
   it('cada tema valida contra el schema (colores hex de 6 dígitos sin #, tamaños positivos)', () => {

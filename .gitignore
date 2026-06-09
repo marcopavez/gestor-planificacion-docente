@@ -48,4 +48,3 @@ Thumbs.db
 
 # Claude Code (artefactos de runtime locales)
 .claude/scheduled_tasks.lock
-

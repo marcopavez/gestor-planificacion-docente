@@ -50,7 +50,7 @@ export function bloqueCorpus(ctx: ContextoCascada): BloqueSistema {
     .join('\n');
 
   const texto = [
-    'Eres un asistente de planificación curricular para colegios chilenos (K-12), alineado a las Bases Curriculares y a la normativa MINEDUC (Decreto 67 de evaluación).',
+    'Eres un asistente de planificación curricular para colegios chilenos (K-12), alineado a las Bases Curriculares (MINEDUC).',
     '',
     'Reglas inviolables:',
     '1. Usa EXCLUSIVAMENTE los OA provistos abajo y cita sus códigos VERBATIM. Nunca inventes OA, códigos, decretos, indicadores oficiales ni cifras.',
@@ -129,14 +129,15 @@ export const INSTR_CLASE = instruccion(
 
 export const INSTR_PRUEBA = instruccion(
   [
-    'Genera una PRUEBA (evaluación sumativa) alineada al Decreto 67.',
-    "- 'tabla_especificaciones': una fila por OA evaluado (n_items y puntaje).",
-    '- Cada ítem tributa a un OA de la unidad; selección múltiple con EXACTAMENTE una alternativa correcta.',
-    '- La suma de puntajes de los ítems debe coincidir con la tabla de especificaciones.',
-    "- 'perfil_nivel' según el nivel ('1B' para 1º básico, '2B', '3B', o 'generico').",
-    '- En 1º básico, ítems apropiados para pre-lectores (enunciado leído por el/la docente, apoyo visual).',
-    "- 'alineada_reglamento': false salvo que se entregue el reglamento de evaluación del colegio.",
-    "- 'version_nee_dua': false (la variante DUA/NEE se genera por separado).",
+    'Genera una evaluación FORMATIVA (para aprender, no para calificar) anclada a los OA de la unidad.',
+    "- 'tipo_evaluacion': 'formativa' (úsala salvo que se pida 'diagnostica').",
+    "- 'tabla_especificaciones': una fila por OA evaluado (n_items; el puntaje es opcional en formativa).",
+    '- Cada ítem tributa a un OA de la unidad; selección múltiple y verdadero/falso con EXACTAMENTE una alternativa correcta.',
+    "- Puedes usar tipos variados apropiados al nivel: 'seleccion_multiple', 'verdadero_falso', 'completacion', 'desarrollo', 'ordenar' (con 'secuencia_correcta'), 'terminos_pareados' (con 'pares' columnaA↔columnaB) y 'pictorico' (con 'imagen' = DESCRIPCIÓN de un apoyo visual, nunca una imagen real).",
+    "- El corazón formativo: cada ítem lleva 'retroalimentacion' = qué orientar al estudiante si falla.",
+    "- 'perfil_nivel' según el tramo de edad ('1-2' para 1º–2º básico, '3-4', '5-6', o 'generico').",
+    '- En el tramo 1-2, ítems apropiados para pre-lectores (enunciado leído por el/la docente, apoyo visual).',
+    "- El puntaje es opcional: si lo incluyes en un ítem, inclúyelo también en su fila de la tabla y haz que cuadren.",
   ].join('\n'),
 );
 
@@ -185,7 +186,7 @@ export function entradaClase(unidad: PlanificacionUnidad): string {
 }
 
 export function entradaPrueba(unidad: PlanificacionUnidad): string {
-  return `Planificación de unidad (JSON):\n${JSON.stringify(unidad)}\n\nGenera una prueba sumativa que evalúe los OA basales de la unidad.`;
+  return `Planificación de unidad (JSON):\n${JSON.stringify(unidad)}\n\nGenera una evaluación formativa que evalúe los OA basales de la unidad.`;
 }
 
 export function entradaDeck(unidad: PlanificacionUnidad, clase: ClasePlanificadaType): string {

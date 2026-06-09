@@ -6,7 +6,7 @@ export interface MateriaDemo {
   readonly id: string;
   readonly asignatura: string;
   readonly nivel: string;
-  readonly perfilNivel: '1B' | '2B' | '3B' | 'generico';
+  readonly perfilNivel: '1-2' | '3-4' | '5-6' | 'generico';
   readonly corpusFile: string; // corpus/curriculum/<corpusFile>.json
   readonly samplesDir: string; // samples/<samplesDir>/
 }
@@ -16,7 +16,7 @@ export const MATERIAS_DEMO: readonly MateriaDemo[] = [
     id: 'matematica-1b',
     asignatura: 'Matemática',
     nivel: '1º básico',
-    perfilNivel: '1B',
+    perfilNivel: '1-2',
     corpusFile: 'matematica-1-basico',
     samplesDir: 'aula-matematica-1b',
   },
