@@ -27,6 +27,8 @@ import type { FormatoPlantillaType, PlantillaPlanificacion } from '../schemas/pl
 import type { PlanificacionUnidad } from '../schemas/planificacionUnidad.js';
 import type { CatalogosPlanificacion } from '../schemas/catalogosPlanificacion.js';
 import type { PayloadPlanificacion } from '../schemas/generarPlanificacion.js';
+import type { Prueba } from '../schemas/prueba.js';
+import type { EncabezadoPrueba } from '../schemas/encabezadoPrueba.js';
 
 // --- Recuperación (RAG) ---
 
@@ -106,6 +108,30 @@ export interface ExportPlanificacionPort {
     plan: PlanificacionUnidad,
     plantilla: PlantillaPlanificacion,
     catalogos: CatalogosPlanificacion,
+    idDocumento?: string,
+  ): Promise<ArchivoExportado>;
+}
+
+// --- Export de la Prueba formativa (.docx/.pdf) — Fase 4, INV-6 ---
+// Dos VARIANTES del mismo modelo: 'alumno' (hoja sin respuestas) y 'pauta' (hoja de respuestas con
+// la solución + retroalimentación por ítem). La pauta es un DOCUMENTO SEPARADO (ninguna prueba real
+// traía pauta embebida). El encabezado institucional se pasa como dato (no es IA): ver EncabezadoPrueba.
+// `.pdf` = el mismo .docx renderizado por LibreOffice (como ExportPlanificacionPort).
+export type VariantePrueba = 'alumno' | 'pauta';
+
+export interface ExportPruebaPort {
+  // idDocumento (opcional) hace único el nombre de archivo en disco (evita colisiones al exportar a la
+  // carpeta compartida, como ExportPlanificacionPort).
+  aDocx(
+    prueba: Prueba,
+    encabezado: EncabezadoPrueba,
+    variante: VariantePrueba,
+    idDocumento?: string,
+  ): Promise<ArchivoExportado>;
+  aPdf(
+    prueba: Prueba,
+    encabezado: EncabezadoPrueba,
+    variante: VariantePrueba,
     idDocumento?: string,
   ): Promise<ArchivoExportado>;
 }

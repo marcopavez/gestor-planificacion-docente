@@ -26,6 +26,7 @@ export type {
   EstadoJob,
   ExportPort,
   ExportPlanificacionPort,
+  ExportPruebaPort,
   JobRepository,
   LlmPort,
   NormaRepository,
@@ -42,6 +43,7 @@ export type {
   TrazaRepository,
   UnidadDeTrabajo,
   UsoTokens,
+  VariantePrueba,
   VerificationGate,
 } from './ports/index.js';
 
@@ -99,6 +101,8 @@ export { SchemaPmeAccion } from './schemas/pmeAccion.js';
 export type { PmeAccion } from './schemas/pmeAccion.js';
 export { SchemaPrueba, ItemPrueba } from './schemas/prueba.js';
 export type { ItemPruebaType, Prueba } from './schemas/prueba.js';
+export { SchemaEncabezadoPrueba, OaEncabezado } from './schemas/encabezadoPrueba.js';
+export type { EncabezadoPrueba, OaEncabezadoType } from './schemas/encabezadoPrueba.js';
 export { SchemaReglamentoAuditoria } from './schemas/reglamentoAuditoria.js';
 export type { ReglamentoAuditoria } from './schemas/reglamentoAuditoria.js';
 

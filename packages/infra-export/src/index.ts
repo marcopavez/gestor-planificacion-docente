@@ -18,3 +18,8 @@ export {
   construirComandoSoffice,
   rutaPdfEsperada,
 } from './docx/PdfExportAdapter.js';
+
+// --- Export de la Prueba formativa a .docx/.pdf (Fase 4): variante alumno o pauta ---
+export { PruebaExportAdapter, construirDocumentoPrueba } from './docx/PruebaExportAdapter.js';
+export { planoPrueba } from './docx/planoPrueba.js';
+export type { PruebaPlano, SeccionPruebaPlano, ItemPlano, EncabezadoPlano } from './docx/planoPrueba.js';
