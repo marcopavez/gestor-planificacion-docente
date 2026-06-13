@@ -24,7 +24,10 @@ const EnvIngestSchema = z.object({
 // ---------------------------------------------------------------------------
 const SchemaOaArchivo = z.object({
   codigo: z.string(),
-  eje: z.string(),
+  // eje NULO o ausente es válido: algunas Bases no organizan por eje (p.ej. Inglés) y la columna
+  // `objetivo_aprendizaje.eje` es nullable; el repo ya mapea eje → null. Antes z.string() rechazaba
+  // el archivo entero (Historia/Inglés 6º quedaban sin ingerir).
+  eje: z.string().nullable().optional(),
   descripcion: z.string(),
   detalle: z.array(z.string()).optional(),
   indicadores: z.array(z.string()),
@@ -102,7 +105,7 @@ async function ingestar(corpus: CorpusArchivo, args: CliArgs, db: ReturnType<typ
     // Nivel VERBATIM: preservar "1º básico" tal cual (ordinal º, no °) para evitar mismatch
     // con la PlanificacionAnual que debe usar el mismo string canónico (INV-4).
     nivel: corpus.nivel,
-    eje: oa.eje,
+    eje: oa.eje ?? null, // eje nulo/ausente → null (columna nullable)
     tipo: 'basal' as const, // El corpus no distingue categoría por-OA aún; todos son basales.
     // Concatenar detalle a descripción para no perder texto citable en el corpus (sin detalles vacíos).
     descripcion: oa.detalle && oa.detalle.length > 0
