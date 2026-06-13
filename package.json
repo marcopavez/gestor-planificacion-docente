@@ -4,6 +4,8 @@
   "type": "module",
   "packageManager": "pnpm@9.15.9",
   "scripts": {
+    "seed": "node scripts/seed.mjs",
+    "dev": "node scripts/dev.mjs",
     "build": "pnpm -r --filter \"@faro/*\" build",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --build tsconfig.json && pnpm --filter @faro/web typecheck",

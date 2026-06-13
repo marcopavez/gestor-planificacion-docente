@@ -1,0 +1,29 @@
+# docker-compose.yml — Postgres local para Faro (desarrollo / pruebas).
+# Levanta SOLO la base de datos; el worker y la web corren en tu máquina vía `pnpm dev`.
+# v2 NO usa pgvector/RAG → Postgres estándar basta.
+#
+# Deja esta línea en tu .env (coincide con las credenciales de abajo):
+#   DATABASE_URL=postgresql://faro:faro@localhost:5544/faro
+# Nota: el host expone 5544 (no el 5432 por defecto) para no chocar con un Postgres local ya instalado.
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: faro-db
+    environment:
+      POSTGRES_USER: faro
+      POSTGRES_PASSWORD: faro
+      POSTGRES_DB: faro
+    ports:
+      # host 5544 → contenedor 5432 (evita chocar con un Postgres local en el 5432).
+      - '5544:5432'
+    volumes:
+      - faro-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U faro -d faro']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  faro-db-data:
