@@ -494,6 +494,34 @@ describe('JobRepository — cola de prueba formativa (Fase 4)', () => {
 });
 
 // ---------------------------------------------------------------------------
+// JobRepository.encolarPptInfantil / tomarSiguientePptInfantil — cola de PPT infantil (Fase 3)
+// ---------------------------------------------------------------------------
+describe('JobRepository — cola de PPT infantil (Fase 3)', () => {
+  it('encolarPptInfantil → tomarSiguientePptInfantil devuelve el payload; otras colas NO la toman', async () => {
+    const db = await crearDb();
+    const repo = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
+    const planDocId = '33333333-3333-4333-8333-333333333333'; // uuid v4 válido (RFC 4122)
+
+    const jobId = await repo.encolarPptInfantil({ planificacionDocumentoId: planDocId });
+    expect(jobId).toBeDefined();
+
+    // Aislamiento de colas: ni la cascada ni la prueba deben tomar un job de PPT (filtran por tipo_trabajo).
+    expect(await repo.tomarSiguiente('worker-01')).toBeNull();
+    expect(await repo.tomarSiguientePrueba('worker-01')).toBeNull();
+
+    const job = await repo.tomarSiguientePptInfantil('worker-01');
+    expect(job).not.toBeNull();
+    expect(job!.id).toBe(jobId);
+    expect(job!.payload.planificacionDocumentoId).toBe(planDocId);
+    expect(job!.intentos).toBe(1); // cuenta el intento en curso
+
+    // Tras tomarlo queda en_proceso (visible para el polling de la web).
+    const estado = await repo.obtenerEstado(jobId);
+    expect(estado?.estado).toBe('en_proceso');
+  }, T);
+});
+
+// ---------------------------------------------------------------------------
 // JobRepository.obtenerEstado — lectura del estado para el polling de la web (H-PA.9)
 // ---------------------------------------------------------------------------
 describe('JobRepository — obtenerEstado (H-PA.9)', () => {

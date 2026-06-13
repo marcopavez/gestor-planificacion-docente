@@ -23,6 +23,11 @@ export { GenerarClaseDeckUseCase } from './aula/cascada/GenerarClaseDeckUseCase.
 
 // --- PPT infantil (Fase 3): ClaseDeck infantil data-driven desde la PlanificacionUnidad ---
 export { GenerarPptInfantilUseCase } from './aula/cascada/GenerarPptInfantilUseCase.js';
+export { ProcesarTrabajoPptInfantilUseCase } from './aula/cascada/ProcesarTrabajoPptInfantilUseCase.js';
+export type {
+  DependenciasProcesarPptInfantil,
+  ResultadoProcesarPptInfantil,
+} from './aula/cascada/ProcesarTrabajoPptInfantilUseCase.js';
 
 // --- Prueba formativa (Fase 4): Prueba data-driven desde la PlanificacionUnidad + builder de encabezado ---
 export { GenerarPruebaFormativaUseCase } from './aula/cascada/GenerarPruebaFormativaUseCase.js';

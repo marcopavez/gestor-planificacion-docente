@@ -28,6 +28,7 @@ import type { PlanificacionUnidad } from '../schemas/planificacionUnidad.js';
 import type { CatalogosPlanificacion } from '../schemas/catalogosPlanificacion.js';
 import type { PayloadPlanificacion } from '../schemas/generarPlanificacion.js';
 import type { PayloadPrueba } from '../schemas/payloadPrueba.js';
+import type { PayloadPptInfantil } from '../schemas/payloadPptInfantil.js';
 import type { Prueba } from '../schemas/prueba.js';
 import type { EncabezadoPrueba } from '../schemas/encabezadoPrueba.js';
 
@@ -239,6 +240,14 @@ export interface TrabajoPrueba {
   readonly intentos: number; // ya incrementado por tomarSiguientePrueba (cuenta el intento en curso)
 }
 
+// Un trabajo de generación de PPT infantil (Fase 3): el payload referencia el documento de
+// planificación de unidad del que deriva el deck; el worker lo carga y valida al tomarlo.
+export interface TrabajoPptInfantil {
+  readonly id: string;
+  readonly payload: PayloadPptInfantil;
+  readonly intentos: number; // ya incrementado por tomarSiguientePptInfantil (cuenta el intento en curso)
+}
+
 // Estado de un job de la cola, leído por la web para hacer polling del avance (H-PA.9).
 // documentoId = id del documento raíz de la cascada (la unidad generada) cuando estado='hecho'.
 export interface EstadoJob {
@@ -256,6 +265,8 @@ export interface JobRepository {
   encolarPlanificacion(payload: PayloadPlanificacion): Promise<string>;
   // Encola una generación de prueba formativa (Fase 4) desde una unidad ya planificada.
   encolarPrueba(payload: PayloadPrueba): Promise<string>;
+  // Encola una generación de PPT infantil (Fase 3) desde una unidad ya planificada.
+  encolarPptInfantil(payload: PayloadPptInfantil): Promise<string>;
   // FOR UPDATE SKIP LOCKED — ADR-003. Marca el job 'en_proceso' e incrementa intentos atómicamente.
   // Filtra por tipo de trabajo 'cascada_unidad' (coexiste con la cola de planificación, H-2.7).
   tomarSiguiente(workerId: string): Promise<TrabajoCascada | null>;
@@ -263,6 +274,8 @@ export interface JobRepository {
   tomarSiguientePlanificacion(workerId: string): Promise<TrabajoPlanificacion | null>;
   // Análogo para la cola 'prueba_formativa' (Fase 4): su propia cola por tipo de trabajo.
   tomarSiguientePrueba(workerId: string): Promise<TrabajoPrueba | null>;
+  // Análogo para la cola 'ppt_infantil' (Fase 3): su propia cola por tipo de trabajo.
+  tomarSiguientePptInfantil(workerId: string): Promise<TrabajoPptInfantil | null>;
   // Estado del job para el polling de la web; null si el id no existe (H-PA.9).
   obtenerEstado(jobId: string): Promise<EstadoJob | null>;
   // Éxito: estado='hecho' y documento_id = id del documento raíz de la cascada (la unidad generada).

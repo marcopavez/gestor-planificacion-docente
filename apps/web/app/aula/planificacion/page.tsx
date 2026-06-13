@@ -402,6 +402,7 @@ function RevisionPlan(props: {
       </div>
 
       <GenerarPrueba planificacionDocumentoId={documentoId} />
+      <GenerarPptInfantil planificacionDocumentoId={documentoId} />
     </section>
   );
 }
@@ -461,6 +462,66 @@ function GenerarPrueba({ planificacionDocumentoId }: { planificacionDocumentoId:
           <span>Prueba generada (borrador):</span>
           <a href={`/api/aula/documentos/${pruebaDocId}/prueba?variante=alumno`}>.docx alumno</a>
           <a href={`/api/aula/documentos/${pruebaDocId}/prueba?variante=pauta`}>.docx pauta</a>
+        </div>
+      )}
+    </fieldset>
+  );
+}
+
+// Genera un PPT INFANTIL (Fase 3) desde esta planificación: encola el job, hace polling y, al terminar,
+// ofrece la descarga .pptx. El deck se genera del documento PERSISTIDO (guarda los cambios HIL antes si
+// los hiciste) y es autocontenido (tema por tramo/asignatura). Nace borrador (HIL aparte, como la prueba).
+function GenerarPptInfantil({ planificacionDocumentoId }: { planificacionDocumentoId: string }) {
+  const [estado, setEstado] = useState<'idle' | 'generando' | 'listo' | 'error'>('idle');
+  const [deckDocId, setDeckDocId] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  const generar = useCallback(async () => {
+    setErr(null);
+    setEstado('generando');
+    try {
+      const res = await fetch('/api/aula/ppt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planificacionDocumentoId }),
+      });
+      if (!res.ok) {
+        const j = (await res.json()) as { error?: string };
+        throw new Error(j.error ?? `POST → ${res.status}`);
+      }
+      const { jobId } = (await res.json()) as { jobId: string };
+      // Polling acotado del job de PPT (el worker corre GenerarPptInfantilUseCase).
+      for (let i = 0; i < 60; i++) {
+        await new Promise((r) => setTimeout(r, 1500));
+        const e = await fetch(`/api/aula/ppt/${jobId}`);
+        if (!e.ok) continue;
+        const r = (await e.json()) as { estado: string; documentoId?: string; error?: string | null };
+        if (r.estado === 'fallido') throw new Error(r.error ?? 'La generación del PPT falló.');
+        if (r.estado === 'hecho' && r.documentoId !== undefined) {
+          setDeckDocId(r.documentoId);
+          setEstado('listo');
+          return;
+        }
+      }
+      throw new Error('La generación del PPT tardó demasiado; reintenta.');
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'No se pudo generar el PPT.');
+      setEstado('error');
+    }
+  }, [planificacionDocumentoId]);
+
+  return (
+    <fieldset>
+      <legend>PPT infantil (desde esta planificación)</legend>
+      {err !== null && <p style={{ color: '#b00020' }}>⚠ {err}</p>}
+      {(estado === 'idle' || estado === 'error') && (
+        <button onClick={() => void generar()}>Generar PPT infantil (borrador)</button>
+      )}
+      {estado === 'generando' && <p>Generando el PPT… (corre en el worker)</p>}
+      {estado === 'listo' && deckDocId !== null && (
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+          <span>PPT generado (borrador):</span>
+          <a href={`/api/aula/documentos/${deckDocId}/pptx`}>.pptx</a>
         </div>
       )}
     </fieldset>

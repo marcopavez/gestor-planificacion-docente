@@ -11,9 +11,11 @@ import { dirname, join } from 'node:path';
 import {
   CascadaAulaUseCase,
   GenerarPlanificacionUseCase,
+  GenerarPptInfantilUseCase,
   GenerarPruebaFormativaUseCase,
   ProcesarTrabajoCascadaUseCase,
   ProcesarTrabajoPlanificacionUseCase,
+  ProcesarTrabajoPptInfantilUseCase,
   ProcesarTrabajoPruebaUseCase,
 } from '@faro/application';
 import type { ClockPort } from '@faro/domain';
@@ -116,6 +118,16 @@ async function main(): Promise<void> {
     uow: new UnidadDeTrabajoDrizzle(db),
   });
 
+  // --- Cola de PPT infantil (Fase 3), en paralelo a las otras tres (no las toca) ---
+  // Genera el deck infantil desde la unidad ya planificada (su documento); el deck lo valida su schema
+  // (sin gate determinista). El export .pptx es bajo demanda en la web, no aquí.
+  const pptInfantilUseCase = new ProcesarTrabajoPptInfantilUseCase({
+    jobs: new JobRepositoryDrizzle(db),
+    documentos: new DocumentoRepositoryDrizzle(db),
+    generar: new GenerarPptInfantilUseCase(llm),
+    uow: new UnidadDeTrabajoDrizzle(db),
+  });
+
   let corriendo = true;
   const apagar = (senal: string): void => {
     if (!corriendo) return;
@@ -127,8 +139,9 @@ async function main(): Promise<void> {
 
   log.info({ workerId, modo, samplesDir }, 'worker: iniciado (H-PA.8)');
 
-  // Loop principal: en CADA iteración intenta ambas colas (cascada y planificación) para que una
-  // cola con trabajo continuo no inanice a la otra; el backoff solo aplica si AMBAS están vacías.
+  // Loop principal: en CADA iteración intenta las cuatro colas (cascada, planificación, prueba y PPT
+  // infantil) para que una cola con trabajo continuo no inanice a las otras; el backoff solo aplica si
+  // TODAS están vacías.
   while (corriendo) {
     const r = await useCase.ejecutarSiguiente(workerId);
     switch (r.tipo) {
@@ -175,8 +188,28 @@ async function main(): Promise<void> {
         break;
     }
 
-    // Backoff fijo solo si las tres colas quedaron vacías (no saturar la DB cuando no hay trabajo).
-    if (r.tipo === 'sin_trabajo' && rp.tipo === 'sin_trabajo' && rt.tipo === 'sin_trabajo') {
+    const rpp = await pptInfantilUseCase.ejecutarSiguiente(workerId);
+    switch (rpp.tipo) {
+      case 'sin_trabajo':
+        break;
+      case 'hecho':
+        log.info({ jobId: rpp.jobId, documentoId: rpp.documentoId }, 'worker: PPT infantil hecho');
+        break;
+      case 'reintenta':
+        log.warn({ jobId: rpp.jobId, error: rpp.error }, 'worker: PPT infantil reencolado para reintento');
+        break;
+      case 'fallido':
+        log.error({ jobId: rpp.jobId, error: rpp.error }, 'worker: PPT infantil fallido');
+        break;
+    }
+
+    // Backoff fijo solo si las cuatro colas quedaron vacías (no saturar la DB cuando no hay trabajo).
+    if (
+      r.tipo === 'sin_trabajo' &&
+      rp.tipo === 'sin_trabajo' &&
+      rt.tipo === 'sin_trabajo' &&
+      rpp.tipo === 'sin_trabajo'
+    ) {
       await esperar(INTERVALO_VACIO_MS);
     }
   }

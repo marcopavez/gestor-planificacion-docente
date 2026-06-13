@@ -19,7 +19,7 @@ import * as PptxGenJSModule from 'pptxgenjs';
 const PptxGenJS = PptxGenJSModule.default;
 type Pptx = InstanceType<typeof PptxGenJS>;
 
-const MIME_PPTX = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+export const MIME_PPTX = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
 
 type SlideMomento = SlideDeckType['momento'];
 
