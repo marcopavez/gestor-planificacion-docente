@@ -19,7 +19,7 @@ import {
 } from '@faro/application';
 import type { ClockPort } from '@faro/domain';
 import { CatalogoRepositoryCorpus, PlantillaRepositoryCorpus } from '@faro/infra-corpus';
-import { DocxExportAdapter, PdfExportAdapter } from '@faro/infra-export';
+import { DocxExportAdapter, PdfExportAdapter, PruebaExportAdapter } from '@faro/infra-export';
 import {
   crearDb,
   CorpusVersionRepositoryDrizzle,
@@ -92,6 +92,8 @@ export function produccion() {
     // Export bajo demanda de la planificación (.docx / .pdf vía LibreOffice).
     docxExport: new DocxExportAdapter(dirExport, logExport),
     pdfExport: new PdfExportAdapter(dirExport, logExport),
+    // Export bajo demanda de la prueba formativa (.docx alumno/pauta; .pdf vía LibreOffice) — Fase 4.
+    pruebaExport: new PruebaExportAdapter(dirExport, logExport),
     // Use cases (escritura con gate) — encapsulan la lógica de dominio.
     crearPlan: new CrearPlanificacionAnualUseCase(planes, oas, corpus, relojSistema),
     listarPlanes: new ListarPlanificacionAnualUseCase(planes),

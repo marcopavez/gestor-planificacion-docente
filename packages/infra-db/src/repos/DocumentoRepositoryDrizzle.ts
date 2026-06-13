@@ -40,6 +40,9 @@ function filaADominio(row: DocumentoRow): DocumentoGenerado {
     // Mapeamos 1:1 — la columna guarda el valor que el dominio llama establecimientoId.
     establecimientoId: row.establecimiento,
     tipo: row.tipo,
+    // Trazabilidad: versión del corpus (INV-4) y origen en la cadena de la cascada (self-FK).
+    corpusVersionId: row.corpusVersionId,
+    origenId: row.origenId,
     // payload jsonb es el "contenido" del documento generado (artefacto de la cascada).
     contenido: row.payload,
     // Las citas no se almacenan en columna separada en esta versión del schema;
@@ -64,6 +67,8 @@ function filaSqlADominio(row: DocumentoRowSql): DocumentoGenerado {
     id: row.id,
     establecimientoId: row.establecimiento,
     tipo: row.tipo,
+    corpusVersionId: row.corpus_version_id,
+    origenId: row.origen_id,
     contenido: row.payload,
     citas: [],
     estadoRevision: row.estado_revision as EstadoRevision,

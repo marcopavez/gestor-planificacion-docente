@@ -467,6 +467,33 @@ describe('JobRepository — nuevo contrato cascada-unidad', () => {
 });
 
 // ---------------------------------------------------------------------------
+// JobRepository.encolarPrueba / tomarSiguientePrueba — cola de prueba formativa (Fase 4)
+// ---------------------------------------------------------------------------
+describe('JobRepository — cola de prueba formativa (Fase 4)', () => {
+  it('encolarPrueba → tomarSiguientePrueba devuelve el payload; tomarSiguiente (cascada) NO la toma', async () => {
+    const db = await crearDb();
+    const repo = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
+    const planDocId = '22222222-2222-4222-8222-222222222222'; // uuid v4 válido (RFC 4122)
+
+    const jobId = await repo.encolarPrueba({ planificacionDocumentoId: planDocId });
+    expect(jobId).toBeDefined();
+
+    // Aislamiento de colas: la cola de cascada NO debe tomar un job de prueba (filtra por tipo_trabajo).
+    expect(await repo.tomarSiguiente('worker-01')).toBeNull();
+
+    const job = await repo.tomarSiguientePrueba('worker-01');
+    expect(job).not.toBeNull();
+    expect(job!.id).toBe(jobId);
+    expect(job!.payload.planificacionDocumentoId).toBe(planDocId);
+    expect(job!.intentos).toBe(1); // cuenta el intento en curso
+
+    // Tras tomarlo queda en_proceso (visible para el polling de la web).
+    const estado = await repo.obtenerEstado(jobId);
+    expect(estado?.estado).toBe('en_proceso');
+  }, T);
+});
+
+// ---------------------------------------------------------------------------
 // JobRepository.obtenerEstado — lectura del estado para el polling de la web (H-PA.9)
 // ---------------------------------------------------------------------------
 describe('JobRepository — obtenerEstado (H-PA.9)', () => {

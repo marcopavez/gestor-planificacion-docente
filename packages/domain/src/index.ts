@@ -40,6 +40,7 @@ export type {
   SalidaEstructurada,
   TrabajoCascada,
   TrabajoPlanificacion,
+  TrabajoPrueba,
   TrazaRepository,
   UnidadDeTrabajo,
   UsoTokens,
@@ -103,6 +104,8 @@ export { SchemaPrueba, ItemPrueba } from './schemas/prueba.js';
 export type { ItemPruebaType, Prueba } from './schemas/prueba.js';
 export { SchemaEncabezadoPrueba, OaEncabezado } from './schemas/encabezadoPrueba.js';
 export type { EncabezadoPrueba, OaEncabezadoType } from './schemas/encabezadoPrueba.js';
+export { SchemaPayloadPrueba } from './schemas/payloadPrueba.js';
+export type { PayloadPrueba } from './schemas/payloadPrueba.js';
 export { SchemaReglamentoAuditoria } from './schemas/reglamentoAuditoria.js';
 export type { ReglamentoAuditoria } from './schemas/reglamentoAuditoria.js';
 

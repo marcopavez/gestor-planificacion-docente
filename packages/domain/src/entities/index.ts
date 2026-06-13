@@ -75,6 +75,11 @@ export interface DocumentoGenerado {
   readonly id: string;
   readonly establecimientoId: string;
   readonly tipo: string; // 'prueba' | 'clase' | 'reglamento_auditoria' | 'pme_fase_anual'
+  // Versión real del corpus vista al generar (INV-4) y origen en la cadena de la cascada (self-FK).
+  // Opcionales en la interfaz para no romper constructores existentes; el adapter Drizzle los puebla
+  // siempre (corpus_version_id es NOT NULL; origen_id puede ser null en un documento raíz).
+  readonly corpusVersionId?: string;
+  readonly origenId?: string | null;
   readonly contenido: unknown;
   readonly citas: Cita[];
   readonly estadoRevision: EstadoRevision;

@@ -400,6 +400,69 @@ function RevisionPlan(props: {
         <a href={`/api/aula/documentos/${documentoId}/docx`}>Descargar .docx</a>
         <a href={`/api/aula/documentos/${documentoId}/pdf`}>Descargar .pdf</a>
       </div>
+
+      <GenerarPrueba planificacionDocumentoId={documentoId} />
     </section>
+  );
+}
+
+// Genera una PRUEBA FORMATIVA (Fase 4) desde esta planificación: encola el job, hace polling y, al
+// terminar, ofrece las descargas .docx alumno/pauta. La prueba se genera del documento PERSISTIDO
+// (guarda los cambios HIL antes si los hiciste). Nace borrador (HIL aparte, como la planificación).
+function GenerarPrueba({ planificacionDocumentoId }: { planificacionDocumentoId: string }) {
+  const [estado, setEstado] = useState<'idle' | 'generando' | 'listo' | 'error'>('idle');
+  const [pruebaDocId, setPruebaDocId] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  const generar = useCallback(async () => {
+    setErr(null);
+    setEstado('generando');
+    try {
+      const res = await fetch('/api/aula/prueba', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planificacionDocumentoId }),
+      });
+      if (!res.ok) {
+        const j = (await res.json()) as { error?: string };
+        throw new Error(j.error ?? `POST → ${res.status}`);
+      }
+      const { jobId } = (await res.json()) as { jobId: string };
+      // Polling acotado del job de prueba (el worker corre GenerarPruebaFormativaUseCase).
+      for (let i = 0; i < 60; i++) {
+        await new Promise((r) => setTimeout(r, 1500));
+        const e = await fetch(`/api/aula/prueba/${jobId}`);
+        if (!e.ok) continue;
+        const r = (await e.json()) as { estado: string; documentoId?: string; error?: string | null };
+        if (r.estado === 'fallido') throw new Error(r.error ?? 'La generación de la prueba falló.');
+        if (r.estado === 'hecho' && r.documentoId !== undefined) {
+          setPruebaDocId(r.documentoId);
+          setEstado('listo');
+          return;
+        }
+      }
+      throw new Error('La generación de la prueba tardó demasiado; reintenta.');
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'No se pudo generar la prueba.');
+      setEstado('error');
+    }
+  }, [planificacionDocumentoId]);
+
+  return (
+    <fieldset>
+      <legend>Prueba formativa (desde esta planificación)</legend>
+      {err !== null && <p style={{ color: '#b00020' }}>⚠ {err}</p>}
+      {(estado === 'idle' || estado === 'error') && (
+        <button onClick={() => void generar()}>Generar prueba formativa (borrador)</button>
+      )}
+      {estado === 'generando' && <p>Generando la prueba… (corre en el worker)</p>}
+      {estado === 'listo' && pruebaDocId !== null && (
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+          <span>Prueba generada (borrador):</span>
+          <a href={`/api/aula/documentos/${pruebaDocId}/prueba?variante=alumno`}>.docx alumno</a>
+          <a href={`/api/aula/documentos/${pruebaDocId}/prueba?variante=pauta`}>.docx pauta</a>
+        </div>
+      )}
+    </fieldset>
   );
 }

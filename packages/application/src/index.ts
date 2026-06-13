@@ -28,6 +28,11 @@ export { GenerarPptInfantilUseCase } from './aula/cascada/GenerarPptInfantilUseC
 export { GenerarPruebaFormativaUseCase } from './aula/cascada/GenerarPruebaFormativaUseCase.js';
 export { construirEncabezadoPrueba } from './aula/cascada/encabezadoPrueba.js';
 export type { DatosInstitucionales } from './aula/cascada/encabezadoPrueba.js';
+export { ProcesarTrabajoPruebaUseCase } from './aula/cascada/ProcesarTrabajoPruebaUseCase.js';
+export type {
+  DependenciasProcesarPrueba,
+  ResultadoProcesarPrueba,
+} from './aula/cascada/ProcesarTrabajoPruebaUseCase.js';
 
 // --- derivarContextoCascada (función pura: UnidadPlanificada → ContextoCascada) ---
 export { derivarContextoCascada } from './aula/cascada/derivarContextoCascada.js';

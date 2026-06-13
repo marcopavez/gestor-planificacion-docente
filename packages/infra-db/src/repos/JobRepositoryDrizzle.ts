@@ -8,10 +8,12 @@ import type {
   EstadoJob,
   JobRepository,
   PayloadPlanificacion,
+  PayloadPrueba,
   TrabajoCascada,
   TrabajoPlanificacion,
+  TrabajoPrueba,
 } from '@faro/domain';
-import { SchemaPayloadPlanificacion } from '@faro/domain';
+import { SchemaPayloadPlanificacion, SchemaPayloadPrueba } from '@faro/domain';
 import type { DbOTx } from '../db.js';
 import { jobGeneracion } from '../schema/index.js';
 
@@ -53,6 +55,21 @@ export class JobRepositoryDrizzle implements JobRepository {
       .returning({ id: jobGeneracion.id });
 
     if (!row) throw new Error('No se pudo encolar el job de planificación');
+    return row.id;
+  }
+
+  async encolarPrueba(payload: PayloadPrueba): Promise<string> {
+    const [row] = await this.db
+      .insert(jobGeneracion)
+      .values({
+        tipoTrabajo: 'prueba_formativa',
+        estado: 'pendiente',
+        // Referencia al documento de planificación; el worker lo carga y valida al tomar el job.
+        payload: payload as unknown as Record<string, unknown>,
+      })
+      .returning({ id: jobGeneracion.id });
+
+    if (!row) throw new Error('No se pudo encolar el job de prueba');
     return row.id;
   }
 
@@ -164,6 +181,38 @@ export class JobRepositoryDrizzle implements JobRepository {
 
       // El payload se validó al encolar; lo revalidamos aquí (defensa: jsonb es opaco).
       const payload = SchemaPayloadPlanificacion.parse(row.payload);
+      return { id: row.id, payload, intentos: actualizado.intentos };
+    });
+  }
+
+  /** Análogo a tomarSiguientePlanificacion para la cola 'prueba_formativa' (Fase 4). */
+  async tomarSiguientePrueba(workerId: string): Promise<TrabajoPrueba | null> {
+    return this.db.transaction(async (tx) => {
+      const rows = await tx.execute<{ id: string; payload: unknown }>(
+        sql`SELECT id, payload FROM job_generacion
+            WHERE estado = 'pendiente' AND tipo_trabajo = 'prueba_formativa'
+            ORDER BY created_at ASC
+            LIMIT 1
+            FOR UPDATE SKIP LOCKED`,
+      );
+
+      const row = (rows as unknown as { rows: Array<{ id: string; payload: unknown }> }).rows[0];
+      if (!row) return null;
+
+      const [actualizado] = await tx
+        .update(jobGeneracion)
+        .set({
+          estado: 'en_proceso',
+          lockedBy: workerId,
+          lockedAt: new Date(),
+          intentos: sql`${jobGeneracion.intentos} + 1`,
+        })
+        .where(eq(jobGeneracion.id, row.id))
+        .returning({ intentos: jobGeneracion.intentos });
+
+      if (!actualizado) throw new Error('No se pudo bloquear el job de prueba tomado');
+
+      const payload = SchemaPayloadPrueba.parse(row.payload);
       return { id: row.id, payload, intentos: actualizado.intentos };
     });
   }

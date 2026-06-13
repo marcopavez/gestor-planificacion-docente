@@ -11,14 +11,17 @@ import { dirname, join } from 'node:path';
 import {
   CascadaAulaUseCase,
   GenerarPlanificacionUseCase,
+  GenerarPruebaFormativaUseCase,
   ProcesarTrabajoCascadaUseCase,
   ProcesarTrabajoPlanificacionUseCase,
+  ProcesarTrabajoPruebaUseCase,
 } from '@faro/application';
 import type { ClockPort } from '@faro/domain';
 import { crearLlm } from '@faro/infra-ai';
 import { CatalogoRepositoryCorpus, PlantillaRepositoryCorpus } from '@faro/infra-corpus';
 import {
   crearDb,
+  DocumentoRepositoryDrizzle,
   JobRepositoryDrizzle,
   OaRepositoryDrizzle,
   PlanificacionAnualRepositoryDrizzle,
@@ -104,6 +107,15 @@ async function main(): Promise<void> {
     uow: new UnidadDeTrabajoDrizzle(db),
   });
 
+  // --- Cola de prueba formativa (Fase 4), en paralelo a las otras dos (no las toca) ---
+  // Genera la prueba desde la unidad ya planificada (su documento); el gate pedagógico corre dentro.
+  const pruebaUseCase = new ProcesarTrabajoPruebaUseCase({
+    jobs: new JobRepositoryDrizzle(db),
+    documentos: new DocumentoRepositoryDrizzle(db),
+    generar: new GenerarPruebaFormativaUseCase(llm),
+    uow: new UnidadDeTrabajoDrizzle(db),
+  });
+
   let corriendo = true;
   const apagar = (senal: string): void => {
     if (!corriendo) return;
@@ -148,8 +160,23 @@ async function main(): Promise<void> {
         break;
     }
 
-    // Backoff fijo solo si ambas colas quedaron vacías (no saturar la DB cuando no hay trabajo).
-    if (r.tipo === 'sin_trabajo' && rp.tipo === 'sin_trabajo') {
+    const rt = await pruebaUseCase.ejecutarSiguiente(workerId);
+    switch (rt.tipo) {
+      case 'sin_trabajo':
+        break;
+      case 'hecho':
+        log.info({ jobId: rt.jobId, documentoId: rt.documentoId }, 'worker: prueba formativa hecha');
+        break;
+      case 'reintenta':
+        log.warn({ jobId: rt.jobId, error: rt.error }, 'worker: prueba reencolada para reintento');
+        break;
+      case 'fallido':
+        log.error({ jobId: rt.jobId, error: rt.error }, 'worker: prueba fallida');
+        break;
+    }
+
+    // Backoff fijo solo si las tres colas quedaron vacías (no saturar la DB cuando no hay trabajo).
+    if (r.tipo === 'sin_trabajo' && rp.tipo === 'sin_trabajo' && rt.tipo === 'sin_trabajo') {
       await esperar(INTERVALO_VACIO_MS);
     }
   }
