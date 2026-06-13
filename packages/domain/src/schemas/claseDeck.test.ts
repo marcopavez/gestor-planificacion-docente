@@ -105,7 +105,7 @@ describe('tramoDeNivel', () => {
   it('cae al tramo 3-4 cuando no reconoce un dígito 1-6', () => {
     expect(tramoDeNivel('básico')).toBe('3-4');
     expect(tramoDeNivel('')).toBe('3-4');
-    // 7º no es del MVP (1-6); cae al default 3-4.
+    // 7º no es de básica (v2 = 1-6); cae al default 3-4.
     expect(tramoDeNivel('7º básico')).toBe('3-4');
   });
 });

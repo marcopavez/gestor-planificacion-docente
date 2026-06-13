@@ -37,11 +37,11 @@ Cada fase entrega funcionalidad **vertical, íntegra y de calidad de producción
 
 | Fase | Spec | Objetivo en una línea | Estado |
 |---|---|---|---|
-| **0** | [`00-cimientos.md`](./00-cimientos.md) | Cimientos: monorepo hexagonal + persistencia + worker asíncrono + HIL + export base | ✅ **construido** (Fase 0/1 previas) |
-| **1** | [`01-curriculum-oa.md`](./01-curriculum-oa.md) | **Datos de currículum:** OA de 1º–6º básico, todas las asignaturas, como JSON versionado. Sin RAG. | ⬜ a construir |
-| **2** | [`02-planificacion.md`](./02-planificacion.md) | **Núcleo:** generar la planificación en **2 formatos reales** (A denso, B DUA), configurable, export **.docx + .pdf**. Generación **híbrida** (datos fijos + IA). | 🟡 parcial (cascada base existe) |
-| **3** | [`03-ppt-infantil.md`](./03-ppt-infantil.md) | Desde la planificación, un **PPT colorido e interactivo** para 6–12 años. | ⬜ *(espera referencias del dueño)* |
-| **4** | [`04-prueba-formativa.md`](./04-prueba-formativa.md) | Desde la planificación, una **prueba formativa evaluable apta para niños**. | ⬜ *(espera referencias del dueño)* |
+| **0** | [`00-cimientos.md`](./00-cimientos.md) | Cimientos: monorepo hexagonal + persistencia + worker asíncrono + HIL + export base | ✅ **construido** |
+| **1** | [`01-curriculum-oa.md`](./01-curriculum-oa.md) | **Datos de currículum:** OA de 1º–6º básico, todas las asignaturas, como JSON versionado. Sin RAG. | ✅ **construido** — 56 bloques / 791 OA + 32 OAT, todas las asignaturas, `corpus@2026.1` |
+| **2** | [`02-planificacion.md`](./02-planificacion.md) | **Núcleo:** generar la planificación en **2 formatos reales** (A denso, B DUA), configurable, export **.docx + .pdf**. Generación **híbrida** (datos fijos + IA). | ✅ **construido** — núcleo + auditoría de fidelidad resuelta |
+| **3** | [`03-ppt-infantil.md`](./03-ppt-infantil.md) | Desde la planificación, un **PPT colorido e interactivo** para 6–12 años. | 🟡 **MVP construido** — tramo 5º–6º en calibración (refs en investigación) |
+| **4** | [`04-prueba-formativa.md`](./04-prueba-formativa.md) | Desde la planificación, una **prueba formativa evaluable apta para niños**. | 🟡 **motor construido** — falta cablear en web/worker + UI |
 | **5** | `05-piloto.md` *(por escribir)* | Pulido + piloto en 1–2 colegios. | ⬜ |
 
 > **Aparcada (no es fase v2):** [`01-nucleo-rag.md`](./01-nucleo-rag.md) — el RAG/grafo normativo del producto v1. Mantenida como referencia (ver nota al inicio del archivo).
@@ -96,15 +96,17 @@ Son **criterios de aceptación globales**: ninguna fase puede violarlos. Versió
 
 | # | Tema | Bloquea | Estado |
 |---|---|---|---|
-| 1 | **Corpus OA 1º–6º, todas las asignaturas:** extraer de `docs/bases-curriculares-primera-a-sexto-basico.pdf` (python + pdfplumber). | Fase 1 (es su entregable) | 🟡 Hoy solo existe `corpus/curriculum/matematica-1-basico.json`. |
+| 1 | **Corpus OA 1º–6º, todas las asignaturas:** extraer de `docs/bases-curriculares-primera-a-sexto-basico.pdf` (python + pdfplumber). | Fase 1 (es su entregable) | ✅ **Resuelto.** 56 bloques / 791 OA + 32 OAT, `corpus@2026.1`, con test de integridad. ~0.9% de OA marcados `[VERIFICAR]` por layout del PDF (no inventados). |
 | 2 | **Indicadores de evaluación:** viven en los *Programas de Estudio* (no en las Bases). | Fase 2 (campo "indicadores") | Resuelto por decisión **híbrida**: la IA los redacta como `ia_borrador`. Si el dueño aporta el Programa de Estudio, se usan los oficiales. |
 | 3 | **Referencias de estilo del PPT infantil y de la prueba.** | Fases 3 y 4 | ⬜ El dueño las comparte. |
-| 4 | **Lista exacta de asignaturas del MVP** (Lenguaje, Matemática, Cs. Naturales, Historia, Artes, Música, Tecnología, Orientación, Ed. Física, Inglés…). | Fase 1 | `[VERIFICAR]` con el dueño qué asignaturas entran al MVP. |
+| 4 | **Lista exacta de asignaturas.** | Fase 1 | ✅ **Resuelto: TODAS las de las Bases Curriculares.** Lenguaje y Comunicación, Matemática, Ciencias Naturales, Historia/Geografía y Cs. Sociales, Artes Visuales, Música, Ed. Física y Salud, Tecnología, Orientación (1º–6º) + Idioma Extranjero Inglés (5º–6º) + OAT. (Religión queda fuera: no está en las Bases.) |
 | 5 | **Theming visual del export** (logo/colores del colegio en el `.docx`/`.pdf`). | Fase 2 (iteración) | v2 entrega la estructura de tablas fiel; el theming fino es iteración posterior. |
 
 ---
 
-## 7. Alcance del MVP — v2
+## 7. Alcance del producto — v2
+
+> Ya no estamos en etapa MVP: las Fases 0–4 están construidas y el currículum cubre todas las asignaturas. Lo que sigue es productización (cablear Fases 3/4 en web/worker + UI), calibración del tramo 5º–6º y piloto.
 
 **Entra:** datos de currículum OA (1º–6º, todas las asignaturas); generador de planificación en **2 formatos reales** configurables; export **.docx + .pdf**; generación **híbrida** (OA/listas = datos fijos, experiencias/indicadores = IA borrador); **PPT infantil**; **prueba formativa** apta para niños; HIL (revisión docente).
 
@@ -114,6 +116,6 @@ Son **criterios de aceptación globales**: ninguna fase puede violarlos. Versió
 
 ## 8. Estado y próximos pasos
 
-- ✅ **Construido:** Fase 0 (cimientos) y la productización previa (persistencia + worker + HIL + cascada de Aula + export `.pptx`).
-- ▶️ **Siguiente:** **Fase 1** (corpus OA 1º–6º) y **Fase 2** (núcleo de planificación, 2 formatos, `.docx`/`.pdf`). Punto de entrada: [`02-planificacion.md`](./02-planificacion.md).
-- ⏸️ **En espera del dueño:** referencias de estilo para **Fase 3** (PPT) y **Fase 4** (prueba).
+- ✅ **Construido:** Fases 0–2 completas (cimientos, corpus OA completo, núcleo de planificación con export `.docx`/`.pdf` fiel) + Fase 3 (PPT infantil, MVP) y Fase 4 (motor de prueba formativa).
+- ▶️ **Siguiente:** cablear los motores de Fase 3 (PPT) y Fase 4 (prueba) en web/worker + UI; calibrar el tema del tramo **5º–6º** con las referencias de estilo en investigación; limpiar rótulos "Decreto 67" stale; Fase 5 (piloto).
+- ⏸️ **En espera del dueño:** referencias de estilo del tramo **5º–6º** (sin material local) — en investigación vía deep research; estrategia de banco de imágenes con licencia.

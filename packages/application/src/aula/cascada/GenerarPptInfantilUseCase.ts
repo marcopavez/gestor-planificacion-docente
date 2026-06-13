@@ -8,7 +8,7 @@
 // elegido por tramo de edad — no lo decide la IA ni se hardcodea por nivel.
 // El deck nace BORRADOR: la IA solo redacta; la revisión docente (HIL) va después.
 //
-// DIFERIDO (NO en este MVP): triggers/animaciones, mini_juego, e integración web/worker async.
+// DIFERIDO (NO en esta versión): triggers/animaciones, mini_juego, e integración web/worker async.
 
 import type { ClaseDeck, LlmPort, PlanificacionUnidad } from '@faro/domain';
 import { SchemaClaseDeck, TEMAS_DECK_INFANTIL, tramoDeNivel } from '@faro/domain';

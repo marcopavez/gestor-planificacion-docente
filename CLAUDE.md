@@ -12,17 +12,22 @@
 
 ## 2. Estado del proyecto
 
+> **Ya no estamos en etapa MVP.** Las Fases 0–4 están construidas; el currículum cubre **todas las asignaturas MINEDUC** de básica. El foco se mueve hacia productización (cablear los motores de Fase 3/4 en web/worker + UI) y el piloto (Fase 5).
+
 - **Construido (Fase 0 + productización previa):** monorepo hexagonal (pnpm), persistencia (Postgres + Drizzle), worker asíncrono (cola), HIL (`borrador→revisado`), cascada de Aula y export `.pptx`. Suite verde en `main`.
-- **Lo siguiente (v2):** **Fase 1** (corpus OA 1º–6º, todas las asignaturas) y **Fase 2** (núcleo: planificación en 2 formatos, export `.docx`/`.pdf`). Ver `specs/`.
-- **En espera del dueño:** referencias de estilo para **Fase 3** (PPT infantil) y **Fase 4** (prueba formativa).
+- **Fase 1 — corpus OA: ✅ completo.** 56 bloques / 791 OA, **1º–6º, todas las asignaturas de las Bases Curriculares** (Inglés solo 5º–6º) + 32 OAT, `corpus_version 2026.1`, con test de integridad. *(No es MVP: es el currículum nacional completo de básica.)*
+- **Fase 2 — núcleo de planificación: ✅ completo.** 2 formatos reales (A denso / B DUA), generación híbrida, export `.docx`/`.pdf` que calcan las tablas (auditoría de fidelidad resuelta).
+- **Fase 3 — PPT infantil: ✅ MVP construido.** Motor data-driven por clase, tema por tramo de edad. **Tramo 5º–6º en calibración** (se está investigando referencias de estilo reales).
+- **Fase 4 — prueba formativa: ✅ motor construido.** `GenerarPruebaFormativaUseCase` + export `.docx` alumno/pauta. **Falta cablear en web/worker + UI.**
+- **Lo siguiente:** cablear Fases 3/4 en web/worker + UI; calibrar el tramo 5º–6º con las referencias en investigación; limpieza de rótulos "Decreto 67" stale; Fase 5 (piloto). Ver `specs/`.
 
 ## 3. Objetivo y alcance (v2)
 
 ### Objetivo
 Devolverle horas al docente generando su **planificación** (y, desde ella, PPT y prueba) como **borradores listos para revisar**, fieles al formato de su colegio.
 
-### Entra (MVP v2)
-- **Datos de currículum:** OA de 1º–6º básico, **todas las asignaturas** de la malla, como JSON versionado (extraído de las Bases Curriculares). *(Fase 1)*
+### Entra (alcance v2)
+- **Datos de currículum:** OA de 1º–6º básico, **todas las asignaturas** de la malla, como JSON versionado (extraído de las Bases Curriculares). *(Fase 1 — ✅ construido)*
 - **Núcleo de planificación:** **2 formatos reales** configurables (A denso, B DUA), generación **híbrida**, export **`.docx` + `.pdf`** que calcan las tablas. *(Fase 2)*
 - **PPT infantil** colorido/interactivo (6–12 años) desde la planificación. *(Fase 3)*
 - **Prueba formativa** evaluable apta para niños. *(Fase 4)*
@@ -99,7 +104,7 @@ Faro v1 era un **copiloto de cumplimiento normativo** cuyo "foso" eran dos *know
 ## 10. Glosario mínimo (v2)
 
 - **OA** — Objetivo de Aprendizaje (Bases Curriculares): unidad citable del currículum nacional; el **único piso fijo** (lo demás —formato, indicadores— varía por colegio).
-- **Básica** — educación básica chilena; el MVP cubre **1º a 6º**.
+- **Básica** — educación básica chilena; v2 cubre **1º a 6º** (todas las asignaturas de las Bases Curriculares).
 - **Planificación de Unidad / Bloque** — los dos instrumentos reales que Faro replica (Formato A / Formato B).
 - **DUA** — Diseño Universal para el Aprendizaje (3 principios: Representación, Acción y Expresión, Implicación); estructura el Formato B.
 - **Indicadores de evaluación** — evidencias observables por OA; viven en los Programas de Estudio (no en las Bases) → en v2 los redacta la IA como borrador.

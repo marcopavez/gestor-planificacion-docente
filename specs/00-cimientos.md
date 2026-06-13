@@ -534,7 +534,7 @@ while (running) {
 - **INV-5** — lint de boundaries + fronteras de paquete; `domain` sin deps de framework.
 - **INV-6** — Voyage/reranker tras puertos; el slice corre con fakes sin tocar la lógica.
 
-**Comentario de cumplimiento inline obligatorio** donde se toquen datos del colegio: *"nivel curso/contenido, no individualizado por alumno"* (bajo riesgo Ley 21.719 en MVP).
+**Comentario de cumplimiento inline obligatorio** donde se toquen datos del colegio: *"nivel curso/contenido, no individualizado por alumno"* (bajo riesgo Ley 21.719 en v2).
 
 ---
 
