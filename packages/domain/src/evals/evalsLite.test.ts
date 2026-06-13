@@ -1,5 +1,5 @@
 // packages/domain/src/evals/evalsLite.test.ts
-// Evals-lite (opt-in): fidelidad de la cascada curada (samples) contra los gates y Decreto 67.
+// Evals-lite (opt-in): fidelidad de la cascada curada (samples) contra los gates v2 (formativos).
 // INV-1: puro, sin DB, sin LLM, sin red. Lee samples y corpus por node:fs (permitido en domain),
 // e importa gates/schemas por ruta relativa dentro del dominio (no por @faro/domain).
 // Opt-in para no penalizar la suite normal: corre solo con EVALS_LITE=1.
@@ -50,9 +50,9 @@ evals('evals-lite — fidelidad de la cascada curada (Matemática 1º básico)',
     expect(reporte.planificacion.ok && reporte.pedagogica.ok && reporte.citas.ok).toBe(true);
   });
 
-  it('la prueba cumple Decreto 67 (≥16 ítems, ítem→OA, una correcta, puntajes)', () => {
-    // ≥16 ítems (el sample tiene 16).
-    expect(prueba.items.length).toBeGreaterThanOrEqual(16);
+  it('la prueba formativa es coherente (ítem→OA, una correcta; puntaje opcional)', () => {
+    // Hay ítems (no exigimos un mínimo: en v2 formativa no hay umbral normativo de cantidad).
+    expect(prueba.items.length).toBeGreaterThan(0);
     // Cada ítem tributa a un OA que existe en el corpus.
     expect(prueba.items.every((it) => codigosCorpus.has(it.oa))).toBe(true);
     // Selección múltiple / verdadero-falso: exactamente una alternativa correcta.
@@ -60,10 +60,9 @@ evals('evals-lite — fidelidad de la cascada curada (Matemática 1º básico)',
       (it) => it.tipo === 'seleccion_multiple' || it.tipo === 'verdadero_falso',
     );
     expect(cerrados.every((it) => (it.alternativas ?? []).filter((a) => a.correcta).length === 1)).toBe(true);
-    // Puntaje presente en cada ítem.
-    expect(prueba.items.every((it) => typeof it.puntaje === 'number')).toBe(true);
-    // NO aseveramos prueba.alineada_reglamento: el prompt de producción lo fija en false a propósito,
-    // porque la alineación real al reglamento exige el reglamento de evaluación del colegio (Fase 2+).
+    // El foco formativo es la retroalimentación, no la ponderación → el puntaje es OPCIONAL.
+    // Solo validamos que, cuando está presente, sea numérico (no exigimos que todos lo traigan).
+    expect(prueba.items.every((it) => it.puntaje === undefined || typeof it.puntaje === 'number')).toBe(true);
   });
 
   it('todos los OA citados en los 4 artefactos existen en el corpus (alineación a OA)', () => {

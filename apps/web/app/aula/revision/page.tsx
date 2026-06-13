@@ -382,7 +382,7 @@ function PanelGates({ gates }: { gates: ReporteGates | null }): React.ReactEleme
         Chequeos deterministas (no IA): cobertura de OA, ítem→OA, puntajes y citas al currículum vigente.
       </p>
       <PanelGate titulo="Planificación (cobertura OA, indicadores, duración)" gate={gates.planificacion} />
-      <PanelGate titulo="Prueba (ítem→OA, una correcta, puntajes, Decreto 67)" gate={gates.pedagogica} />
+      <PanelGate titulo="Prueba (ítem→OA, una correcta, puntajes)" gate={gates.pedagogica} />
       <PanelGate titulo="Citas (OA existe + vigente en el corpus)" gate={gates.citas} />
     </section>
   );

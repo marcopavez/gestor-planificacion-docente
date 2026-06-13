@@ -114,7 +114,7 @@ export default function AulaPage() {
     <main style={{ maxWidth: 920, margin: '0 auto', padding: 24, fontFamily: 'system-ui, sans-serif', color: '#1f2328' }}>
       <h1 style={{ color: COLOR.acento, marginBottom: 4 }}>Faro · Cascada de Aula</h1>
       <p style={{ color: COLOR.suave, marginTop: 0 }}>
-        Del Objetivo de Aprendizaje a la planificación, la prueba y el .pptx — alineado al currículum y al Decreto 67.
+        Del Objetivo de Aprendizaje a la planificación, la prueba y el .pptx — alineado al currículum nacional.
       </p>
 
       <span
@@ -235,7 +235,7 @@ function Validacion({ gates }: { gates: ReporteGates }): React.ReactElement {
         Chequeos deterministas (no IA): cobertura de OA, ítem→OA, puntajes y citas al currículum vigente.
       </p>
       <PanelGate titulo="Planificación (cobertura OA, indicadores, duración)" gate={gates.planificacion} />
-      <PanelGate titulo="Prueba (ítem→OA, una correcta, puntajes, Decreto 67)" gate={gates.pedagogica} />
+      <PanelGate titulo="Prueba (ítem→OA, una correcta, puntajes)" gate={gates.pedagogica} />
       <PanelGate titulo="Citas (OA existe + vigente en el corpus)" gate={gates.citas} />
     </section>
   );
