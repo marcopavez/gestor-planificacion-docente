@@ -64,9 +64,10 @@ export const SchemaClaseDeck = z.object({
 });
 
 /**
- * Temas por tramo de edad (Fase 3). Las paletas '1-2' y '3-4' están CALIBRADAS contra los PPT/guías
- * reales del colegio (color de consigna rojo E2231A, fuentes del sistema — NO Google Fonts). El tramo
- * '5-6' queda con valores provisionales hasta tener referencias.
+ * Temas por tramo de edad (Fase 3). CALIBRADAS contra material real (fuentes del sistema — NO Google
+ * Fonts): '1-2' y '3-4' contra los PPT/guías del colegio (consigna rojo E2231A); '5-6' contra refs
+ * MINEDUC 5º-6º (curriculumnacional.cl). El sistema 5-6 real es color-por-asignatura (acento neutro
+ * por defecto aquí; ver nota en la entrada '5-6').
  */
 export const TEMAS_DECK_INFANTIL: Record<'1-2' | '3-4' | '5-6', TemaDeckInfantilType> = {
   // 1º-2º básico — deck a COLOR, cálido; paleta derivada de las guías de 1°.
@@ -83,10 +84,13 @@ export const TEMAS_DECK_INFANTIL: Record<'1-2' | '3-4' | '5-6', TemaDeckInfantil
     tamano: { titulo: 44, cuerpo: 26 },
     estilo: 'pastel',
   },
-  // 5º-6º básico — paleta naturaleza provisional. [VERIFICAR: faltan referencias 5-6]
-  // Se añade consigna:'E2231A' por consistencia de tipo con los otros tramos.
+  // 5º-6º básico — CALIBRADO contra refs MINEDUC reales 5º-6º (curriculumnacional.cl "Evaluación
+  // Programa - OA##", muestreo de píxeles): look sobrio/maduro, título gris oscuro sobre tarjeta blanca,
+  // sans humanista de sistema (Calibri), mucho aire. El sistema real es COLOR-POR-ASIGNATURA — acento:
+  // Matemática E92B91 · Ciencias 93C953 · Lenguaje F7963B · Historia 06ABD8. Aquí se fija el cian como
+  // acento NEUTRO por defecto hasta cablear el acento por asignatura (requiere cambio de selección/render).
   '5-6': {
-    paleta: { primario: '16A085', secundario: '8E44AD', acento: 'E67E22', fondo: 'F7FBF9', texto: '20303A', consigna: 'E2231A' },
+    paleta: { primario: '3A3A3A', secundario: 'BDE9F4', acento: '06ABD8', fondo: 'FFFFFF', texto: '3A3A3A', consigna: 'E2231A' },
     fuente: { titulo: 'Calibri', cuerpo: 'Calibri' },
     tamano: { titulo: 34, cuerpo: 22 },
     estilo: 'naturaleza',
