@@ -177,6 +177,8 @@ export {
   TemaDeckInfantil,
   TEMAS_DECK_INFANTIL,
   tramoDeNivel,
+  temaDeckInfantil,
+  acentoAsignatura5y6,
 } from './schemas/claseDeck.js';
 export type { ClaseDeck, SlideDeckType, TemaDeckInfantilType } from './schemas/claseDeck.js';
 

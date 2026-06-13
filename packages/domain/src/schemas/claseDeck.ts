@@ -39,6 +39,8 @@ export const TemaDeckInfantil = z.object({
     texto: ColorHex, // cuerpo
     // Color semántico del ENUNCIADO de preguntas (rojo en los PPT reales del colegio).
     consigna: ColorHex,
+    // Color del MARCO a sangre (Fase 3, refs MINEDUC 5-6): opcional → 1-2/3-4 sin marco (backward-compat).
+    borde: ColorHex.optional(),
   }),
   fuente: z.object({
     titulo: z.string(), // nombre de fuente del título
@@ -90,7 +92,7 @@ export const TEMAS_DECK_INFANTIL: Record<'1-2' | '3-4' | '5-6', TemaDeckInfantil
   // Matemática E92B91 · Ciencias 93C953 · Lenguaje F7963B · Historia 06ABD8. Aquí se fija el cian como
   // acento NEUTRO por defecto hasta cablear el acento por asignatura (requiere cambio de selección/render).
   '5-6': {
-    paleta: { primario: '3A3A3A', secundario: 'BDE9F4', acento: '06ABD8', fondo: 'FFFFFF', texto: '3A3A3A', consigna: 'E2231A' },
+    paleta: { primario: '3A3A3A', secundario: 'BDE9F4', acento: '06ABD8', fondo: 'FFFFFF', texto: '3A3A3A', consigna: 'E2231A', borde: '06ABD8' },
     fuente: { titulo: 'Calibri', cuerpo: 'Calibri' },
     tamano: { titulo: 34, cuerpo: 22 },
     estilo: 'naturaleza',
@@ -108,6 +110,39 @@ export function tramoDeNivel(nivel: string): '1-2' | '3-4' | '5-6' {
   if (grado === 5 || grado === 6) return '5-6';
   // 3-4 explícito y default (incluye niveles no reconocidos).
   return '3-4';
+}
+
+/**
+ * Acento por asignatura del tramo 5-6, MUESTREADO de refs reales MINEDUC (curriculumnacional.cl,
+ * "Evaluación Programa - OA##" 5º-6º): el sistema visual es color-por-asignatura. Solo las 4 troncales
+ * tienen color con fuente primaria; el resto de asignaturas cae al acento por defecto del tema (no se
+ * inventan colores — convención del dueño: no inventar hechos chilenos). Match por palabra clave para
+ * tolerar los nombres largos del corpus ("Historia, Geografía y Ciencias Sociales", etc.).
+ */
+const ACENTO_ASIGNATURA_5_6: ReadonlyArray<readonly [RegExp, string]> = [
+  [/matem/i, 'E92B91'], // Matemática — magenta
+  [/ciencias\s+naturales/i, '93C953'], // Ciencias Naturales — verde lima
+  [/lenguaje/i, 'F7963B'], // Lenguaje y Comunicación — naranjo
+  [/historia/i, '06ABD8'], // Historia, Geografía y Cs. Sociales — cian
+];
+
+/** Devuelve el acento MINEDUC de la asignatura (5-6), o `undefined` si no hay ref real de su color. */
+export function acentoAsignatura5y6(asignatura: string): string | undefined {
+  return ACENTO_ASIGNATURA_5_6.find(([patron]) => patron.test(asignatura))?.[1];
+}
+
+/**
+ * Tema visual del deck para `(nivel, asignatura)`. El tramo elige la base; en 5-6 el acento y el MARCO
+ * a sangre se tiñen POR ASIGNATURA según las refs MINEDUC (color-por-asignatura); las asignaturas sin
+ * ref real usan el acento neutro del tema base. Para 1-2/3-4 devuelve el tema base sin cambios (esos
+ * tramos se calibraron con un único color por los PPT del colegio, no por asignatura).
+ */
+export function temaDeckInfantil(nivel: string, asignatura: string): TemaDeckInfantilType {
+  const tramo = tramoDeNivel(nivel);
+  const base = TEMAS_DECK_INFANTIL[tramo];
+  if (tramo !== '5-6') return base;
+  const acento = acentoAsignatura5y6(asignatura) ?? base.paleta.acento;
+  return { ...base, paleta: { ...base.paleta, acento, borde: acento } };
 }
 
 export type ClaseDeck = z.infer<typeof SchemaClaseDeck>;

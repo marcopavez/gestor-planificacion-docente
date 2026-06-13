@@ -155,10 +155,34 @@ export class PptxExportAdapter implements ExportPort {
 
   // --- Render infantil data-driven (Fase 3): la paleta/fuente/tamaño salen del `tema` del deck ---
 
+  /**
+   * Fondo del slide infantil. Con `tema.paleta.borde` (tramo 5-6, refs MINEDUC) pinta un MARCO a sangre:
+   * fondo del color del borde + una tarjeta interior del color `fondo` sobre la que va el contenido (look
+   * color-por-asignatura). Sin `borde` (1-2/3-4) deja el fondo plano — backward-compatible. Llamar ANTES
+   * de añadir texto para que el contenido quede por encima de la tarjeta. Margen 0.22" en el lienzo 10×5.625".
+   */
+  private fondoInfantil(pptx: Pptx, slide: ReturnType<Pptx['addSlide']>, tema: TemaDeckInfantilType): void {
+    const borde = tema.paleta.borde;
+    if (!borde) {
+      slide.background = { color: tema.paleta.fondo };
+      return;
+    }
+    slide.background = { color: borde };
+    // ShapeType vive en la INSTANCIA de pptxgenjs (no en la clase default-exportada).
+    slide.addShape(pptx.ShapeType.rect, {
+      x: 0.22,
+      y: 0.22,
+      w: 9.56,
+      h: 5.185,
+      fill: { color: tema.paleta.fondo },
+      line: { type: 'none' },
+    });
+  }
+
   /** Portada infantil: usa la paleta y fuente del tema; mantiene el sello de borrador (HIL — INV-3). */
   private portadaInfantil(pptx: Pptx, deck: ClaseDeck, tema: TemaDeckInfantilType): void {
     const slide = pptx.addSlide();
-    slide.background = { color: tema.paleta.fondo };
+    this.fondoInfantil(pptx, slide, tema);
     slide.addText(deck.titulo, {
       x: 0.5,
       y: 1.4,
@@ -223,7 +247,7 @@ export class PptxExportAdapter implements ExportPort {
   /** Lámina con la banda de momento teñida por el tema; reutilizada por contenido/¿qué sigue?. */
   private slideBaseInfantil(pptx: Pptx, s: SlideDeckType, tema: TemaDeckInfantilType): ReturnType<Pptx['addSlide']> {
     const slide = pptx.addSlide();
-    slide.background = { color: tema.paleta.fondo };
+    this.fondoInfantil(pptx, slide, tema);
     const m = MOMENTO[s.momento];
     // La banda de momento se tiñe con el acento del tema (no inventamos secciones nuevas).
     slide.addText(m.etiqueta, {
@@ -307,7 +331,7 @@ export class PptxExportAdapter implements ExportPort {
   /** 'pregunta'/'elige': la pregunta GRANDE centrada + opciones; la correcta SOLO en notas_docente. */
   private slideInteraccion(pptx: Pptx, s: SlideDeckType, tema: TemaDeckInfantilType): void {
     const slide = pptx.addSlide();
-    slide.background = { color: tema.paleta.fondo };
+    this.fondoInfantil(pptx, slide, tema);
     // El ENUNCIADO de la pregunta va en color consigna (rojo) como en los PPT reales del colegio.
     slide.addText(s.titulo, {
       x: 0.5,

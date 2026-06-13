@@ -4,14 +4,14 @@
 // slides (texto simple por tramo + slides de interacción), validados contra SchemaClaseDeck. El use case
 // SOBRESCRIBE los campos que no se inventan (titulo/asignatura/nivel/oa/tramo_edad/tema): el aporte real
 // de la IA son los slides, igual que GenerarClaseDeckUseCase pero con el LOOK infantil data-driven.
-// El LOOK vive en el `tema` (TEMAS_DECK_INFANTIL, placeholders a calibrar con las referencias del dueño),
-// elegido por tramo de edad — no lo decide la IA ni se hardcodea por nivel.
+// El LOOK vive en el `tema` (calibrado contra refs reales por tramo; en 5-6, color-por-asignatura según
+// MINEDUC), elegido por (nivel, asignatura) vía temaDeckInfantil — no lo decide la IA ni se hardcodea.
 // El deck nace BORRADOR: la IA solo redacta; la revisión docente (HIL) va después.
 //
 // DIFERIDO (NO en esta versión): triggers/animaciones, mini_juego, e integración web/worker async.
 
 import type { ClaseDeck, LlmPort, PlanificacionUnidad } from '@faro/domain';
-import { SchemaClaseDeck, TEMAS_DECK_INFANTIL, tramoDeNivel } from '@faro/domain';
+import { SchemaClaseDeck, temaDeckInfantil, tramoDeNivel } from '@faro/domain';
 import { bloqueCorpusUnidad, entradaDeckInfantil, exigirParsedConMeta, INSTR_DECK_INFANTIL } from './generacion.js';
 import type { MetaGeneracion } from './generacion.js';
 
@@ -22,8 +22,9 @@ export class GenerarPptInfantilUseCase {
     unidad: PlanificacionUnidad,
   ): Promise<{ valor: ClaseDeck; meta: MetaGeneracion }> {
     // Tramo de edad → tema (data-driven). El default '3-4' cubre niveles no reconocidos (ver tramoDeNivel).
+    // En 5-6 el tema se tiñe POR ASIGNATURA (acento + marco a sangre) según las refs MINEDUC reales.
     const tramo = tramoDeNivel(unidad.nivel);
-    const tema = TEMAS_DECK_INFANTIL[tramo];
+    const tema = temaDeckInfantil(unidad.nivel, unidad.asignatura);
 
     // La IA redacta el deck (schema validado); su aporte real son los slides. El use case fija el resto.
     const salida = await this.llm.generar({

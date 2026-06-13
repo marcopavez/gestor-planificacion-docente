@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { inflateRawSync } from 'node:zlib';
-import { SchemaClaseDeck, TEMAS_DECK_INFANTIL, type ClaseDeck } from '@faro/domain';
+import { SchemaClaseDeck, TEMAS_DECK_INFANTIL, temaDeckInfantil, type ClaseDeck } from '@faro/domain';
 import { logger } from '@faro/observability';
 import { describe, expect, it } from 'vitest';
 import { PptxExportAdapter } from './PptxExportAdapter.js';
@@ -202,6 +202,42 @@ describe('PptxExportAdapter (RF-2.8, CA-2.12)', () => {
     // (además de conservarlo en las notas del orador).
     expect(slidesXml).toContain('IMAGEN: dos grupos de fichas, uno con 3 y otro con 7');
     expect(notasXml).toContain('Sugerencia de imagen: dos grupos de fichas, uno con 3 y otro con 7');
+  });
+
+  // Deck 5-6 (tema con `borde`): el render pinta el MARCO a sangre con el color de la asignatura
+  // (color-por-asignatura MINEDUC) sobre una tarjeta interior blanca. El acento neutro por defecto del
+  // tramo (06ABD8) NO debe aparecer: prueba que el acento se tiñó por asignatura (Matemática → E92B91).
+  it('con tema 5-6 (borde): pinta el marco a sangre del color de la asignatura sobre tarjeta blanca', async () => {
+    const tema = temaDeckInfantil('5º básico', 'Matemática');
+    expect(tema.paleta.borde).toBe('E92B91'); // sanity: acento+marco de Matemática
+    const deck: ClaseDeck = SchemaClaseDeck.parse({
+      titulo: 'Clase 5° · Valor posicional',
+      asignatura: 'Matemática',
+      nivel: '5º básico',
+      oa: ['MA05 OA 01'],
+      tramo_edad: '5-6',
+      tema,
+      slides: [
+        {
+          momento: 'inicio',
+          tipo: 'contenido',
+          titulo: 'Valor posicional',
+          contenido: ['Repasemos los números hasta los millones.'],
+          notas_docente: 'Activar conocimientos previos.',
+        },
+      ],
+    });
+    const dir = join(tmpdir(), 'faro-pptx-test');
+    const adapter = new PptxExportAdapter(dir, logger);
+
+    const archivo = await adapter.exportarPptx(deck);
+    const xml = todasLasSlides(await readFile(archivo.ruta));
+
+    // Marco a sangre del color de la asignatura + tarjeta interior blanca.
+    expect(xml).toContain('E92B91'); // magenta de Matemática (fondo del marco / acento)
+    expect(xml).toContain('FFFFFF'); // tarjeta interior blanca
+    // El acento neutro por defecto del tramo 5-6 NO aparece → el acento se tiñó por asignatura.
+    expect(xml).not.toContain('06ABD8');
   });
 
   // BACKWARD-COMPAT del placeholder: un deck SIN `tema` NO dibuja el recuadro "IMAGEN: …" en la slide

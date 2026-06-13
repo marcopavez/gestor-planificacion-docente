@@ -2,7 +2,13 @@
 // Verifica: backward-compat (defaults de tipo/opciones), tema infantil opcional, los temas
 // placeholder por tramo y el helper tramoDeNivel.
 import { describe, expect, it } from 'vitest';
-import { SchemaClaseDeck, TEMAS_DECK_INFANTIL, tramoDeNivel, type TemaDeckInfantilType } from './claseDeck.js';
+import {
+  SchemaClaseDeck,
+  TEMAS_DECK_INFANTIL,
+  temaDeckInfantil,
+  tramoDeNivel,
+  type TemaDeckInfantilType,
+} from './claseDeck.js';
 
 // Deck mínimo "viejo": sin tipo/opciones en la slide ni tramo_edad/tema → debe seguir parseando.
 const deckPrevio = {
@@ -62,9 +68,9 @@ describe('SchemaClaseDeck (Fase 3 — aditivo, backward-compatible)', () => {
   });
 });
 
-describe('TEMAS_DECK_INFANTIL (calibrado 1-2/3-4; 5-6 provisional)', () => {
+describe('TEMAS_DECK_INFANTIL (calibrado 1-2/3-4 colegio; 5-6 contra refs MINEDUC)', () => {
   it('define los 3 tramos con el estilo correcto', () => {
-    // 1-2 y 3-4 calibrados contra los PPT/guías reales (ambos 'pastel'-cálido); 5-6 sigue 'naturaleza'.
+    // 1-2 y 3-4 calibrados contra los PPT/guías reales (ambos 'pastel'-cálido); 5-6 sobrio ('naturaleza').
     expect(TEMAS_DECK_INFANTIL['1-2'].estilo).toBe('pastel');
     expect(TEMAS_DECK_INFANTIL['3-4'].estilo).toBe('pastel');
     expect(TEMAS_DECK_INFANTIL['5-6'].estilo).toBe('naturaleza');
@@ -107,5 +113,40 @@ describe('tramoDeNivel', () => {
     expect(tramoDeNivel('')).toBe('3-4');
     // 7º no es de básica (v2 = 1-6); cae al default 3-4.
     expect(tramoDeNivel('7º básico')).toBe('3-4');
+  });
+});
+
+describe('temaDeckInfantil (acento por asignatura en 5-6 — refs MINEDUC)', () => {
+  it('en 5-6 tiñe acento Y marco (borde) por asignatura troncal, con los hex reales muestreados', () => {
+    const mate = temaDeckInfantil('5º básico', 'Matemática');
+    expect(mate.paleta.acento).toBe('E92B91');
+    expect(mate.paleta.borde).toBe('E92B91');
+    expect(temaDeckInfantil('6º básico', 'Ciencias Naturales').paleta.acento).toBe('93C953');
+    expect(temaDeckInfantil('5º básico', 'Lenguaje y Comunicación').paleta.acento).toBe('F7963B');
+    // Nombre largo del corpus: el match por palabra clave debe reconocer "Historia, Geografía y …".
+    expect(temaDeckInfantil('6º básico', 'Historia, Geografía y Ciencias Sociales').paleta.acento).toBe('06ABD8');
+  });
+
+  it('en 5-6, una asignatura sin ref real de color cae al acento neutro por defecto (no inventa color)', () => {
+    const musica = temaDeckInfantil('5º básico', 'Música');
+    expect(musica.paleta.acento).toBe(TEMAS_DECK_INFANTIL['5-6'].paleta.acento); // 06ABD8 neutro
+    expect(musica.paleta.borde).toBe(TEMAS_DECK_INFANTIL['5-6'].paleta.acento);
+  });
+
+  it('"Ciencias Sociales" (en Historia) NO se confunde con "Ciencias Naturales"', () => {
+    expect(temaDeckInfantil('5º básico', 'Historia, Geografía y Ciencias Sociales').paleta.acento).toBe('06ABD8');
+  });
+
+  it('1-2 y 3-4 NO llevan marco (borde) y conservan el tema base por tramo (no por asignatura)', () => {
+    expect(temaDeckInfantil('1º básico', 'Matemática').paleta.borde).toBeUndefined();
+    const tres = temaDeckInfantil('3º básico', 'Matemática');
+    expect(tres.paleta.borde).toBeUndefined();
+    expect(tres.paleta.acento).toBe(TEMAS_DECK_INFANTIL['3-4'].paleta.acento);
+  });
+
+  it('el tema resultante valida contra el schema público', () => {
+    expect(() =>
+      SchemaClaseDeck.parse({ ...deckPrevio, tema: temaDeckInfantil('5º básico', 'Matemática') }),
+    ).not.toThrow();
   });
 });

@@ -126,13 +126,19 @@ describe('GenerarPptInfantilUseCase (Fase 3, PPT infantil sin API key)', () => {
     expect(llamadas).toEqual(['redaccion']);
   });
 
-  it('elige el tema por tramo según el nivel (5º básico → tramo 5-6)', async () => {
+  it('elige el tema por tramo y, en 5-6, lo tiñe por asignatura (Ciencias Naturales → acento/marco verde)', async () => {
     const uc = new GenerarPptInfantilUseCase(llmDeMuestras([]));
 
-    const deck = await uc.ejecutar(unidadMuestra('5º básico'));
+    const deck = await uc.ejecutar(unidadMuestra('5º básico')); // unidad de Ciencias Naturales
 
     expect(deck.tramo_edad).toBe('5-6');
-    expect(deck.tema).toEqual(TEMAS_DECK_INFANTIL['5-6']);
+    // El sistema MINEDUC 5-6 es color-por-asignatura: Ciencias Naturales → verde lima 93C953
+    // (acento + marco a sangre), NO el acento neutro por defecto del tramo (06ABD8).
+    expect(deck.tema?.paleta.acento).toBe('93C953');
+    expect(deck.tema?.paleta.borde).toBe('93C953');
+    // El resto del tema 5-6 (fondo/título/fuente/tamaños) se conserva de la base.
+    expect(deck.tema?.paleta.fondo).toBe(TEMAS_DECK_INFANTIL['5-6'].paleta.fondo);
+    expect(deck.tema?.fuente.titulo).toBe('Calibri');
   });
 
   it('ejecutarConMeta expone los metadatos de la llamada (traza_ia)', async () => {
