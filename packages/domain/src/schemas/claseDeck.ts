@@ -113,17 +113,26 @@ export function tramoDeNivel(nivel: string): '1-2' | '3-4' | '5-6' {
 }
 
 /**
- * Acento por asignatura del tramo 5-6, MUESTREADO de refs reales MINEDUC (curriculumnacional.cl,
- * "Evaluación Programa - OA##" 5º-6º): el sistema visual es color-por-asignatura. Solo las 4 troncales
- * tienen color con fuente primaria; el resto de asignaturas cae al acento por defecto del tema (no se
- * inventan colores — convención del dueño: no inventar hechos chilenos). Match por palabra clave para
+ * Acento por asignatura del tramo 5-6: el sistema visual MINEDUC es color-por-asignatura. Las 4
+ * troncales tienen su color MUESTREADO de refs reales MINEDUC (curriculumnacional.cl, "Evaluación
+ * Programa - OA##" 5º-6º). Las otras 6 asignaturas NO tienen color oficial publicado → el color lo
+ * decide el producto (decisión del dueño: las decisiones estéticas son de Faro), eligiendo un hue que
+ * REFERENCIA el contenido de la asignatura según las Bases Curriculares. Match por palabra clave para
  * tolerar los nombres largos del corpus ("Historia, Geografía y Ciencias Sociales", etc.).
  */
 const ACENTO_ASIGNATURA_5_6: ReadonlyArray<readonly [RegExp, string]> = [
-  [/matem/i, 'E92B91'], // Matemática — magenta
-  [/ciencias\s+naturales/i, '93C953'], // Ciencias Naturales — verde lima
-  [/lenguaje/i, 'F7963B'], // Lenguaje y Comunicación — naranjo
-  [/historia/i, '06ABD8'], // Historia, Geografía y Cs. Sociales — cian
+  // Troncales — color real de la ref MINEDUC.
+  [/matem/i, 'E92B91'], // Matemática — magenta (ref MINEDUC)
+  [/ciencias\s+naturales/i, '93C953'], // Ciencias Naturales — verde lima/vida (ref MINEDUC)
+  [/lenguaje/i, 'F7963B'], // Lenguaje y Comunicación — naranjo (ref MINEDUC)
+  [/historia/i, '06ABD8'], // Historia, Geografía y Cs. Sociales — cian (ref MINEDUC)
+  // No-troncales — color de Faro referenciando el contenido de la materia.
+  [/artes/i, '8E44AD'], // Artes Visuales — violeta: color, creatividad y expresión visual
+  [/m[úu]sica/i, '5E35B1'], // Música — púrpura: ritmo, armonía y expresión sonora
+  [/f[íi]sica/i, '0FA36B'], // Educación Física y Salud — verde esmeralda: vitalidad, movimiento, salud
+  [/tecnolog/i, '1E6FD9'], // Tecnología — azul: lo digital y las herramientas
+  [/orientaci/i, 'E8A33D'], // Orientación — ámbar cálido: bienestar y desarrollo personal/social
+  [/ingl[ée]s/i, '00897B'], // Idioma Extranjero Inglés — teal: comunicación y apertura al mundo
 ];
 
 /** Devuelve el acento MINEDUC de la asignatura (5-6), o `undefined` si no hay ref real de su color. */

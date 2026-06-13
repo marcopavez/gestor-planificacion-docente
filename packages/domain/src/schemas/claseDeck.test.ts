@@ -3,12 +3,27 @@
 // placeholder por tramo y el helper tramoDeNivel.
 import { describe, expect, it } from 'vitest';
 import {
+  acentoAsignatura5y6,
   SchemaClaseDeck,
   TEMAS_DECK_INFANTIL,
   temaDeckInfantil,
   tramoDeNivel,
   type TemaDeckInfantilType,
 } from './claseDeck.js';
+
+// Las 10 asignaturas de las Bases Curriculares (nombres tal cual el corpus); Inglés es 5º-6º.
+const ASIGNATURAS_BASES = [
+  'Matemática',
+  'Lenguaje y Comunicación',
+  'Ciencias Naturales',
+  'Historia, Geografía y Ciencias Sociales',
+  'Artes Visuales',
+  'Música',
+  'Educación Física y Salud',
+  'Tecnología',
+  'Orientación',
+  'Idioma Extranjero Inglés',
+] as const;
 
 // Deck mínimo "viejo": sin tipo/opciones en la slide ni tramo_edad/tema → debe seguir parseando.
 const deckPrevio = {
@@ -127,10 +142,27 @@ describe('temaDeckInfantil (acento por asignatura en 5-6 — refs MINEDUC)', () 
     expect(temaDeckInfantil('6º básico', 'Historia, Geografía y Ciencias Sociales').paleta.acento).toBe('06ABD8');
   });
 
-  it('en 5-6, una asignatura sin ref real de color cae al acento neutro por defecto (no inventa color)', () => {
-    const musica = temaDeckInfantil('5º básico', 'Música');
-    expect(musica.paleta.acento).toBe(TEMAS_DECK_INFANTIL['5-6'].paleta.acento); // 06ABD8 neutro
-    expect(musica.paleta.borde).toBe(TEMAS_DECK_INFANTIL['5-6'].paleta.acento);
+  it('en 5-6, las asignaturas no-troncales tienen su propio color (decisión de producto, ligado al contenido)', () => {
+    expect(temaDeckInfantil('5º básico', 'Artes Visuales').paleta.acento).toBe('8E44AD');
+    expect(temaDeckInfantil('6º básico', 'Música').paleta.acento).toBe('5E35B1');
+    expect(temaDeckInfantil('5º básico', 'Educación Física y Salud').paleta.acento).toBe('0FA36B');
+    expect(temaDeckInfantil('6º básico', 'Tecnología').paleta.acento).toBe('1E6FD9');
+    expect(temaDeckInfantil('5º básico', 'Orientación').paleta.acento).toBe('E8A33D');
+    expect(temaDeckInfantil('6º básico', 'Idioma Extranjero Inglés').paleta.acento).toBe('00897B');
+  });
+
+  it('toda asignatura de las Bases (5-6) tiene un color propio asignado (mapa completo, sin huecos)', () => {
+    for (const a of ASIGNATURAS_BASES) {
+      expect(acentoAsignatura5y6(a)).toBeDefined();
+      // el marco se tiñe con ese mismo color
+      expect(temaDeckInfantil('5º básico', a).paleta.borde).toBe(acentoAsignatura5y6(a));
+    }
+  });
+
+  it('en 5-6, una asignatura no reconocida cae al acento neutro por defecto del tramo (fallback)', () => {
+    const x = temaDeckInfantil('5º básico', 'Asignatura Inexistente XYZ');
+    expect(acentoAsignatura5y6('Asignatura Inexistente XYZ')).toBeUndefined();
+    expect(x.paleta.acento).toBe(TEMAS_DECK_INFANTIL['5-6'].paleta.acento); // 06ABD8 neutro
   });
 
   it('"Ciencias Sociales" (en Historia) NO se confunde con "Ciencias Naturales"', () => {
