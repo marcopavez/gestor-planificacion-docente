@@ -10,10 +10,12 @@ import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import {
   CascadaAulaUseCase,
+  GenerarGuiaUseCase,
   GenerarPlanificacionUseCase,
   GenerarPptInfantilUseCase,
   GenerarPruebaFormativaUseCase,
   ProcesarTrabajoCascadaUseCase,
+  ProcesarTrabajoGuiaUseCase,
   ProcesarTrabajoPlanificacionUseCase,
   ProcesarTrabajoPptInfantilUseCase,
   ProcesarTrabajoPruebaUseCase,
@@ -128,6 +130,15 @@ async function main(): Promise<void> {
     uow: new UnidadDeTrabajoDrizzle(db),
   });
 
+  // --- Cola de guías del alumno (Tanda 1), en paralelo a las otras (no las toca) ---
+  // Genera la guía desde los OA de la unidad; el export .docx es bajo demanda en la web, no aquí.
+  const guiaUseCase = new ProcesarTrabajoGuiaUseCase({
+    jobs: new JobRepositoryDrizzle(db),
+    oas,
+    generar: new GenerarGuiaUseCase(llm),
+    uow: new UnidadDeTrabajoDrizzle(db),
+  });
+
   let corriendo = true;
   const apagar = (senal: string): void => {
     if (!corriendo) return;
@@ -139,9 +150,9 @@ async function main(): Promise<void> {
 
   log.info({ workerId, modo, samplesDir }, 'worker: iniciado (H-PA.8)');
 
-  // Loop principal: en CADA iteración intenta las cuatro colas (cascada, planificación, prueba y PPT
-  // infantil) para que una cola con trabajo continuo no inanice a las otras; el backoff solo aplica si
-  // TODAS están vacías.
+  // Loop principal: en CADA iteración intenta las cinco colas (cascada, planificación, prueba, PPT
+  // infantil y guías) para que una cola con trabajo continuo no inanice a las otras; el backoff solo
+  // aplica si TODAS están vacías.
   while (corriendo) {
     const r = await useCase.ejecutarSiguiente(workerId);
     switch (r.tipo) {
@@ -203,12 +214,28 @@ async function main(): Promise<void> {
         break;
     }
 
-    // Backoff fijo solo si las cuatro colas quedaron vacías (no saturar la DB cuando no hay trabajo).
+    const rg = await guiaUseCase.ejecutarSiguiente(workerId);
+    switch (rg.tipo) {
+      case 'sin_trabajo':
+        break;
+      case 'hecho':
+        log.info({ jobId: rg.jobId, documentoId: rg.documentoId }, 'worker: guía hecha');
+        break;
+      case 'reintenta':
+        log.warn({ jobId: rg.jobId, error: rg.error }, 'worker: guía reencolada para reintento');
+        break;
+      case 'fallido':
+        log.error({ jobId: rg.jobId, error: rg.error }, 'worker: guía fallida');
+        break;
+    }
+
+    // Backoff fijo solo si las cinco colas quedaron vacías (no saturar la DB cuando no hay trabajo).
     if (
       r.tipo === 'sin_trabajo' &&
       rp.tipo === 'sin_trabajo' &&
       rt.tipo === 'sin_trabajo' &&
-      rpp.tipo === 'sin_trabajo'
+      rpp.tipo === 'sin_trabajo' &&
+      rg.tipo === 'sin_trabajo'
     ) {
       await esperar(INTERVALO_VACIO_MS);
     }
