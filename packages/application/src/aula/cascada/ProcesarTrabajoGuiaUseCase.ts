@@ -11,7 +11,7 @@ import type {
   ReposTransaccion,
   UnidadDeTrabajo,
 } from '@faro/domain';
-import { guiaGate } from '@faro/domain';
+import { GeneracionError, guiaGate } from '@faro/domain';
 import type { ContextoCascada } from './tipos.js';
 import type { GenerarGuiaUseCase } from './GenerarGuiaUseCase.js';
 
@@ -118,8 +118,14 @@ export class ProcesarTrabajoGuiaUseCase {
       return { tipo: 'hecho', jobId: job.id, documentoId };
     } catch (e) {
       const mensaje = e instanceof Error ? e.message : String(e);
-      // Transitorios (IA, infra): reintento acotado; agotados → fallido permanente.
-      if (job.intentos < this.maxIntentos) {
+      // Errores PERMANENTES de input (no cambian entre reintentos): tramo no soportado / OA ausente en el
+      // contexto. No se reintentan → fallido directo (consistente con el OA-no-encontrado de arriba).
+      // OJO: 'fuga_texto:*' NO es permanente (una regeneración puede salir limpia) → sigue el camino transitorio.
+      const esPermanente =
+        e instanceof GeneracionError &&
+        (e.stopReason === 'guia_tramo_no_soportado' || e.stopReason === 'guia_sin_oa');
+      // Transitorios (IA, infra, fuga de texto): reintento acotado; agotados → fallido permanente.
+      if (!esPermanente && job.intentos < this.maxIntentos) {
         await this.jobs.reintentar(job.id, mensaje);
         return { tipo: 'reintenta', jobId: job.id, error: mensaje };
       }

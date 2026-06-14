@@ -142,6 +142,39 @@ describe('ProcesarTrabajoGuiaUseCase', () => {
     expect((await uc.ejecutarSiguiente('w-1')).tipo).toBe('sin_trabajo');
   });
 
+  it('falla permanente (sin reintentar) si el nivel es tramo 1-2 (no soportado en Tanda 1)', async () => {
+    // Un docente puede pedir guía desde una planificación de 1º/2º (la UI no filtra por tramo). El motor
+    // lanza GeneracionError('guia_tramo_no_soportado') ANTES de llamar al LLM: es input permanente, no se
+    // reintenta. Con intentos=1 (< maxIntentos) el camino transitorio daría 'reintenta'; este caso debe
+    // dar 'fallido' directo y NO llamar a reintentar.
+    const { jobs, oas, uow } = dobles();
+    (jobs.tomarSiguienteGuia as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: 'job-12',
+      intentos: 1,
+      payload: {
+        asignatura: 'Ciencias Naturales',
+        nivel: '1º básico',
+        oaCodigo: 'CN03 OA 01',
+        conocimiento: 'Los seres vivos',
+        establecimiento: 'Colegio Demo',
+      },
+    });
+    const uc = new ProcesarTrabajoGuiaUseCase({
+      jobs: jobs as JobRepository,
+      oas, // porAsignaturaNivel devuelve [OA] → el OA existe; falla por el tramo, no por OA ausente
+      generar: new GenerarGuiaUseCase({
+        async generar() {
+          throw new Error('el LLM no debe llamarse: el guard de tramo corta antes');
+        },
+      }),
+      uow,
+    });
+    const r = await uc.ejecutarSiguiente('w-1');
+    expect(r.tipo).toBe('fallido');
+    expect(jobs.reintentar).not.toHaveBeenCalled();
+    expect(jobs.marcarFallido).toHaveBeenCalledOnce();
+  });
+
   it('falla permanente si el OA no existe en el corpus publicado', async () => {
     const { jobs, uow } = dobles();
     const oasVacio: OaRepository = {
