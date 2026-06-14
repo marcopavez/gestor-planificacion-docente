@@ -432,6 +432,12 @@ function RevisionPlan(props: {
 
       <GenerarPrueba planificacionDocumentoId={documentoId} />
       <GenerarPptInfantil planificacionDocumentoId={documentoId} />
+      <GenerarGuia
+        asignatura={plan.asignatura}
+        nivel={plan.nivel}
+        establecimiento={plan.establecimiento}
+        oaCodigos={plan.oa.map((o) => o.codigo)}
+      />
     </section>
   );
 }
@@ -513,6 +519,128 @@ function GenerarPrueba({ planificacionDocumentoId }: { planificacionDocumentoId:
           <span>Prueba generada (borrador):</span>
           <a href={`/api/aula/documentos/${pruebaDocId}/prueba?variante=alumno`}>.docx alumno</a>
           <a href={`/api/aula/documentos/${pruebaDocId}/prueba?variante=pauta`}>.docx pauta</a>
+        </div>
+      )}
+    </fieldset>
+  );
+}
+
+// Genera una GUÍA DE TRABAJO DEL ALUMNO (Tanda 1) desde un OA de la planificación: encola el job, hace
+// polling y ofrece la descarga .docx. Recibe el contexto de la planificación (asignatura, nivel,
+// establecimiento, lista de códigos de OA) para no requerir un documento persisitido previo.
+// El docente elige el OA y escribe el conocimiento/tema; la guía nace borrador (HIL).
+function GenerarGuia({
+  asignatura,
+  nivel,
+  establecimiento,
+  oaCodigos,
+}: {
+  asignatura: string;
+  nivel: string;
+  establecimiento: string;
+  oaCodigos: readonly string[];
+}) {
+  const [oaCodigo, setOaCodigo] = useState<string>(oaCodigos[0] ?? '');
+  const [conocimiento, setConocimiento] = useState<string>('');
+  const [estado, setEstado] = useState<'idle' | 'generando' | 'listo' | 'error' | 'segundo_plano'>('idle');
+  const [guiaDocId, setGuiaDocId] = useState<string | null>(null);
+  const [jobId, setJobId] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  // Traduce el resultado del sondeo a estado de UI. 'sigue' NO es error: el worker puede seguir y el
+  // documento no se pierde, así que ofrecemos "comprobar de nuevo" en vez de re-encolar (evita duplicar).
+  const aplicar = useCallback((r: ResultadoSondeo) => {
+    if (r.estado === 'fallido') {
+      setErr(r.error);
+      setEstado('error');
+    } else if (r.estado === 'listo') {
+      setGuiaDocId(r.documentoId);
+      setEstado('listo');
+    } else {
+      setEstado('segundo_plano');
+    }
+  }, []);
+
+  const generar = useCallback(async () => {
+    if (oaCodigo === '' || conocimiento.trim() === '') {
+      setErr('Elige un OA y escribe el conocimiento/tema de la guía.');
+      setEstado('error');
+      return;
+    }
+    setErr(null);
+    setEstado('generando');
+    try {
+      const res = await fetch('/api/aula/guia', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ asignatura, nivel, oaCodigo, conocimiento: conocimiento.trim(), establecimiento }),
+      });
+      if (!res.ok) {
+        const j = (await res.json()) as { error?: string };
+        throw new Error(j.error ?? `POST → ${res.status}`);
+      }
+      const { jobId: nuevo } = (await res.json()) as { jobId: string };
+      setJobId(nuevo);
+      aplicar(await sondearJob('/api/aula/guia', nuevo));
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'No se pudo generar la guía.');
+      setEstado('error');
+    }
+  }, [asignatura, nivel, establecimiento, oaCodigo, conocimiento, aplicar]);
+
+  // Reanuda el sondeo del MISMO job (no re-encola): recupera el documento si el worker terminó mientras tanto.
+  const comprobar = useCallback(async () => {
+    if (jobId === null) return;
+    setErr(null);
+    setEstado('generando');
+    try {
+      aplicar(await sondearJob('/api/aula/guia', jobId));
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'No se pudo comprobar la guía.');
+      setEstado('error');
+    }
+  }, [jobId, aplicar]);
+
+  return (
+    <fieldset>
+      <legend>Guía de trabajo del alumno (desde un OA · 3º–6º)</legend>
+      {err !== null && <p style={{ color: '#b00020' }}>⚠ {err}</p>}
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 8 }}>
+        <label>
+          OA:{' '}
+          <select value={oaCodigo} onChange={(e) => setOaCodigo(e.target.value)}>
+            {oaCodigos.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label style={{ flex: 1 }}>
+          Conocimiento:{' '}
+          <input
+            type="text"
+            value={conocimiento}
+            placeholder="Ej: Características de los seres vivos"
+            onChange={(e) => setConocimiento(e.target.value)}
+            style={{ width: '60%' }}
+          />
+        </label>
+      </div>
+      {(estado === 'idle' || estado === 'error') && (
+        <button onClick={() => void generar()}>Generar guía (borrador)</button>
+      )}
+      {estado === 'generando' && <p>Generando la guía… (corre en el worker)</p>}
+      {estado === 'segundo_plano' && (
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+          <span>La guía sigue generándose en segundo plano (el worker no la perdió).</span>
+          <button onClick={() => void comprobar()}>Comprobar de nuevo</button>
+        </div>
+      )}
+      {estado === 'listo' && guiaDocId !== null && (
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+          <span>Guía generada (borrador):</span>
+          <a href={`/api/aula/documentos/${guiaDocId}/guia?formato=docx`}>.docx</a>
         </div>
       )}
     </fieldset>
