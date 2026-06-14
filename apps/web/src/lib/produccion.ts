@@ -21,6 +21,7 @@ import type { ClockPort } from '@faro/domain';
 import { CatalogoRepositoryCorpus, PlantillaRepositoryCorpus } from '@faro/infra-corpus';
 import {
   DocxExportAdapter,
+  GuiaExportAdapter,
   PdfExportAdapter,
   PptxExportAdapter,
   PruebaExportAdapter,
@@ -99,6 +100,8 @@ export function produccion() {
     pdfExport: new PdfExportAdapter(dirExport, logExport),
     // Export bajo demanda de la prueba formativa (.docx alumno/pauta; .pdf vía LibreOffice) — Fase 4.
     pruebaExport: new PruebaExportAdapter(dirExport, logExport),
+    // Export bajo demanda de la guía del alumno (.docx/.pdf vía LibreOffice) — Tanda 1.
+    guiaExport: new GuiaExportAdapter(dirExport, logExport),
     // Export bajo demanda del PPT infantil (.pptx; el deck es autocontenido) — Fase 3.
     pptxExport: new PptxExportAdapter(dirExport, logExport),
     // Use cases (escritura con gate) — encapsulan la lógica de dominio.
