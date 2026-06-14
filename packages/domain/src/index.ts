@@ -110,6 +110,8 @@ export { SchemaPayloadPrueba } from './schemas/payloadPrueba.js';
 export type { PayloadPrueba } from './schemas/payloadPrueba.js';
 export { SchemaPayloadPptInfantil } from './schemas/payloadPptInfantil.js';
 export type { PayloadPptInfantil } from './schemas/payloadPptInfantil.js';
+export { SchemaPayloadGuia } from './schemas/payloadGuia.js';
+export type { PayloadGuia } from './schemas/payloadGuia.js';
 export { SchemaGuia, LIMITE_TEXTO_GUIA, fugaDeTextoEnGuia } from './schemas/guia.js';
 export type { Guia } from './schemas/guia.js';
 export { SchemaReglamentoAuditoria } from './schemas/reglamentoAuditoria.js';
