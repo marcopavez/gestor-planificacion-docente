@@ -201,6 +201,7 @@ export {
   planificacionGateV2,
   secuenciaAnualGate,
 } from './gates/index.js';
+export { guiaGate } from './gates/guiaGate.js';
 export type {
   EntradaCitationGate,
   EntradaGatesCascada,
