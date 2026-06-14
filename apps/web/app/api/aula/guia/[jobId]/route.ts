@@ -11,7 +11,7 @@ import { responderError500 } from '@/lib/respuestaError';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const log = crearLoggerHijo('web/guia');
+const log = crearLoggerHijo('web/guia/estado');
 
 export async function GET(
   _req: Request,

@@ -34,10 +34,10 @@ export async function prepararExportGuia(
     return { ok: false, status: 422, error: 'El contenido del documento no es una guía válida.' };
   }
 
-  // Datos institucionales: config "pasada al exportar". El nombreColegio cae a la asignatura como
-  // fallback inocuo (la guía standalone no tiene establecimiento real salvo override del caller).
+  // Datos institucionales: config "pasada al exportar". La guía standalone no tiene establecimiento
+  // real, así que sin override caen a placeholders explícitos (el caller los pasa por query).
   const inst: DatosInstitucionalesGuia = {
-    nombreColegio: override?.nombreColegio ?? guia.data.asignatura,
+    nombreColegio: override?.nombreColegio ?? '[Colegio]',
     comuna: override?.comuna ?? '[Comuna]',
     ...(override?.docente !== undefined ? { docente: override.docente } : {}),
   };
