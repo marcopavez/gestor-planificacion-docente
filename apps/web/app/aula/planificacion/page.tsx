@@ -527,7 +527,7 @@ function GenerarPrueba({ planificacionDocumentoId }: { planificacionDocumentoId:
 
 // Genera una GUÍA DE TRABAJO DEL ALUMNO (Tanda 1) desde un OA de la planificación: encola el job, hace
 // polling y ofrece la descarga .docx. Recibe el contexto de la planificación (asignatura, nivel,
-// establecimiento, lista de códigos de OA) para no requerir un documento persisitido previo.
+// establecimiento, lista de códigos de OA) para no requerir un documento persistido previo.
 // El docente elige el OA y escribe el conocimiento/tema; la guía nace borrador (HIL).
 function GenerarGuia({
   asignatura,
@@ -540,6 +540,8 @@ function GenerarGuia({
   establecimiento: string;
   oaCodigos: readonly string[];
 }) {
+  // Init solo en el montaje: válido porque los códigos de OA no cambian en la revisión HIL (solo cambia
+  // la prosa de la unidad). Si algún día el HIL permite editar los OA, sincronizar con un useEffect.
   const [oaCodigo, setOaCodigo] = useState<string>(oaCodigos[0] ?? '');
   const [conocimiento, setConocimiento] = useState<string>('');
   const [estado, setEstado] = useState<'idle' | 'generando' | 'listo' | 'error' | 'segundo_plano'>('idle');
