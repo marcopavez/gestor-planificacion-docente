@@ -4,7 +4,9 @@
 // La generación se stubea (el motor tiene su propio test).
 
 import type {
+  DocumentoGenerado,
   JobRepository,
+  NuevoDocumento,
   OaRepository,
   ObjetivoAprendizaje,
   ReposTransaccion,
@@ -79,24 +81,29 @@ function dobles() {
     porAsignaturaNivel: vi.fn(async () => [OA]),
     porIds: vi.fn(async () => [OA]),
   };
-  const crearBorrador = vi.fn(async () => ({ id: 'doc-1' }) as never);
+  // Captura los borradores creados con su tipo real (NuevoDocumento) para aseverar sin `any`.
+  const borradores: NuevoDocumento[] = [];
+  const crearBorrador = vi.fn(async (input: NuevoDocumento): Promise<DocumentoGenerado> => {
+    borradores.push(input);
+    return { id: 'doc-1' } as unknown as DocumentoGenerado;
+  });
   const registrar = vi.fn(async () => {});
   const marcarHechoTx = vi.fn(async () => {});
   const uow: UnidadDeTrabajo = {
     enTransaccion: vi.fn(async (fn) =>
       fn({
-        documentos: { crearBorrador } as never,
-        trazas: { registrar } as never,
-        jobs: { marcarHecho: marcarHechoTx } as never,
-      } as ReposTransaccion),
+        documentos: { crearBorrador },
+        trazas: { registrar },
+        jobs: { marcarHecho: marcarHechoTx },
+      } as unknown as ReposTransaccion),
     ),
   };
-  return { jobs, oas, uow, crearBorrador, registrar };
+  return { jobs, oas, uow, crearBorrador, registrar, borradores };
 }
 
 describe('ProcesarTrabajoGuiaUseCase', () => {
   it('toma un job, carga el OA, genera y persiste un borrador de guía + traza', async () => {
-    const { jobs, oas, uow, crearBorrador, registrar } = dobles();
+    const { jobs, oas, uow, crearBorrador, registrar, borradores } = dobles();
     const uc = new ProcesarTrabajoGuiaUseCase({
       jobs: jobs as JobRepository,
       oas,
@@ -117,10 +124,9 @@ describe('ProcesarTrabajoGuiaUseCase', () => {
     const r = await uc.ejecutarSiguiente('w-1');
     expect(r.tipo).toBe('hecho');
     expect(crearBorrador).toHaveBeenCalledOnce();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const args = (crearBorrador.mock.calls as any)[0][0] as { tipo: string; corpusVersionId: string };
-    expect(args.tipo).toBe('guia');
-    expect(args.corpusVersionId).toBe('cv-1');
+    const creado = borradores[0];
+    expect(creado?.tipo).toBe('guia');
+    expect(creado?.corpusVersionId).toBe('cv-1');
     expect(registrar).toHaveBeenCalledOnce();
   });
 
