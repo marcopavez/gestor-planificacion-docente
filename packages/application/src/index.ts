@@ -31,6 +31,9 @@ export type {
 
 // --- Prueba formativa (Fase 4): Prueba data-driven desde la PlanificacionUnidad + builder de encabezado ---
 export { GenerarPruebaFormativaUseCase } from './aula/cascada/GenerarPruebaFormativaUseCase.js';
+
+// --- Guía del alumno (Tanda 1): guía híbrida standalone desde OA + conocimiento ---
+export { GenerarGuiaUseCase } from './aula/cascada/GenerarGuiaUseCase.js';
 export { construirEncabezadoPrueba } from './aula/cascada/encabezadoPrueba.js';
 export type { DatosInstitucionales } from './aula/cascada/encabezadoPrueba.js';
 export { ProcesarTrabajoPruebaUseCase } from './aula/cascada/ProcesarTrabajoPruebaUseCase.js';
