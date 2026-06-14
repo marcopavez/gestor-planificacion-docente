@@ -41,6 +41,34 @@ async function getJson<T>(url: string): Promise<T> {
   return (await res.json()) as T;
 }
 
+// Presupuesto de sondeo del cliente. La generación real con LLM tarda minutos (y más si el job espera
+// encolado detrás de otro: el worker procesa una llamada a la vez), así que esperamos ~5 min antes de
+// asumir "sigue en segundo plano". Antes era 90s, que daba falsos "tardó demasiado" con el worker corriendo.
+const SONDEO_INTERVALO_MS = 1500;
+const SONDEO_MAX_INTENTOS = 200; // 200 × 1.5s = 5 min
+
+/** Resultado de sondear un job ya encolado. 'sigue' = se agotó el presupuesto pero el worker no falló. */
+type ResultadoSondeo =
+  | { estado: 'listo'; documentoId: string }
+  | { estado: 'fallido'; error: string }
+  | { estado: 'sigue' };
+
+// Sondea un job YA encolado (no lo encola). Reutilizable para "comprobar de nuevo" sin duplicar trabajo:
+// si el worker terminó mientras el cliente se había rendido, esto recupera el documento persistido.
+async function sondearJob(rutaBase: string, jobId: string): Promise<ResultadoSondeo> {
+  for (let i = 0; i < SONDEO_MAX_INTENTOS; i++) {
+    await new Promise((r) => setTimeout(r, SONDEO_INTERVALO_MS));
+    const e = await fetch(`${rutaBase}/${jobId}`);
+    if (!e.ok) continue;
+    const r = (await e.json()) as { estado: string; documentoId?: string; error?: string | null };
+    if (r.estado === 'fallido') return { estado: 'fallido', error: r.error ?? 'La generación falló.' };
+    if (r.estado === 'hecho' && r.documentoId !== undefined) {
+      return { estado: 'listo', documentoId: r.documentoId };
+    }
+  }
+  return { estado: 'sigue' };
+}
+
 export default function PaginaPlanificacion() {
   const [paso, setPaso] = useState<Paso>('form');
   const [error, setError] = useState<string | null>(null);
@@ -144,8 +172,8 @@ export default function PaginaPlanificacion() {
     const ctrl = new AbortController();
     let cancelado = false;
     void (async () => {
-      for (let i = 0; i < 60 && !cancelado; i++) {
-        await new Promise((r) => setTimeout(r, 1500));
+      for (let i = 0; i < SONDEO_MAX_INTENTOS && !cancelado; i++) {
+        await new Promise((r) => setTimeout(r, SONDEO_INTERVALO_MS));
         if (cancelado) return;
         try {
           const res = await fetch(`/api/aula/planificacion/${jobId}`, { signal: ctrl.signal });
@@ -177,7 +205,8 @@ export default function PaginaPlanificacion() {
         }
       }
       if (!cancelado) {
-        setError('La generación tardó demasiado; reintenta.');
+        // El worker puede seguir generando: el documento no se pierde, solo dejamos de esperar.
+        setError('La generación está tardando más de lo normal; sigue corriendo en el worker. Reintenta en un momento.');
         setPaso('form');
       }
     })();
@@ -411,9 +440,24 @@ function RevisionPlan(props: {
 // terminar, ofrece las descargas .docx alumno/pauta. La prueba se genera del documento PERSISTIDO
 // (guarda los cambios HIL antes si los hiciste). Nace borrador (HIL aparte, como la planificación).
 function GenerarPrueba({ planificacionDocumentoId }: { planificacionDocumentoId: string }) {
-  const [estado, setEstado] = useState<'idle' | 'generando' | 'listo' | 'error'>('idle');
+  const [estado, setEstado] = useState<'idle' | 'generando' | 'listo' | 'error' | 'segundo_plano'>('idle');
   const [pruebaDocId, setPruebaDocId] = useState<string | null>(null);
+  const [jobId, setJobId] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
+
+  // Traduce el resultado del sondeo a estado de UI. 'sigue' NO es error: el worker puede seguir y el
+  // documento no se pierde, así que ofrecemos "comprobar de nuevo" en vez de re-encolar (evita duplicar).
+  const aplicar = useCallback((r: ResultadoSondeo) => {
+    if (r.estado === 'fallido') {
+      setErr(r.error);
+      setEstado('error');
+    } else if (r.estado === 'listo') {
+      setPruebaDocId(r.documentoId);
+      setEstado('listo');
+    } else {
+      setEstado('segundo_plano');
+    }
+  }, []);
 
   const generar = useCallback(async () => {
     setErr(null);
@@ -428,26 +472,27 @@ function GenerarPrueba({ planificacionDocumentoId }: { planificacionDocumentoId:
         const j = (await res.json()) as { error?: string };
         throw new Error(j.error ?? `POST → ${res.status}`);
       }
-      const { jobId } = (await res.json()) as { jobId: string };
-      // Polling acotado del job de prueba (el worker corre GenerarPruebaFormativaUseCase).
-      for (let i = 0; i < 60; i++) {
-        await new Promise((r) => setTimeout(r, 1500));
-        const e = await fetch(`/api/aula/prueba/${jobId}`);
-        if (!e.ok) continue;
-        const r = (await e.json()) as { estado: string; documentoId?: string; error?: string | null };
-        if (r.estado === 'fallido') throw new Error(r.error ?? 'La generación de la prueba falló.');
-        if (r.estado === 'hecho' && r.documentoId !== undefined) {
-          setPruebaDocId(r.documentoId);
-          setEstado('listo');
-          return;
-        }
-      }
-      throw new Error('La generación de la prueba tardó demasiado; reintenta.');
+      const { jobId: nuevo } = (await res.json()) as { jobId: string };
+      setJobId(nuevo);
+      aplicar(await sondearJob('/api/aula/prueba', nuevo));
     } catch (e) {
       setErr(e instanceof Error ? e.message : 'No se pudo generar la prueba.');
       setEstado('error');
     }
-  }, [planificacionDocumentoId]);
+  }, [planificacionDocumentoId, aplicar]);
+
+  // Reanuda el sondeo del MISMO job (no re-encola): recupera el documento si el worker terminó mientras tanto.
+  const comprobar = useCallback(async () => {
+    if (jobId === null) return;
+    setErr(null);
+    setEstado('generando');
+    try {
+      aplicar(await sondearJob('/api/aula/prueba', jobId));
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'No se pudo comprobar la prueba.');
+      setEstado('error');
+    }
+  }, [jobId, aplicar]);
 
   return (
     <fieldset>
@@ -457,6 +502,12 @@ function GenerarPrueba({ planificacionDocumentoId }: { planificacionDocumentoId:
         <button onClick={() => void generar()}>Generar prueba formativa (borrador)</button>
       )}
       {estado === 'generando' && <p>Generando la prueba… (corre en el worker)</p>}
+      {estado === 'segundo_plano' && (
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+          <span>La prueba sigue generándose en segundo plano (el worker no la perdió).</span>
+          <button onClick={() => void comprobar()}>Comprobar de nuevo</button>
+        </div>
+      )}
       {estado === 'listo' && pruebaDocId !== null && (
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
           <span>Prueba generada (borrador):</span>
@@ -472,9 +523,23 @@ function GenerarPrueba({ planificacionDocumentoId }: { planificacionDocumentoId:
 // ofrece la descarga .pptx. El deck se genera del documento PERSISTIDO (guarda los cambios HIL antes si
 // los hiciste) y es autocontenido (tema por tramo/asignatura). Nace borrador (HIL aparte, como la prueba).
 function GenerarPptInfantil({ planificacionDocumentoId }: { planificacionDocumentoId: string }) {
-  const [estado, setEstado] = useState<'idle' | 'generando' | 'listo' | 'error'>('idle');
+  const [estado, setEstado] = useState<'idle' | 'generando' | 'listo' | 'error' | 'segundo_plano'>('idle');
   const [deckDocId, setDeckDocId] = useState<string | null>(null);
+  const [jobId, setJobId] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
+
+  // Igual que en la prueba: 'sigue' no es error (el worker puede seguir), ofrecemos "comprobar de nuevo".
+  const aplicar = useCallback((r: ResultadoSondeo) => {
+    if (r.estado === 'fallido') {
+      setErr(r.error);
+      setEstado('error');
+    } else if (r.estado === 'listo') {
+      setDeckDocId(r.documentoId);
+      setEstado('listo');
+    } else {
+      setEstado('segundo_plano');
+    }
+  }, []);
 
   const generar = useCallback(async () => {
     setErr(null);
@@ -489,26 +554,27 @@ function GenerarPptInfantil({ planificacionDocumentoId }: { planificacionDocumen
         const j = (await res.json()) as { error?: string };
         throw new Error(j.error ?? `POST → ${res.status}`);
       }
-      const { jobId } = (await res.json()) as { jobId: string };
-      // Polling acotado del job de PPT (el worker corre GenerarPptInfantilUseCase).
-      for (let i = 0; i < 60; i++) {
-        await new Promise((r) => setTimeout(r, 1500));
-        const e = await fetch(`/api/aula/ppt/${jobId}`);
-        if (!e.ok) continue;
-        const r = (await e.json()) as { estado: string; documentoId?: string; error?: string | null };
-        if (r.estado === 'fallido') throw new Error(r.error ?? 'La generación del PPT falló.');
-        if (r.estado === 'hecho' && r.documentoId !== undefined) {
-          setDeckDocId(r.documentoId);
-          setEstado('listo');
-          return;
-        }
-      }
-      throw new Error('La generación del PPT tardó demasiado; reintenta.');
+      const { jobId: nuevo } = (await res.json()) as { jobId: string };
+      setJobId(nuevo);
+      aplicar(await sondearJob('/api/aula/ppt', nuevo));
     } catch (e) {
       setErr(e instanceof Error ? e.message : 'No se pudo generar el PPT.');
       setEstado('error');
     }
-  }, [planificacionDocumentoId]);
+  }, [planificacionDocumentoId, aplicar]);
+
+  // Reanuda el sondeo del MISMO job (no re-encola): recupera el deck si el worker terminó mientras tanto.
+  const comprobar = useCallback(async () => {
+    if (jobId === null) return;
+    setErr(null);
+    setEstado('generando');
+    try {
+      aplicar(await sondearJob('/api/aula/ppt', jobId));
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'No se pudo comprobar el PPT.');
+      setEstado('error');
+    }
+  }, [jobId, aplicar]);
 
   return (
     <fieldset>
@@ -518,6 +584,12 @@ function GenerarPptInfantil({ planificacionDocumentoId }: { planificacionDocumen
         <button onClick={() => void generar()}>Generar PPT infantil (borrador)</button>
       )}
       {estado === 'generando' && <p>Generando el PPT… (corre en el worker)</p>}
+      {estado === 'segundo_plano' && (
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+          <span>El PPT sigue generándose en segundo plano (el worker no lo perdió).</span>
+          <button onClick={() => void comprobar()}>Comprobar de nuevo</button>
+        </div>
+      )}
       {estado === 'listo' && deckDocId !== null && (
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
           <span>PPT generado (borrador):</span>
