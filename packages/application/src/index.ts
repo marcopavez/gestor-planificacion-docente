@@ -34,6 +34,11 @@ export { GenerarPruebaFormativaUseCase } from './aula/cascada/GenerarPruebaForma
 
 // --- Guía del alumno (Tanda 1): guía híbrida standalone desde OA + conocimiento ---
 export { GenerarGuiaUseCase } from './aula/cascada/GenerarGuiaUseCase.js';
+export { ProcesarTrabajoGuiaUseCase } from './aula/cascada/ProcesarTrabajoGuiaUseCase.js';
+export type {
+  DependenciasProcesarGuia,
+  ResultadoProcesarGuia,
+} from './aula/cascada/ProcesarTrabajoGuiaUseCase.js';
 export { construirEncabezadoPrueba } from './aula/cascada/encabezadoPrueba.js';
 export type { DatosInstitucionales } from './aula/cascada/encabezadoPrueba.js';
 export { ProcesarTrabajoPruebaUseCase } from './aula/cascada/ProcesarTrabajoPruebaUseCase.js';

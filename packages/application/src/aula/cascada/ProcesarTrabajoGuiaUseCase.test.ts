@@ -1,0 +1,155 @@
+// Test del worker de guía del alumno (Tanda 1) sin red: doubles de JobRepository/OaRepository/uow.
+// Verifica: camino feliz (toma job → carga OA del corpus → genera → persiste borrador 'guia' con
+// origenId omitido → marcarHecho), error permanente (OA inexistente en corpus → fallido) y cola vacía.
+// La generación se stubea (el motor tiene su propio test).
+
+import type {
+  JobRepository,
+  OaRepository,
+  ObjetivoAprendizaje,
+  ReposTransaccion,
+  TrabajoGuia,
+  UnidadDeTrabajo,
+} from '@faro/domain';
+import { describe, expect, it, vi } from 'vitest';
+import { GenerarGuiaUseCase } from './GenerarGuiaUseCase.js';
+import { ProcesarTrabajoGuiaUseCase } from './ProcesarTrabajoGuiaUseCase.js';
+
+const OA: ObjetivoAprendizaje = {
+  id: 'oa-1',
+  corpusVersionId: 'cv-1',
+  codigo: 'CN03 OA 01',
+  asignatura: 'Ciencias Naturales',
+  nivel: '3º básico',
+  descripcion: 'Observar y describir los seres vivos.',
+  indicadores: [],
+  vigenciaDesde: null,
+  vigenciaHasta: null,
+};
+
+const guiaIa = {
+  asignatura: 'x',
+  curso: 'x',
+  oa: { codigo: 'x', descripcion: 'x' },
+  conocimiento: 'x',
+  perfil_nivel: '3-4' as const,
+  titulo: 'x',
+  explicacion: 'Los seres vivos nacen y crecen.',
+  ejemplo: 'Un perro crece.',
+  ejercicios: [
+    {
+      oa: 'CN03 OA 01',
+      habilidad: 'comprender' as const,
+      tipo: 'verdadero_falso' as const,
+      enunciado: 'Un árbol es un ser vivo.',
+      alternativas: [
+        { texto: 'Verdadero', correcta: true },
+        { texto: 'Falso', correcta: false },
+      ],
+      retroalimentacion: 'Los árboles crecen.',
+    },
+  ],
+};
+
+function dobles() {
+  const tomado: TrabajoGuia = {
+    id: 'job-1',
+    intentos: 1,
+    payload: {
+      asignatura: 'Ciencias Naturales',
+      nivel: '3º básico',
+      oaCodigo: 'CN03 OA 01',
+      conocimiento: 'Los seres vivos',
+      establecimiento: 'Colegio Demo',
+    },
+  };
+  let entregado = false;
+  const jobs: Partial<JobRepository> = {
+    tomarSiguienteGuia: vi.fn(async () => {
+      if (entregado) return null;
+      entregado = true;
+      return tomado;
+    }),
+    marcarHecho: vi.fn(async () => {}),
+    reintentar: vi.fn(async () => {}),
+    marcarFallido: vi.fn(async () => {}),
+  };
+  const oas: OaRepository = {
+    porAsignaturaCurso: vi.fn(async () => [OA]),
+    porAsignaturaNivel: vi.fn(async () => [OA]),
+    porIds: vi.fn(async () => [OA]),
+  };
+  const crearBorrador = vi.fn(async () => ({ id: 'doc-1' }) as never);
+  const registrar = vi.fn(async () => {});
+  const marcarHechoTx = vi.fn(async () => {});
+  const uow: UnidadDeTrabajo = {
+    enTransaccion: vi.fn(async (fn) =>
+      fn({
+        documentos: { crearBorrador } as never,
+        trazas: { registrar } as never,
+        jobs: { marcarHecho: marcarHechoTx } as never,
+      } as ReposTransaccion),
+    ),
+  };
+  return { jobs, oas, uow, crearBorrador, registrar };
+}
+
+describe('ProcesarTrabajoGuiaUseCase', () => {
+  it('toma un job, carga el OA, genera y persiste un borrador de guía + traza', async () => {
+    const { jobs, oas, uow, crearBorrador, registrar } = dobles();
+    const uc = new ProcesarTrabajoGuiaUseCase({
+      jobs: jobs as JobRepository,
+      oas,
+      generar: new GenerarGuiaUseCase({
+        async generar(args) {
+          const parsed = args.schema.parse(guiaIa);
+          return {
+            parsed,
+            stopReason: 'end_turn',
+            usage: { input: 0, output: 0, cacheRead: 0, cacheCreation: 0 },
+            modelo: 'muestras',
+          };
+        },
+      }),
+      uow,
+    });
+
+    const r = await uc.ejecutarSiguiente('w-1');
+    expect(r.tipo).toBe('hecho');
+    expect(crearBorrador).toHaveBeenCalledOnce();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const args = (crearBorrador.mock.calls as any)[0][0] as { tipo: string; corpusVersionId: string };
+    expect(args.tipo).toBe('guia');
+    expect(args.corpusVersionId).toBe('cv-1');
+    expect(registrar).toHaveBeenCalledOnce();
+  });
+
+  it('sin trabajo devuelve sin_trabajo', async () => {
+    const { jobs, oas, uow } = dobles();
+    (jobs.tomarSiguienteGuia as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+    const uc = new ProcesarTrabajoGuiaUseCase({
+      jobs: jobs as JobRepository,
+      oas,
+      generar: new GenerarGuiaUseCase({ async generar() { throw new Error('no'); } }),
+      uow,
+    });
+    expect((await uc.ejecutarSiguiente('w-1')).tipo).toBe('sin_trabajo');
+  });
+
+  it('falla permanente si el OA no existe en el corpus publicado', async () => {
+    const { jobs, uow } = dobles();
+    const oasVacio: OaRepository = {
+      porAsignaturaCurso: vi.fn(async () => []),
+      porAsignaturaNivel: vi.fn(async () => []),
+      porIds: vi.fn(async () => []),
+    };
+    const uc = new ProcesarTrabajoGuiaUseCase({
+      jobs: jobs as JobRepository,
+      oas: oasVacio,
+      generar: new GenerarGuiaUseCase({ async generar() { throw new Error('no'); } }),
+      uow,
+    });
+    const r = await uc.ejecutarSiguiente('w-1');
+    expect(r.tipo).toBe('fallido');
+  });
+});
