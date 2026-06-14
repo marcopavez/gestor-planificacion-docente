@@ -170,6 +170,19 @@ export const INSTR_DECK_INFANTIL = instruccion(
   ].join('\n'),
 );
 
+export const INSTR_GUIA = instruccion(
+  [
+    'Genera una GUÍA DE TRABAJO para el ALUMNO (educación básica chilena, 3º a 6º) sobre el CONOCIMIENTO indicado, anclada al OA provisto.',
+    'Es para APRENDER y PRACTICAR (no es una prueba calificada). Lenguaje claro y apropiado al nivel.',
+    "- 'explicacion': enseña el conocimiento en 1–2 párrafos breves.",
+    "- 'ejemplo': un ejemplo RESUELTO/modelado que muestra cómo se hace.",
+    "- 'ejercicios': práctica graduada (recordar → aplicar). Tipos: 'seleccion_multiple', 'verdadero_falso', 'completacion', 'desarrollo', 'ordenar' (con 'secuencia_correcta') o 'terminos_pareados' (con 'pares' columnaA↔columnaB). Selección múltiple y verdadero/falso con EXACTAMENTE una alternativa correcta. NO uses 'pictorico'.",
+    "- 'desafio' (opcional): un ítem final de mayor exigencia.",
+    "- Cada ítem lleva 'retroalimentacion' = qué orientar al alumno si falla.",
+    '- Cada campo de texto contiene SOLO el contenido del ítem/sección para el alumno: NUNCA escribas notas para ti, razonamiento ni instrucciones de formato dentro de un campo.',
+  ].join('\n'),
+);
+
 // --- Entradas de usuario (la petición concreta + artefactos aguas arriba) ---
 
 export function entradaUnidad(ctx: ContextoCascada): string {
@@ -207,6 +220,17 @@ export function entradaDeckInfantil(unidad: PlanificacionUnidad, tramo: '1-2' | 
     JSON.stringify(unidad),
     '',
     'Genera los slides del PPT infantil para esta unidad, anclados a su propósito, experiencias, OA e indicadores.',
+  ].join('\n');
+}
+
+export function entradaGuia(ctx: ContextoCascada, conocimiento: string): string {
+  const oa = ctx.oaSeleccionados[0];
+  return [
+    `Asignatura: ${ctx.asignatura}`,
+    `Nivel: ${ctx.nivel}`,
+    `OA: ${oa?.codigo} — ${oa?.descripcion}`,
+    `Conocimiento a trabajar en esta guía: ${conocimiento}`,
+    'Genera una guía de trabajo para el alumno sobre ESE conocimiento, anclada al OA.',
   ].join('\n');
 }
 
