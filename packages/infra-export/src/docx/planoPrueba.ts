@@ -205,7 +205,7 @@ function encabezadoPlano(prueba: Prueba, e: EncabezadoPrueba): EncabezadoPlano {
 }
 
 /** Deriva el `ItemPlano` de un `ItemPruebaType` según su tipo, con numeración continua y soluciones HIL. */
-function itemPlano(it: ItemPruebaType, numero: number, mostrarSolucion: boolean): ItemPlano {
+export function itemPlano(it: ItemPruebaType, numero: number, mostrarSolucion: boolean): ItemPlano {
   const base = { numero, enunciado: it.enunciado, ...(it.puntaje !== undefined ? { puntaje: it.puntaje } : {}) };
   const retro = mostrarSolucion && it.retroalimentacion !== undefined ? { retro: it.retroalimentacion } : {};
 

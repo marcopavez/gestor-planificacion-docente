@@ -32,6 +32,7 @@ import type { PayloadPptInfantil } from '../schemas/payloadPptInfantil.js';
 import type { PayloadGuia } from '../schemas/payloadGuia.js';
 import type { Prueba } from '../schemas/prueba.js';
 import type { EncabezadoPrueba } from '../schemas/encabezadoPrueba.js';
+import type { Guia } from '../schemas/guia.js';
 
 // --- Recuperación (RAG) ---
 
@@ -137,6 +138,18 @@ export interface ExportPruebaPort {
     variante: VariantePrueba,
     idDocumento?: string,
   ): Promise<ArchivoExportado>;
+}
+
+// --- Export de la Guía del alumno (.docx/.pdf) — Tanda 1, INV-6 ---
+export interface DatosInstitucionalesGuia {
+  readonly nombreColegio: string;
+  readonly comuna: string;
+  readonly docente?: string;
+}
+
+export interface ExportGuiaPort {
+  aDocx(guia: Guia, inst: DatosInstitucionalesGuia, idDocumento?: string): Promise<ArchivoExportado>;
+  aPdf(guia: Guia, inst: DatosInstitucionalesGuia, idDocumento?: string): Promise<ArchivoExportado>;
 }
 
 // --- Verificación ---

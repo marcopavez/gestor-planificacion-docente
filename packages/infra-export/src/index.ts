@@ -23,3 +23,8 @@ export {
 export { PruebaExportAdapter, construirDocumentoPrueba } from './docx/PruebaExportAdapter.js';
 export { planoPrueba } from './docx/planoPrueba.js';
 export type { PruebaPlano, SeccionPruebaPlano, ItemPlano, EncabezadoPlano } from './docx/planoPrueba.js';
+
+// --- Export de la Guía del alumno a .docx/.pdf (Tanda 1, INV-6) ---
+export { GuiaExportAdapter } from './docx/GuiaExportAdapter.js';
+export { planoGuia } from './docx/planoGuia.js';
+export type { GuiaPlano, EncabezadoGuiaPlano } from './docx/planoGuia.js';

@@ -26,6 +26,8 @@ export type {
   EstadoJob,
   ExportPort,
   ExportPlanificacionPort,
+  ExportGuiaPort,
+  DatosInstitucionalesGuia,
   ExportPruebaPort,
   JobRepository,
   LlmPort,
