@@ -3,6 +3,7 @@
 // por tipo de ítem y, si hay ponderación completa, que los puntajes cuadren. Spec §4.6.
 
 import type { Prueba } from '../schemas/prueba.js';
+import { validarItemPrueba } from './itemPrueba.js';
 import { construirResultado, type Hallazgo, type ResultadoGate } from './tipos.js';
 
 export function pedagogicalGate(prueba: Prueba): ResultadoGate {
@@ -21,44 +22,8 @@ export function pedagogicalGate(prueba: Prueba): ResultadoGate {
         ref: it.oa,
       });
     }
-    // Selección múltiple / verdadero-falso: exactamente una alternativa correcta.
-    if (it.tipo === 'seleccion_multiple' || it.tipo === 'verdadero_falso') {
-      const correctas = (it.alternativas ?? []).filter((a) => a.correcta).length;
-      if (correctas !== 1) {
-        h.push({
-          gate: 'pedagogica',
-          regla: 'una_correcta',
-          severidad: 'bloquea',
-          mensaje: `El ítem ${n} (${it.tipo}) tiene ${correctas} alternativas correctas; debe ser exactamente 1.`,
-        });
-      }
-    }
-    // Ordenar: la secuencia esperada debe existir, no estar vacía y no tener duplicados.
-    if (it.tipo === 'ordenar') {
-      const sec = it.secuencia_correcta ?? [];
-      const sinDuplicados = new Set(sec).size === sec.length;
-      if (sec.length === 0 || !sinDuplicados) {
-        h.push({
-          gate: 'pedagogica',
-          regla: 'una_correcta',
-          severidad: 'bloquea',
-          mensaje: `El ítem ${n} (ordenar) requiere secuencia_correcta no vacía y sin duplicados.`,
-        });
-      }
-    }
-    // Términos pareados: debe haber pares y cada par con ambas columnas.
-    if (it.tipo === 'terminos_pareados') {
-      const pares = it.pares ?? [];
-      const paresValidos = pares.every((p) => p.columnaA.length > 0 && p.columnaB.length > 0);
-      if (pares.length === 0 || !paresValidos) {
-        h.push({
-          gate: 'pedagogica',
-          regla: 'una_correcta',
-          severidad: 'bloquea',
-          mensaje: `El ítem ${n} (terminos_pareados) requiere pares no vacíos con columnaA y columnaB.`,
-        });
-      }
-    }
+    // Validez por tipo de ítem (una correcta / ordenar / términos pareados) — compartida con la guía.
+    h.push(...validarItemPrueba(it, n));
     // 'pictorico': sin validación extra (la imagen es solo una descripción placeholder).
   });
 

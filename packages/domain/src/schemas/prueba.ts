@@ -65,13 +65,13 @@ export type ItemPruebaType = z.infer<typeof ItemPrueba>;
 export const LIMITE_TEXTO_ITEM = 1000;
 
 /**
- * Detecta fuga de texto en una prueba: la IA volcó razonamiento/borrador en algún campo de texto libre
- * del ítem (string que supera LIMITE_TEXTO_ITEM). Devuelve el primer hallazgo o null si está sana.
+ * Detecta fuga de texto en una lista de ítems: algún campo de texto libre supera LIMITE_TEXTO_ITEM
+ * (la IA volcó razonamiento/borrador dentro de un campo JSON). La usan prueba y guía.
  */
-export function fugaDeTextoEnPrueba(
-  prueba: Prueba,
+export function fugaDeTextoEnItems(
+  items: readonly ItemPruebaType[],
 ): { campo: string; itemIndex: number; largo: number } | null {
-  for (const [itemIndex, it] of prueba.items.entries()) {
+  for (const [itemIndex, it] of items.entries()) {
     const campos: ReadonlyArray<readonly [string, string | undefined]> = [
       ['enunciado', it.enunciado],
       ['imagen', it.imagen],
@@ -85,4 +85,14 @@ export function fugaDeTextoEnPrueba(
     }
   }
   return null;
+}
+
+/**
+ * Detecta fuga de texto en una prueba: la IA volcó razonamiento/borrador en algún campo de texto libre
+ * del ítem (string que supera LIMITE_TEXTO_ITEM). Devuelve el primer hallazgo o null si está sana.
+ */
+export function fugaDeTextoEnPrueba(
+  prueba: Prueba,
+): { campo: string; itemIndex: number; largo: number } | null {
+  return fugaDeTextoEnItems(prueba.items);
 }
