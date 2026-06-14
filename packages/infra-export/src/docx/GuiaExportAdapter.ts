@@ -28,14 +28,16 @@ const execFileP = promisify(execFile);
 /** Nombre de archivo seguro para la guía (sin tildes ni símbolos). `idDocumento` evita colisiones. */
 function nombreArchivoGuia(guia: Guia, idDocumento?: string): string {
   const sufijo = idDocumento !== undefined ? `-${idDocumento}` : '';
-  const base = `guia-${guia.conocimiento}-${guia.curso}${sufijo}`;
-  const slug = base
+  // El 'conocimiento' es texto libre de la IA: se acota el slug para no romper MAX_PATH (260) en Windows.
+  // El sufijo (id del documento) se mantiene intacto fuera del recorte para no perder unicidad.
+  const cuerpo = `${guia.conocimiento}-${guia.curso}`
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-  return slug.length > 0 ? slug : 'guia';
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80);
+  return `guia-${cuerpo.length > 0 ? cuerpo : 'guia'}${sufijo}`;
 }
 
 export class GuiaExportAdapter implements ExportGuiaPort {
