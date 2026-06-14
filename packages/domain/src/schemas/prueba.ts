@@ -56,3 +56,33 @@ export const SchemaPrueba = z.object({
 
 export type Prueba = z.infer<typeof SchemaPrueba>;
 export type ItemPruebaType = z.infer<typeof ItemPrueba>;
+
+// Cota de cordura para el texto libre de un ítem (enunciado/imagen/retro/respuesta). Una prueba para
+// niños cabe holgadamente: un valor que la excede no es contenido, es la IA "pensando en voz alta"
+// dentro de un campo JSON (fuga de cadena-de-pensamiento, p. ej. el .docx con el prompt filtrado). No
+// va como .max() del schema porque el SDK no soporta maxLength en structured outputs (skill claude-api);
+// se valida aquí, tras parsear, y la generación se rechaza+reintenta (INV-2: basura nunca se persiste).
+export const LIMITE_TEXTO_ITEM = 1000;
+
+/**
+ * Detecta fuga de texto en una prueba: la IA volcó razonamiento/borrador en algún campo de texto libre
+ * del ítem (string que supera LIMITE_TEXTO_ITEM). Devuelve el primer hallazgo o null si está sana.
+ */
+export function fugaDeTextoEnPrueba(
+  prueba: Prueba,
+): { campo: string; itemIndex: number; largo: number } | null {
+  for (const [itemIndex, it] of prueba.items.entries()) {
+    const campos: ReadonlyArray<readonly [string, string | undefined]> = [
+      ['enunciado', it.enunciado],
+      ['imagen', it.imagen],
+      ['retroalimentacion', it.retroalimentacion],
+      ['respuesta_correcta', it.respuesta_correcta],
+    ];
+    for (const [campo, valor] of campos) {
+      if (valor !== undefined && valor.length > LIMITE_TEXTO_ITEM) {
+        return { campo, itemIndex, largo: valor.length };
+      }
+    }
+  }
+  return null;
+}

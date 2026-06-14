@@ -101,7 +101,7 @@ export { SchemaClase } from './schemas/clase.js';
 export type { Clase } from './schemas/clase.js';
 export { SchemaPmeAccion } from './schemas/pmeAccion.js';
 export type { PmeAccion } from './schemas/pmeAccion.js';
-export { SchemaPrueba, ItemPrueba } from './schemas/prueba.js';
+export { SchemaPrueba, ItemPrueba, LIMITE_TEXTO_ITEM, fugaDeTextoEnPrueba } from './schemas/prueba.js';
 export type { ItemPruebaType, Prueba } from './schemas/prueba.js';
 export { SchemaEncabezadoPrueba, OaEncabezado } from './schemas/encabezadoPrueba.js';
 export type { EncabezadoPrueba, OaEncabezadoType } from './schemas/encabezadoPrueba.js';

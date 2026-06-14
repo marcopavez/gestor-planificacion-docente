@@ -4,7 +4,7 @@
 // la unidad. La muestra es internamente coherente y DEBE pasar pedagogicalGate (INV-1, sin red).
 
 import type { LlmPort, PlanificacionUnidad, Prueba } from '@faro/domain';
-import { pedagogicalGate, SchemaPrueba, tramoDeNivel } from '@faro/domain';
+import { GeneracionError, pedagogicalGate, SchemaPrueba, tramoDeNivel } from '@faro/domain';
 import { describe, expect, it } from 'vitest';
 import { GenerarPruebaFormativaUseCase } from './GenerarPruebaFormativaUseCase.js';
 
@@ -171,6 +171,32 @@ describe('GenerarPruebaFormativaUseCase (Fase 4, prueba formativa sin API key)',
 
     expect(prueba.perfil_nivel).toBe('5-6');
     expect(prueba.tipo_evaluacion).toBe('formativa');
+  });
+
+  it('rechaza (GeneracionError) una prueba con fuga de razonamiento en un campo de texto', async () => {
+    // Reproduce el bug real (prueba_error_generado.docx): la IA volcó su borrador/"pensar en voz alta"
+    // dentro del campo 'imagen' del ítem pictórico. Como 'imagen' es z.string() sin cota, la fuga pasa
+    // el schema; el guardia anti-fuga del use case debe rechazarla para que el worker reintente.
+    const fuga = 'Cuatro tarjetas. ' + 'NOTE: let me write the clean JSON now. '.repeat(300);
+    const pruebaConFuga: Prueba = {
+      ...pruebaMuestra,
+      items: pruebaMuestra.items.map((it) => (it.tipo === 'pictorico' ? { ...it, imagen: fuga } : it)),
+    };
+    const llm: LlmPort = {
+      async generar(args) {
+        // La fuga PASA el schema (z.string() no acota largo) → lo prueba el .parse de abajo.
+        const parsed = args.schema.parse(pruebaConFuga);
+        return {
+          parsed,
+          stopReason: 'end_turn',
+          usage: { input: 0, output: 0, cacheRead: 0, cacheCreation: 0 },
+          modelo: 'muestras',
+        };
+      },
+    };
+    const uc = new GenerarPruebaFormativaUseCase(llm);
+
+    await expect(uc.ejecutar(unidadMuestra('1º básico'))).rejects.toThrow(GeneracionError);
   });
 
   it('ejecutarConMeta expone los metadatos de la llamada (traza_ia)', async () => {

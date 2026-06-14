@@ -9,7 +9,7 @@
 // no este use case (misma convención que la cascada y el PPT infantil).
 
 import type { LlmPort, PlanificacionUnidad, Prueba } from '@faro/domain';
-import { SchemaPrueba, tramoDeNivel } from '@faro/domain';
+import { fugaDeTextoEnPrueba, GeneracionError, SchemaPrueba, tramoDeNivel } from '@faro/domain';
 import { bloqueCorpusUnidad, entradaPrueba, exigirParsedConMeta, INSTR_PRUEBA } from './generacion.js';
 import type { MetaGeneracion } from './generacion.js';
 
@@ -37,7 +37,17 @@ export class GenerarPruebaFormativaUseCase {
     };
 
     // Revalida la prueba ensamblada contra el contrato del dominio (la sobreescritura no rompe el schema).
-    return { valor: SchemaPrueba.parse(prueba), meta };
+    const valido = SchemaPrueba.parse(prueba);
+
+    // Guardia anti-fuga: el schema (z.string()) no acota el texto libre y el SDK no soporta maxLength en
+    // structured outputs, así que una IA que vuelca su razonamiento dentro de un campo (p. ej. 'imagen')
+    // pasa el parse. La rechazamos aquí → el worker reintenta (INV-2: basura nunca se persiste/exporta).
+    const fuga = fugaDeTextoEnPrueba(valido);
+    if (fuga !== null) {
+      throw new GeneracionError(`fuga_texto:${fuga.campo}#${fuga.itemIndex}(${fuga.largo})`);
+    }
+
+    return { valor: valido, meta };
   }
 
   async ejecutar(unidad: PlanificacionUnidad): Promise<Prueba> {
