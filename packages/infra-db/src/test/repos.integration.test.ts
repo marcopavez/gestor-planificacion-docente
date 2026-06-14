@@ -538,8 +538,10 @@ describe('JobRepository — cola de guía del alumno (Tanda 1)', () => {
     });
     expect(id).toBeDefined();
 
-    // La cola de cascada NO toma un job de guía (filtra por tipo_trabajo).
+    // Aislamiento de colas: ninguna cola vecina (cascada/prueba/PPT) toma un job de guía (filtran por tipo_trabajo).
     expect(await jobs.tomarSiguiente('w-cascada')).toBeNull();
+    expect(await jobs.tomarSiguientePrueba('w-prueba')).toBeNull();
+    expect(await jobs.tomarSiguientePptInfantil('w-ppt')).toBeNull();
 
     const t = await jobs.tomarSiguienteGuia('w-guia');
     expect(t?.id).toBe(id);
