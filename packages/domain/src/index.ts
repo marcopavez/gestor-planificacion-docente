@@ -39,6 +39,7 @@ export type {
   RetrievalPort,
   SalidaEstructurada,
   TrabajoCascada,
+  TrabajoGuia,
   TrabajoPlanificacion,
   TrabajoPptInfantil,
   TrabajoPrueba,

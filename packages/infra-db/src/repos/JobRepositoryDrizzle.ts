@@ -7,15 +7,18 @@ import { eq, sql } from 'drizzle-orm';
 import type {
   EstadoJob,
   JobRepository,
+  PayloadGuia,
   PayloadPlanificacion,
   PayloadPptInfantil,
   PayloadPrueba,
   TrabajoCascada,
+  TrabajoGuia,
   TrabajoPlanificacion,
   TrabajoPptInfantil,
   TrabajoPrueba,
 } from '@faro/domain';
 import {
+  SchemaPayloadGuia,
   SchemaPayloadPlanificacion,
   SchemaPayloadPptInfantil,
   SchemaPayloadPrueba,
@@ -266,6 +269,53 @@ export class JobRepositoryDrizzle implements JobRepository {
       if (!actualizado) throw new Error('No se pudo bloquear el job de PPT infantil tomado');
 
       const payload = SchemaPayloadPptInfantil.parse(row.payload);
+      return { id: row.id, payload, intentos: actualizado.intentos };
+    });
+  }
+
+  async encolarGuia(payload: PayloadGuia): Promise<string> {
+    const [row] = await this.db
+      .insert(jobGeneracion)
+      .values({
+        tipoTrabajo: 'guia',
+        estado: 'pendiente',
+        // Payload OA + conocimiento; el worker resuelve el OA completo vía OaRepository al tomarlo.
+        payload: payload as unknown as Record<string, unknown>,
+      })
+      .returning({ id: jobGeneracion.id });
+
+    if (!row) throw new Error('No se pudo encolar el job de guía');
+    return row.id;
+  }
+
+  /** Análogo a tomarSiguientePrueba para la cola 'guia' (Tanda 1). */
+  async tomarSiguienteGuia(workerId: string): Promise<TrabajoGuia | null> {
+    return this.db.transaction(async (tx) => {
+      const rows = await tx.execute<{ id: string; payload: unknown }>(
+        sql`SELECT id, payload FROM job_generacion
+            WHERE estado = 'pendiente' AND tipo_trabajo = 'guia'
+            ORDER BY created_at ASC
+            LIMIT 1
+            FOR UPDATE SKIP LOCKED`,
+      );
+
+      const row = (rows as unknown as { rows: Array<{ id: string; payload: unknown }> }).rows[0];
+      if (!row) return null;
+
+      const [actualizado] = await tx
+        .update(jobGeneracion)
+        .set({
+          estado: 'en_proceso',
+          lockedBy: workerId,
+          lockedAt: new Date(),
+          intentos: sql`${jobGeneracion.intentos} + 1`,
+        })
+        .where(eq(jobGeneracion.id, row.id))
+        .returning({ intentos: jobGeneracion.intentos });
+
+      if (!actualizado) throw new Error('No se pudo bloquear el job de guía tomado');
+
+      const payload = SchemaPayloadGuia.parse(row.payload);
       return { id: row.id, payload, intentos: actualizado.intentos };
     });
   }

@@ -29,6 +29,7 @@ import type { CatalogosPlanificacion } from '../schemas/catalogosPlanificacion.j
 import type { PayloadPlanificacion } from '../schemas/generarPlanificacion.js';
 import type { PayloadPrueba } from '../schemas/payloadPrueba.js';
 import type { PayloadPptInfantil } from '../schemas/payloadPptInfantil.js';
+import type { PayloadGuia } from '../schemas/payloadGuia.js';
 import type { Prueba } from '../schemas/prueba.js';
 import type { EncabezadoPrueba } from '../schemas/encabezadoPrueba.js';
 
@@ -248,6 +249,13 @@ export interface TrabajoPptInfantil {
   readonly intentos: number; // ya incrementado por tomarSiguientePptInfantil (cuenta el intento en curso)
 }
 
+// Un trabajo de generación de GUÍA (Tanda 1): el payload trae OA + conocimiento (standalone desde el OA).
+export interface TrabajoGuia {
+  readonly id: string;
+  readonly payload: PayloadGuia;
+  readonly intentos: number; // ya incrementado por tomarSiguienteGuia (cuenta el intento en curso)
+}
+
 // Estado de un job de la cola, leído por la web para hacer polling del avance (H-PA.9).
 // documentoId = id del documento raíz de la cascada (la unidad generada) cuando estado='hecho'.
 export interface EstadoJob {
@@ -267,6 +275,8 @@ export interface JobRepository {
   encolarPrueba(payload: PayloadPrueba): Promise<string>;
   // Encola una generación de PPT infantil (Fase 3) desde una unidad ya planificada.
   encolarPptInfantil(payload: PayloadPptInfantil): Promise<string>;
+  // Encola una generación de GUÍA (Tanda 1) standalone desde un OA.
+  encolarGuia(payload: PayloadGuia): Promise<string>;
   // FOR UPDATE SKIP LOCKED — ADR-003. Marca el job 'en_proceso' e incrementa intentos atómicamente.
   // Filtra por tipo de trabajo 'cascada_unidad' (coexiste con la cola de planificación, H-2.7).
   tomarSiguiente(workerId: string): Promise<TrabajoCascada | null>;
@@ -276,6 +286,8 @@ export interface JobRepository {
   tomarSiguientePrueba(workerId: string): Promise<TrabajoPrueba | null>;
   // Análogo para la cola 'ppt_infantil' (Fase 3): su propia cola por tipo de trabajo.
   tomarSiguientePptInfantil(workerId: string): Promise<TrabajoPptInfantil | null>;
+  // Análogo para la cola 'guia': su propia cola por tipo de trabajo.
+  tomarSiguienteGuia(workerId: string): Promise<TrabajoGuia | null>;
   // Estado del job para el polling de la web; null si el id no existe (H-PA.9).
   obtenerEstado(jobId: string): Promise<EstadoJob | null>;
   // Éxito: estado='hecho' y documento_id = id del documento raíz de la cascada (la unidad generada).

@@ -522,6 +522,33 @@ describe('JobRepository — cola de PPT infantil (Fase 3)', () => {
 });
 
 // ---------------------------------------------------------------------------
+// JobRepository.encolarGuia / tomarSiguienteGuia — cola de guía del alumno (Tanda 1)
+// ---------------------------------------------------------------------------
+describe('JobRepository — cola de guía del alumno (Tanda 1)', () => {
+  it('encolarGuia → tomarSiguienteGuia devuelve el payload; otras colas NO la toman', async () => {
+    const db = await crearDb();
+    const jobs = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
+
+    const id = await jobs.encolarGuia({
+      asignatura: 'Ciencias Naturales',
+      nivel: '3º básico',
+      oaCodigo: 'CN03 OA 01',
+      conocimiento: 'Los seres vivos',
+      establecimiento: 'Colegio Demo',
+    });
+    expect(id).toBeDefined();
+
+    // La cola de cascada NO toma un job de guía (filtra por tipo_trabajo).
+    expect(await jobs.tomarSiguiente('w-cascada')).toBeNull();
+
+    const t = await jobs.tomarSiguienteGuia('w-guia');
+    expect(t?.id).toBe(id);
+    expect(t?.payload.oaCodigo).toBe('CN03 OA 01');
+    expect(t?.intentos).toBe(1);
+  }, T);
+});
+
+// ---------------------------------------------------------------------------
 // JobRepository.obtenerEstado — lectura del estado para el polling de la web (H-PA.9)
 // ---------------------------------------------------------------------------
 describe('JobRepository — obtenerEstado (H-PA.9)', () => {
