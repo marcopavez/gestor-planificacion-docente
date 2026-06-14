@@ -131,7 +131,8 @@ async function main(): Promise<void> {
   });
 
   // --- Cola de guías del alumno (Tanda 1), en paralelo a las otras (no las toca) ---
-  // Genera la guía desde los OA de la unidad; el export .docx es bajo demanda en la web, no aquí.
+  // La guía es standalone desde un OA: carga el OA del corpus publicado (vía oas), no de una unidad.
+  // El export .docx es bajo demanda en la web, no aquí.
   const guiaUseCase = new ProcesarTrabajoGuiaUseCase({
     jobs: new JobRepositoryDrizzle(db),
     oas,
