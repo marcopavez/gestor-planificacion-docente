@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Faro · Generar planificación — Formulario</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <main class="faro-page">
+
+    <header class="faro-header">
+      <h1 class="faro-title">Generar planificación de unidad</h1>
+    </header>
+
+    <!-- Estado "form" — paso 1 del flujo -->
+    <!-- estados del flujo: form | generando | revision -->
+    <form>
+      <section class="faro-card">
+
+        <!-- Formato -->
+        <div class="field">
+          <label class="field__label" for="formato-select">Formato</label>
+          <select class="field__control" id="formato-select">
+            <option value="A" selected>A — Planificación de Unidad (denso)</option>
+            <option value="B">B — Bloque de Actividades (DUA)</option>
+          </select>
+        </div>
+
+        <p class="establecimiento-note">Establecimiento: Colegio Básico Los Alamos</p>
+
+        <!-- Asignatura -->
+        <div class="field field--mt">
+          <label class="field__label" for="asignatura-select">Asignatura</label>
+          <select class="field__control" id="asignatura-select">
+            <option value="">— elige —</option>
+            <option value="Ciencias Naturales" selected>Ciencias Naturales</option>
+            <option value="Matemática">Matemática</option>
+            <option value="Lenguaje y Comunicación">Lenguaje y Comunicación</option>
+            <option value="Historia, Geografía y Cs. Sociales">Historia, Geografía y Cs. Sociales</option>
+            <option value="Artes Visuales">Artes Visuales</option>
+            <option value="Música">Música</option>
+            <option value="Educación Física">Educación Física</option>
+          </select>
+        </div>
+
+        <!-- Nivel -->
+        <div class="field field--mt">
+          <label class="field__label" for="nivel-select">Nivel</label>
+          <select class="field__control" id="nivel-select">
+            <option value="">— elige —</option>
+            <option value="1º básico">1º básico</option>
+            <option value="2º básico">2º básico</option>
+            <option value="3º básico" selected>3º básico</option>
+            <option value="4º básico">4º básico</option>
+            <option value="5º básico">5º básico</option>
+            <option value="6º básico">6º básico</option>
+          </select>
+        </div>
+
+        <!-- OA Selector -->
+        <fieldset class="gen-panel gen-panel--mt">
+          <legend>Objetivos de Aprendizaje</legend>
+          <div class="oa-list">
+            <label class="oa-item">
+              <input type="checkbox" checked>
+              <span><strong>CN03 OA 01</strong>: Observar y describir los seres vivos (plantas y animales) según sus características como tamaño, color, textura y estructura.</span>
+            </label>
+            <label class="oa-item">
+              <input type="checkbox" checked>
+              <span><strong>CN03 OA 02</strong>: Clasificar seres vivos según características como tipo de cubierta corporal, tipo de reproducción y presencia de columna vertebral.</span>
+            </label>
+            <label class="oa-item">
+              <input type="checkbox" checked>
+              <span><strong>CN03 OA 03</strong>: Investigar y explicar las relaciones entre los seres vivos y su entorno en ecosistemas cercanos.</span>
+            </label>
+            <label class="oa-item">
+              <input type="checkbox">
+              <span><strong>CN03 OA 04</strong>: Describir y comparar el ciclo de vida de distintos animales (rana, mariposa, ave).</span>
+            </label>
+            <label class="oa-item">
+              <input type="checkbox">
+              <span><strong>CN03 OA 05</strong>: Registrar y comunicar los resultados de sus observaciones e investigaciones de manera organizada.</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- Nombre de la unidad -->
+        <div class="field field--mt">
+          <label class="field__label" for="unidad-input">Unidad</label>
+          <input class="field__control" id="unidad-input" type="text" value="Los seres vivos y su entorno" placeholder="Nombre de la unidad">
+        </div>
+
+        <!-- Docente -->
+        <div class="field field--mt">
+          <label class="field__label" for="docente-input">Docente (opcional)</label>
+          <input class="field__control" id="docente-input" type="text" placeholder="Nombre del docente">
+        </div>
+
+        <!-- Período solo aparece si formato = B -->
+        <!--
+        <div class="field field--mt">
+          <label class="field__label" for="periodo-input">Período</label>
+          <input class="field__control" id="periodo-input" type="text" placeholder="Ej: Primer semestre 2025">
+        </div>
+        -->
+
+        <button class="btn btn--primary btn--mt" type="submit">
+          Generar (borrador)
+        </button>
+        <!-- Cuando el formulario no está completo: -->
+        <!-- <button class="btn btn--disabled btn--mt" type="submit" disabled>Generar (borrador)</button> -->
+
+      </section>
+    </form>
+
+  </main>
+</body>
+</html>

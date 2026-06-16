@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Faro · Revisión (human-in-the-loop)</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <main class="faro-page">
+
+    <header class="faro-header">
+      <h1 class="faro-title">Faro · Revisión (human-in-the-loop)</h1>
+      <p class="faro-subtitle">
+        Revisa los borradores generados, comprueba los gates y aprueba o rechaza.
+        Ningún documento llega a <strong>aprobado</strong> sin un revisor identificado.
+      </p>
+    </header>
+
+    <!-- SELECTOR DE ESTABLECIMIENTO + CARGAR PENDIENTES -->
+    <section class="faro-card">
+      <div class="field field--narrow">
+        <label class="field__label" for="establecimiento-input">Establecimiento</label>
+        <input class="field__control" id="establecimiento-input" type="text" value="Colegio Básico Los Alamos">
+      </div>
+      <button class="btn btn--secondary btn--mt" type="button">Cargar pendientes</button>
+      <!-- Estado cargando: <button class="btn btn--disabled btn--mt" disabled>Cargando…</button> -->
+
+      <!-- LISTA DE DOCUMENTOS PENDIENTES (3 ejemplos) -->
+      <ul class="doc-list">
+
+        <li class="doc-row">
+          <span class="doc-row__label">Planificación de Unidad</span>
+          <span class="badge badge--review">En revisión</span>
+          <span class="doc-row__date">13/06/2026, 10:42</span>
+          <button class="btn btn--secondary" type="button">Abrir</button>
+        </li>
+
+        <li class="doc-row">
+          <span class="doc-row__label">Prueba</span>
+          <span class="badge badge--draft">Borrador</span>
+          <span class="doc-row__date">13/06/2026, 10:45</span>
+          <button class="btn btn--secondary" type="button">Abrir</button>
+        </li>
+
+        <li class="doc-row">
+          <span class="doc-row__label">Deck de la clase</span>
+          <span class="badge badge--approved">Aprobado</span>
+          <span class="doc-row__date">12/06/2026, 16:18</span>
+          <button class="btn btn--secondary" type="button">Abrir</button>
+        </li>
+
+      </ul>
+
+      <!-- Estado vacío (sin pendientes):
+        <p class="text-muted text-sm">
+          No hay documentos pendientes de revisión para este establecimiento.
+        </p>
+      -->
+    </section>
+
+    <!-- AVISO DE ÉXITO (aparece tras una acción exitosa) -->
+    <div class="note note--success">&#9989; Documento actualizado a "En revisión".</div>
+
+    <!-- ─── DETALLE DEL DOCUMENTO ABIERTO ────────────────────────────────── -->
+    <!-- Se muestra al hacer clic en "Abrir" de uno de los documentos -->
+
+    <h2 class="faro-result-heading">
+      Planificación de Unidad
+      <span class="badge badge--review">En revisión</span>
+    </h2>
+
+    <!-- Contenido del artefacto (VistaUnidad) -->
+    <section class="faro-card">
+      <p>
+        <strong>Los seres vivos y su entorno</strong><br>
+        <span class="text-muted">Ciencias Naturales · 3º básico · 4 semanas · 12 hrs pedagógicas</span>
+      </p>
+      <p>
+        Los estudiantes explorarán las características y diversidad de los seres vivos, identificando similitudes y diferencias entre plantas y animales, y comprendiendo cómo interactúan con su entorno natural.
+      </p>
+      <ul>
+        <li><strong>CN03 OA 01</strong> — Observar y describir los seres vivos según sus características.</li>
+        <li><strong>CN03 OA 02</strong> — Clasificar seres vivos según características como cubierta corporal.</li>
+        <li><strong>CN03 OA 03</strong> — Investigar las relaciones entre los seres vivos y su entorno.</li>
+      </ul>
+    </section>
+
+    <!-- Panel de Gates — estado "ok" -->
+    <section class="faro-card faro-card--ok">
+      <h3 class="section-title">&#9989; Validación: lista para revisar</h3>
+      <p class="gates-desc">
+        Chequeos deterministas (no IA): cobertura de OA, ítem→OA, puntajes y citas al currículum vigente.
+      </p>
+
+      <div class="gate gate--ok">
+        <p class="gate__title">&#9989; Planificación (cobertura OA, indicadores, duración) — <span class="gate__title-note">sin observaciones</span></p>
+      </div>
+
+      <div class="gate gate--ok">
+        <p class="gate__title">&#9989; Prueba (ítem→OA, una correcta, puntajes)</p>
+        <ul>
+          <li class="gate__finding">
+            <span class="sev sev--warn">marca</span>
+            El puntaje total (10 pts) es menor al mínimo recomendado (15 pts) para 3º básico.
+          </li>
+        </ul>
+      </div>
+
+      <div class="gate gate--ok">
+        <p class="gate__title">&#9989; Citas (OA existe + vigente en el corpus) — <span class="gate__title-note">sin observaciones</span></p>
+      </div>
+    </section>
+
+    <!-- Panel de Gates — estado "error" (ejemplo alternativo comentado) -->
+    <!--
+    <section class="faro-card faro-card--error">
+      <h3 class="section-title">&#9940; Validación: hallazgos bloqueantes</h3>
+      <p class="gates-desc">
+        Chequeos deterministas (no IA): cobertura de OA, ítem→OA, puntajes y citas al currículum vigente.
+      </p>
+      <div class="gate gate--block">
+        <p class="gate__title">&#9940; Prueba (ítem→OA, una correcta, puntajes)</p>
+        <ul>
+          <li class="gate__finding">
+            <span class="sev sev--block">bloquea</span>
+            El ítem 2 referencia CN03 OA 07, que no existe en el corpus vigente.
+          </li>
+        </ul>
+      </div>
+    </section>
+    -->
+
+    <!-- Acciones de revisión — estado "en_revision" -->
+    <section class="faro-card faro-card--surface">
+      <h3 class="section-title">Acciones de revisión</h3>
+
+      <!-- Estado "borrador": mostrar solo "Enviar a revisión" -->
+      <!-- <button class="btn btn--primary" type="button">Enviar a revisión</button> -->
+
+      <!-- Estado "en_revision": campo revisor + Aprobar + Rechazar -->
+      <div class="field field--narrow">
+        <label class="field__label" for="revisor-input">Revisor (email)</label>
+        <input class="field__control" id="revisor-input" type="email" placeholder="prof.garcia@colegio.cl" value="">
+      </div>
+      <div class="hil-actions">
+        <!-- Si revisor vacío: btn--disabled en "Aprobar" -->
+        <button class="btn btn--disabled" type="button" disabled>Aprobar</button>
+        <button class="btn btn--danger" type="button">Rechazar</button>
+      </div>
+      <!-- Cuando el email está ingresado:
+        <div class="hil-actions">
+          <button class="btn btn--success" type="button">Aprobar</button>
+          <button class="btn btn--danger" type="button">Rechazar</button>
+        </div>
+      -->
+
+      <!-- Estado "aprobado" o "rechazado" (solo lectura):
+        <p class="text-muted">
+          Documento <strong>aprobado</strong> (solo lectura). Revisor: <strong>prof.garcia@colegio.cl</strong>.
+        </p>
+      -->
+    </section>
+
+  </main>
+</body>
+</html>

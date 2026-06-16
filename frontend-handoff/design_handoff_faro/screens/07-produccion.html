@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Faro · Generación asíncrona</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <main class="faro-page">
+
+    <header class="faro-header">
+      <h1 class="faro-title">Faro · Generación asíncrona</h1>
+      <p class="faro-subtitle">
+        Encola la cascada desde una unidad de tu planificación anual;
+        el worker genera los borradores y aquí ves el avance.
+      </p>
+    </header>
+
+    <!-- SELECCIÓN: establecimiento + plan + unidad + botón generar -->
+    <section class="faro-card">
+
+      <div class="field field--narrow">
+        <label class="field__label" for="est-input">Establecimiento</label>
+        <input class="field__control" id="est-input" type="text" value="Colegio Básico Los Alamos">
+      </div>
+
+      <button class="btn btn--secondary btn--mt" type="button">Cargar planificaciones</button>
+      <!-- Estado cargando: <button class="btn btn--disabled btn--mt" disabled>Cargando…</button> -->
+
+      <!-- Estos selectores aparecen solo cuando hay planificaciones cargadas -->
+      <div class="field field--mt field--wide">
+        <label class="field__label" for="plan-select">Planificación</label>
+        <select class="field__control" id="plan-select">
+          <option selected>Ciencias Naturales · 3º básico · 2026</option>
+          <option>Matemática · 1º básico · 2026</option>
+          <option>Lenguaje y Comunicación · 4º básico · 2026</option>
+        </select>
+      </div>
+
+      <div class="field field--mt field--wide">
+        <label class="field__label" for="unidad-select">Unidad</label>
+        <select class="field__control" id="unidad-select">
+          <option selected>1. Los seres vivos y su entorno (CN03 OA 01, CN03 OA 02, CN03 OA 03)</option>
+          <option>2. La materia y sus propiedades (CN03 OA 06, CN03 OA 07)</option>
+          <option>3. El sistema solar (CN03 OA 10, CN03 OA 11)</option>
+        </select>
+      </div>
+
+      <button class="btn btn--primary btn--mt" type="button">Generar cascada</button>
+      <!-- Estado generando (deshabilitado):
+        <button class="btn btn--disabled btn--mt" type="button" disabled>Generar cascada</button>
+      -->
+
+      <!-- Estado vacío (sin planificaciones):
+        <p class="text-muted text-sm">
+          No hay planificaciones para este establecimiento. Crea una vía POST /api/aula/planificaciones.
+        </p>
+      -->
+    </section>
+
+    <!-- JOB STATUS — aparece una vez que se encola la generación -->
+    <!-- estados del job: pendiente | en_proceso | hecho | fallido -->
+    <div class="job-card">
+      Job <code class="job-card__id">job_a3b9c12f</code> — Generando… &#9203;
+      <!-- pendiente:  "En cola… ⏳" -->
+      <!-- en_proceso: "Generando… ⏳" (este estado) -->
+      <!-- hecho:      "Listo ✅" -->
+      <!-- fallido:    "Falló ⛔" -->
+    </div>
+
+    <!-- Nota de error (estado "fallido"):
+      <div class="note note--error">⚠ La generación está tardando demasiado. Revisa que el worker esté corriendo.</div>
+    -->
+
+    <!-- ─── BORRADORES GENERADOS (estado "hecho") ─────────────────────── -->
+    <!-- Este bloque aparece solo cuando el job terminó exitosamente -->
+    <h2 class="faro-result-heading">Borradores generados</h2>
+    <p class="result-intro">
+      Todos nacen <strong>borrador</strong> y requieren revisión docente (human-in-the-loop).
+    </p>
+
+    <!-- Planificación de Unidad -->
+    <section class="faro-card">
+      <h3 class="section-title">Planificación de Unidad</h3>
+      <p>
+        <strong>Los seres vivos y su entorno</strong><br>
+        <span class="text-muted">Ciencias Naturales · 3º básico · 4 semanas · 12 hrs pedagógicas</span>
+      </p>
+      <p>
+        Los estudiantes explorarán las características y diversidad de los seres vivos, identificando similitudes y diferencias entre plantas y animales, comprendiendo cómo interactúan con su entorno natural.
+      </p>
+      <ul>
+        <li><strong>CN03 OA 01</strong> — Observar y describir los seres vivos según sus características.</li>
+        <li><strong>CN03 OA 02</strong> — Clasificar seres vivos según cubierta corporal y reproducción.</li>
+        <li><strong>CN03 OA 03</strong> — Investigar relaciones entre seres vivos y su entorno.</li>
+      </ul>
+    </section>
+
+    <!-- Planificación de Clases -->
+    <section class="faro-card">
+      <h3 class="section-title">Planificación de Clases (3)</h3>
+
+      <div class="clase-item">
+        <p class="clase-item__title">Clase 1 · Observamos los seres vivos <span class="clase-item__duration">(90 min)</span></p>
+      </div>
+      <div class="clase-item">
+        <p class="clase-item__title">Clase 2 · Clasificamos y comparamos <span class="clase-item__duration">(90 min)</span></p>
+      </div>
+      <div class="clase-item">
+        <p class="clase-item__title">Clase 3 · Seres vivos y su entorno <span class="clase-item__duration">(90 min)</span></p>
+      </div>
+    </section>
+
+    <!-- Prueba -->
+    <section class="faro-card">
+      <h3 class="section-title">Prueba (4 ítems · perfil 3_basico)</h3>
+      <ol>
+        <li class="prueba-item">
+          ¿Cuál de las siguientes es una característica de los seres vivos?
+          <span class="prueba-item__meta">(CN03 OA 01 · 2 pts)</span>
+        </li>
+        <li class="prueba-item">
+          ¿Cómo se llama la cubierta corporal de los peces?
+          <span class="prueba-item__meta">(CN03 OA 02 · 2 pts)</span>
+        </li>
+        <li class="prueba-item">
+          Nombra dos seres vivos que viven en un bosque y explica por qué dependen de ese lugar.
+          <span class="prueba-item__meta">(CN03 OA 03 · 4 pts)</span>
+        </li>
+        <li class="prueba-item">
+          Clasifica los siguientes animales en vertebrados o invertebrados: abeja, perro, pulpo, rana.
+          <span class="prueba-item__meta">(CN03 OA 02 · 2 pts)</span>
+        </li>
+      </ol>
+    </section>
+
+    <!-- Deck / PPT con descarga -->
+    <section class="faro-card faro-card--surface">
+      <h3 class="section-title">Deck de la clase · 5 diapositivas</h3>
+      <p class="text-muted">Los seres vivos y su entorno — Ciencias Naturales 3º básico</p>
+
+      <a href="#" class="btn btn--success">&#8595; Descargar .pptx</a>
+
+      <!-- Si el .pptx no está disponible:
+        <p class="text-muted">El .pptx no está disponible.</p>
+      -->
+    </section>
+
+  </main>
+</body>
+</html>

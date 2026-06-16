@@ -36,9 +36,6 @@ interface Detalle {
   createdAt: string;
 }
 
-const COLOR = { borde: '#d0d7de', acento: '#1A237E', suave: '#57606a', fondo: '#f6f8fa' };
-const card: React.CSSProperties = { border: `1px solid ${COLOR.borde}`, borderRadius: 8, padding: 16, marginBottom: 16 };
-
 const ETIQUETA_ESTADO: Record<EstadoRevision, string> = {
   borrador: 'Borrador',
   en_revision: 'En revisión',
@@ -46,11 +43,12 @@ const ETIQUETA_ESTADO: Record<EstadoRevision, string> = {
   rechazado: 'Rechazado',
 };
 
-const COLOR_ESTADO: Record<EstadoRevision, string> = {
-  borrador: '#fff8c5',
-  en_revision: '#ddf4ff',
-  aprobado: '#dafbe1',
-  rechazado: '#ffeef0',
+// Mapeo estado → variante de badge del sistema de diseño (oro/turquesa/verde/coral).
+const BADGE_ESTADO: Record<EstadoRevision, string> = {
+  borrador: 'badge--draft',
+  en_revision: 'badge--review',
+  aprobado: 'badge--approved',
+  rechazado: 'badge--rejected',
 };
 
 const ETIQUETA_TIPO: Record<string, string> = {
@@ -147,47 +145,36 @@ export default function RevisionPage(): React.ReactElement {
   }
 
   return (
-    <main style={{ maxWidth: 920, margin: '0 auto', padding: 24, fontFamily: 'system-ui, sans-serif', color: '#1f2328' }}>
-      <h1 style={{ color: COLOR.acento, marginBottom: 4 }}>Faro · Revisión (human-in-the-loop)</h1>
-      <p style={{ color: COLOR.suave, marginTop: 0 }}>
-        Revisa los borradores generados, comprueba los gates y aprueba o rechaza. Ningún documento llega a{' '}
-        <strong>aprobado</strong> sin un revisor identificado.
-      </p>
+    <main className="faro-page">
+      <header className="faro-header">
+        <h1 className="faro-title">Faro · Revisión (human-in-the-loop)</h1>
+        <p className="faro-subtitle">
+          Revisa los borradores generados, comprueba los gates y aprueba o rechaza. Ningún documento llega a{' '}
+          <strong>aprobado</strong> sin un revisor identificado.
+        </p>
+      </header>
 
-      <section style={{ ...card, marginTop: 16 }}>
-        <label style={{ display: 'block', fontWeight: 600, marginBottom: 8 }}>
-          Establecimiento
-          <input
-            value={establecimiento}
-            onChange={(e) => setEstablecimiento(e.target.value)}
-            style={{ display: 'block', marginTop: 4, padding: 6, minWidth: 280 }}
-          />
+      <section className="faro-card">
+        <label className="field field--wide">
+          <span className="field__label">Establecimiento</span>
+          <input className="field__control" value={establecimiento} onChange={(e) => setEstablecimiento(e.target.value)} />
         </label>
         <button
           onClick={() => void cargarPendientes()}
           disabled={cargandoLista || establecimiento.trim().length === 0}
-          style={botonSecundario(cargandoLista)}
+          className="btn btn--secondary"
         >
           {cargandoLista ? 'Cargando…' : 'Cargar pendientes'}
         </button>
 
         {pendientes.length > 0 && (
-          <ul style={{ listStyle: 'none', padding: 0, marginTop: 16 }}>
+          <ul className="doc-list">
             {pendientes.map((d) => (
-              <li
-                key={d.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  borderTop: `1px solid ${COLOR.borde}`,
-                  padding: '8px 0',
-                }}
-              >
-                <span style={{ flex: 1 }}>{ETIQUETA_TIPO[d.tipo] ?? d.tipo}</span>
+              <li key={d.id} className="doc-row">
+                <span className="doc-row__label">{ETIQUETA_TIPO[d.tipo] ?? d.tipo}</span>
                 <BadgeEstado estado={d.estadoRevision} />
-                <span style={{ fontSize: 12, color: COLOR.suave }}>{new Date(d.createdAt).toLocaleString('es-CL')}</span>
-                <button onClick={() => void abrir(d.id)} style={botonSecundario(false)}>
+                <span className="doc-row__date">{new Date(d.createdAt).toLocaleString('es-CL')}</span>
+                <button onClick={() => void abrir(d.id)} className="btn btn--secondary">
                   Abrir
                 </button>
               </li>
@@ -196,14 +183,12 @@ export default function RevisionPage(): React.ReactElement {
         )}
 
         {pendientes.length === 0 && !cargandoLista && (
-          <p style={{ fontSize: 13, color: COLOR.suave, marginBottom: 0 }}>
-            No hay documentos pendientes de revisión para este establecimiento.
-          </p>
+          <p className="form-hint">No hay documentos pendientes de revisión para este establecimiento.</p>
         )}
       </section>
 
-      {aviso && <p style={{ color: '#1a7f37', background: '#dafbe1', padding: 12, borderRadius: 6 }}>✅ {aviso}</p>}
-      {error && <p style={{ color: '#b35900', background: '#fff8c5', padding: 12, borderRadius: 6 }}>⚠ {error}</p>}
+      {aviso && <p className="note note--success">✅ {aviso}</p>}
+      {error && <p className="note note--error">⚠ {error}</p>}
 
       {detalle && (
         <DetalleDocumento
@@ -219,44 +204,7 @@ export default function RevisionPage(): React.ReactElement {
 }
 
 function BadgeEstado({ estado }: { estado: EstadoRevision }): React.ReactElement {
-  return (
-    <span
-      style={{
-        fontSize: 12,
-        padding: '2px 10px',
-        borderRadius: 999,
-        background: COLOR_ESTADO[estado],
-        border: `1px solid ${COLOR.borde}`,
-      }}
-    >
-      {ETIQUETA_ESTADO[estado]}
-    </span>
-  );
-}
-
-function botonSecundario(deshabilitado: boolean): React.CSSProperties {
-  return {
-    padding: '8px 16px',
-    background: '#fff',
-    color: COLOR.acento,
-    border: `1px solid ${COLOR.acento}`,
-    borderRadius: 6,
-    cursor: deshabilitado ? 'default' : 'pointer',
-    fontWeight: 600,
-  };
-}
-
-function boton(color: string, deshabilitado: boolean): React.CSSProperties {
-  return {
-    padding: '8px 18px',
-    background: deshabilitado ? COLOR.suave : color,
-    color: '#fff',
-    border: 'none',
-    borderRadius: 6,
-    cursor: deshabilitado ? 'default' : 'pointer',
-    fontWeight: 600,
-    marginRight: 8,
-  };
+  return <span className={`badge ${BADGE_ESTADO[estado]}`}>{ETIQUETA_ESTADO[estado]}</span>;
 }
 
 function DetalleDocumento({
@@ -275,7 +223,7 @@ function DetalleDocumento({
   const { estadoRevision } = detalle;
   return (
     <>
-      <h2 style={{ color: COLOR.acento }}>
+      <h2 className="faro-result-heading">
         {ETIQUETA_TIPO[detalle.tipo] ?? detalle.tipo} <BadgeEstado estado={estadoRevision} />
       </h2>
 
@@ -283,41 +231,39 @@ function DetalleDocumento({
 
       <PanelGates gates={detalle.resultadoGates} />
 
-      <section style={{ ...card, background: COLOR.fondo }}>
-        <h3 style={{ marginTop: 0 }}>Acciones de revisión</h3>
+      <section className="faro-card faro-card--surface">
+        <h3 className="section-title">Acciones de revisión</h3>
 
         {estadoRevision === 'borrador' && (
-          <button onClick={() => onAccion('enviar')} disabled={accionando} style={boton(COLOR.acento, accionando)}>
+          <button onClick={() => onAccion('enviar')} disabled={accionando} className="btn btn--primary">
             Enviar a revisión
           </button>
         )}
 
         {estadoRevision === 'en_revision' && (
-          <>
-            <label style={{ display: 'block', fontWeight: 600, marginBottom: 8 }}>
-              Revisor (email)
-              <input
-                value={revisor}
-                onChange={(e) => setRevisor(e.target.value)}
-                placeholder="prof.garcia@colegio.cl"
-                style={{ display: 'block', marginTop: 4, padding: 6, minWidth: 280 }}
-              />
-            </label>
+          <div className="hil-actions">
+            <input
+              className="field__control hil-actions__email"
+              value={revisor}
+              onChange={(e) => setRevisor(e.target.value)}
+              placeholder="prof.garcia@colegio.cl"
+              aria-label="Revisor (email)"
+            />
             <button
               onClick={() => onAccion('aprobar')}
               disabled={accionando || revisor.trim().length === 0}
-              style={boton('#1a7f37', accionando || revisor.trim().length === 0)}
+              className="btn btn--success"
             >
               Aprobar
             </button>
-            <button onClick={() => onAccion('rechazar')} disabled={accionando} style={boton('#cf222e', accionando)}>
+            <button onClick={() => onAccion('rechazar')} disabled={accionando} className="btn btn--danger">
               Rechazar
             </button>
-          </>
+          </div>
         )}
 
         {(estadoRevision === 'aprobado' || estadoRevision === 'rechazado') && (
-          <p style={{ margin: 0, color: COLOR.suave }}>
+          <p className="text-muted">
             Documento <strong>{ETIQUETA_ESTADO[estadoRevision].toLowerCase()}</strong> (solo lectura).
             {estadoRevision === 'aprobado' && detalle.autorHumano && (
               <>
@@ -335,26 +281,16 @@ function DetalleDocumento({
 
 function PanelGate({ titulo, gate }: { titulo: string; gate: ResultadoGate }): React.ReactElement {
   return (
-    <div style={{ marginBottom: 8 }}>
-      <p style={{ margin: '4px 0', fontWeight: 600 }}>
+    <div className={`gate ${gate.ok ? 'gate--ok' : 'gate--block'}`}>
+      <p className="gate__title">
         {gate.ok ? '✅' : '⛔'} {titulo}
-        {gate.hallazgos.length === 0 && <span style={{ color: '#1a7f37', fontWeight: 400 }}> — sin observaciones</span>}
+        {gate.hallazgos.length === 0 && <span className="gate__title-note"> — sin observaciones</span>}
       </p>
       {gate.hallazgos.length > 0 && (
-        <ul style={{ margin: '2px 0 0' }}>
+        <ul>
           {gate.hallazgos.map((h: Hallazgo, i: number) => (
-            <li key={i} style={{ fontSize: 13 }}>
-              <span
-                style={{
-                  fontSize: 11,
-                  padding: '1px 6px',
-                  borderRadius: 999,
-                  background: h.severidad === 'bloquea' ? '#ffeef0' : '#fff8c5',
-                  marginRight: 6,
-                }}
-              >
-                {h.severidad}
-              </span>
+            <li key={i} className="gate__finding">
+              <span className={`sev ${h.severidad === 'bloquea' ? 'sev--block' : 'sev--warn'}`}>{h.severidad}</span>
               {h.mensaje}
             </li>
           ))}
@@ -367,18 +303,16 @@ function PanelGate({ titulo, gate }: { titulo: string; gate: ResultadoGate }): R
 function PanelGates({ gates }: { gates: ReporteGates | null }): React.ReactElement {
   if (gates === null) {
     return (
-      <section style={card}>
-        <h3 style={{ marginTop: 0 }}>Validación</h3>
-        <p style={{ color: COLOR.suave, marginBottom: 0 }}>Sin reporte de gates.</p>
+      <section className="faro-card">
+        <h3 className="section-title">Validación</h3>
+        <p className="text-muted">Sin reporte de gates.</p>
       </section>
     );
   }
   return (
-    <section style={{ ...card, borderColor: gates.ok ? '#1a7f37' : '#cf222e', borderWidth: 2 }}>
-      <h3 style={{ marginTop: 0 }}>
-        {gates.ok ? '✅ Validación: lista para revisar' : '⛔ Validación: hallazgos bloqueantes'}
-      </h3>
-      <p style={{ fontSize: 13, color: COLOR.suave, marginTop: 0 }}>
+    <section className={`faro-card ${gates.ok ? 'faro-card--ok' : 'faro-card--error'}`}>
+      <h3 className="section-title">{gates.ok ? '✅ Validación: lista para revisar' : '⛔ Validación: hallazgos bloqueantes'}</h3>
+      <p className="gates-desc">
         Chequeos deterministas (no IA): cobertura de OA, ítem→OA, puntajes y citas al currículum vigente.
       </p>
       <PanelGate titulo="Planificación (cobertura OA, indicadores, duración)" gate={gates.planificacion} />
@@ -393,8 +327,8 @@ function PanelGates({ gates }: { gates: ReporteGates | null }): React.ReactEleme
 function ContenidoArtefacto({ tipo, contenido }: { tipo: string; contenido: unknown }): React.ReactElement {
   if (contenido === null || contenido === undefined) {
     return (
-      <section style={card}>
-        <p style={{ color: COLOR.suave, margin: 0 }}>Sin contenido.</p>
+      <section className="faro-card">
+        <p className="text-muted">Sin contenido.</p>
       </section>
     );
   }
@@ -409,8 +343,10 @@ function ContenidoArtefacto({ tipo, contenido }: { tipo: string; contenido: unkn
       return <VistaDeck deck={contenido as ClaseDeck} />;
     default:
       return (
-        <section style={card}>
-          <pre style={{ fontSize: 12, overflowX: 'auto', margin: 0 }}>{JSON.stringify(contenido, null, 2)}</pre>
+        <section className="faro-card">
+          <pre className="text-xs" style={{ overflowX: 'auto' }}>
+            {JSON.stringify(contenido, null, 2)}
+          </pre>
         </section>
       );
   }
@@ -418,11 +354,11 @@ function ContenidoArtefacto({ tipo, contenido }: { tipo: string; contenido: unkn
 
 function VistaUnidad({ unidad }: { unidad: PlanificacionUnidad }): React.ReactElement {
   return (
-    <section style={card}>
+    <section className="faro-card">
       <p>
         <strong>{unidad.unidad}</strong>
         <br />
-        <span style={{ color: COLOR.suave }}>
+        <span className="text-muted">
           {unidad.asignatura} · {unidad.nivel} · {unidad.duracion_semanas} semanas · {unidad.horas_pedagogicas} hrs
         </span>
       </p>
@@ -440,13 +376,14 @@ function VistaUnidad({ unidad }: { unidad: PlanificacionUnidad }): React.ReactEl
 
 function VistaClase({ clase }: { clase: PlanificacionClase }): React.ReactElement {
   return (
-    <section style={card}>
-      <p style={{ fontWeight: 600, marginTop: 0 }}>{clase.clases.length} clases</p>
+    <section className="faro-card">
+      <p>
+        <strong>{clase.clases.length} clases</strong>
+      </p>
       {clase.clases.map((c) => (
-        <div key={c.numero} style={{ borderTop: `1px solid ${COLOR.borde}`, paddingTop: 8, marginTop: 8 }}>
-          <p style={{ fontWeight: 600, margin: 0 }}>
-            Clase {c.numero} · {c.objetivo_clase}{' '}
-            <span style={{ color: COLOR.suave, fontWeight: 400 }}>({c.duracion_min} min)</span>
+        <div key={c.numero} className="clase-item">
+          <p className="clase-item__title">
+            Clase {c.numero} · {c.objetivo_clase} <span className="clase-item__duration">({c.duracion_min} min)</span>
           </p>
         </div>
       ))}
@@ -456,17 +393,16 @@ function VistaClase({ clase }: { clase: PlanificacionClase }): React.ReactElemen
 
 function VistaPrueba({ prueba }: { prueba: Prueba }): React.ReactElement {
   return (
-    <section style={card}>
-      <p style={{ fontWeight: 600, marginTop: 0 }}>
-        {prueba.items.length} ítems · perfil {prueba.perfil_nivel}
+    <section className="faro-card">
+      <p>
+        <strong>
+          {prueba.items.length} ítems · perfil {prueba.perfil_nivel}
+        </strong>
       </p>
       <ol>
         {prueba.items.map((it, i) => (
-          <li key={i} style={{ marginBottom: 8 }}>
-            <span>{it.enunciado}</span>{' '}
-            <em style={{ color: COLOR.suave }}>
-              ({it.oa} · {it.puntaje} pts)
-            </em>
+          <li key={i} className="prueba-item">
+            <span>{it.enunciado}</span> <span className="prueba-item__meta">{it.oa} · {it.puntaje} pts</span>
           </li>
         ))}
       </ol>
@@ -476,13 +412,15 @@ function VistaPrueba({ prueba }: { prueba: Prueba }): React.ReactElement {
 
 function VistaDeck({ deck }: { deck: ClaseDeck }): React.ReactElement {
   return (
-    <section style={{ ...card, background: COLOR.fondo }}>
-      <p style={{ fontWeight: 600, marginTop: 0 }}>{deck.titulo}</p>
-      <p style={{ color: COLOR.suave, marginTop: 0 }}>{deck.slides.length} diapositivas</p>
-      <ul>
+    <section className="faro-card faro-card--surface">
+      <p>
+        <strong>{deck.titulo}</strong>
+      </p>
+      <p className="text-muted">{deck.slides.length} diapositivas</p>
+      <ul className="deck-slides">
         {deck.slides.map((s, i) => (
           <li key={i}>
-            <em style={{ color: COLOR.suave }}>[{s.momento}]</em> <strong>{s.titulo}</strong>
+            <em>{s.momento}</em> <strong>{s.titulo}</strong>
           </li>
         ))}
       </ul>

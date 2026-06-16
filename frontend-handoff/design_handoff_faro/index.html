@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Faro — Handoff de diseño</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="faro-page">
+    <header class="faro-header">
+      <h1 class="faro-title">Faro · Handoff de diseño</h1>
+      <p class="faro-subtitle">
+        Kit de pantallas HTML estáticas para que Claude Design produzca el
+        <code>styles.css</code> definitivo. Lee el <code>README.md</code> antes de diseñar.
+      </p>
+    </header>
+
+    <section class="faro-card">
+      <h2 class="section-title">Pantallas</h2>
+      <ul class="nav-list">
+        <li class="nav-list__item">
+          <a href="screens/01-home.html">01 — Home (landing)</a>
+          — Página de bienvenida con enlace a la cascada de Aula.
+        </li>
+        <li class="nav-list__item">
+          <a href="screens/02-cascada-aula.html">02 — Cascada de Aula</a>
+          — Demo: selector de materia/OA + resultados completos (validación, unidad, clases, prueba, deck).
+        </li>
+        <li class="nav-list__item">
+          <a href="screens/03-planificacion-form.html">03 — Planificación · Formulario</a>
+          — Paso 1: elección de formato, asignatura, nivel, OA, unidad y docente.
+        </li>
+        <li class="nav-list__item">
+          <a href="screens/04-planificacion-generando.html">04 — Planificación · Generando</a>
+          — Estado de espera mientras el worker genera la planificación.
+        </li>
+        <li class="nav-list__item">
+          <a href="screens/05-planificacion-revision.html">05 — Planificación · Revisión (HIL)</a>
+          — Pantalla de revisión: campos editables + 3 paneles de generación (prueba lista, PPT idle, guía idle).
+        </li>
+        <li class="nav-list__item">
+          <a href="screens/06-revision-hil.html">06 — Revisión HIL (global)</a>
+          — Superficie de revisión docente: lista de pendientes + detalle abierto con gates + acciones.
+        </li>
+        <li class="nav-list__item">
+          <a href="screens/07-produccion.html">07 — Producción asíncrona</a>
+          — Flujo de producción: selección de planificación/unidad + job en curso + borradores generados.
+        </li>
+      </ul>
+    </section>
+
+    <section class="faro-card">
+      <h2 class="section-title">Instrucciones rápidas</h2>
+      <ol>
+        <li>Abre <code>README.md</code> (el prompt para Claude Design) y léelo completo.</li>
+        <li>Diseña <code>styles.css</code> usando las clases del índice en ese archivo.</li>
+        <li>Verifica tu diseño abriendo cada pantalla directamente en el navegador (sin build).</li>
+        <li>No modifiques el HTML — solo <code>styles.css</code>.</li>
+      </ol>
+    </section>
+  </main>
+</body>
+</html>

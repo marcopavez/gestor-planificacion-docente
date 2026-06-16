@@ -32,9 +32,6 @@ interface RespuestaEstado {
   deckDocId?: string | null;
 }
 
-const COLOR = { borde: '#d0d7de', acento: '#1A237E', suave: '#57606a', fondo: '#f6f8fa' };
-const card: React.CSSProperties = { border: `1px solid ${COLOR.borde}`, borderRadius: 8, padding: 16, marginBottom: 16 };
-
 // Tope de polling: ~2 min (60 sondeos × 2s) antes de rendirse para no sondear indefinidamente.
 const INTERVALO_POLL_MS = 1800;
 const MAX_SONDEOS = 70;
@@ -160,34 +157,32 @@ export default function ProduccionPage(): React.ReactElement {
   }
 
   return (
-    <main style={{ maxWidth: 920, margin: '0 auto', padding: 24, fontFamily: 'system-ui, sans-serif', color: '#1f2328' }}>
-      <h1 style={{ color: COLOR.acento, marginBottom: 4 }}>Faro · Generación asíncrona</h1>
-      <p style={{ color: COLOR.suave, marginTop: 0 }}>
-        Encola la cascada desde una unidad de tu planificación anual; el worker genera los borradores y aquí ves el avance.
-      </p>
+    <main className="faro-page">
+      <header className="faro-header">
+        <h1 className="faro-title">Faro · Generación asíncrona</h1>
+        <p className="faro-subtitle">
+          Encola la cascada desde una unidad de tu planificación anual; el worker genera los borradores y aquí ves el avance.
+        </p>
+      </header>
 
-      <section style={{ ...card, marginTop: 16 }}>
-        <label style={{ display: 'block', fontWeight: 600, marginBottom: 8 }}>
-          Establecimiento
-          <input
-            value={establecimiento}
-            onChange={(e) => setEstablecimiento(e.target.value)}
-            style={{ display: 'block', marginTop: 4, padding: 6, minWidth: 280 }}
-          />
+      <section className="faro-card">
+        <label className="field field--wide">
+          <span className="field__label">Establecimiento</span>
+          <input className="field__control" value={establecimiento} onChange={(e) => setEstablecimiento(e.target.value)} />
         </label>
         <button
           onClick={() => void cargarPlanes()}
           disabled={cargandoPlanes || establecimiento.trim().length === 0}
-          style={botonSecundario(cargandoPlanes)}
+          className="btn btn--secondary"
         >
           {cargandoPlanes ? 'Cargando…' : 'Cargar planificaciones'}
         </button>
 
         {planes.length > 0 && (
           <>
-            <label style={{ display: 'block', fontWeight: 600, margin: '14px 0 8px' }}>
-              Planificación
-              <select value={planId} onChange={(e) => cambiarPlan(e.target.value)} style={{ display: 'block', marginTop: 4, padding: 6, minWidth: 320 }}>
+            <label className="field">
+              <span className="field__label">Planificación</span>
+              <select className="field__control" value={planId} onChange={(e) => cambiarPlan(e.target.value)}>
                 {planes.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.asignatura} · {p.nivel} · {p.anio}
@@ -196,10 +191,10 @@ export default function ProduccionPage(): React.ReactElement {
               </select>
             </label>
 
-            <label style={{ display: 'block', fontWeight: 600, marginBottom: 8 }}>
-              Unidad
-              {/* Sin input de texto libre para nivel: las unidades vienen del corpus/planificación (gotcha º/°). */}
-              <select value={unidadId} onChange={(e) => setUnidadId(e.target.value)} style={{ display: 'block', marginTop: 4, padding: 6, minWidth: 320 }}>
+            {/* Sin input de texto libre para nivel: las unidades vienen del corpus/planificación (gotcha º/°). */}
+            <label className="field">
+              <span className="field__label">Unidad</span>
+              <select className="field__control" value={unidadId} onChange={(e) => setUnidadId(e.target.value)}>
                 {unidades.map((u) => (
                   <option key={u.id} value={u.id}>
                     {u.orden}. {u.titulo} ({u.oaCodigos.join(', ')})
@@ -211,7 +206,7 @@ export default function ProduccionPage(): React.ReactElement {
             <button
               onClick={() => void generar()}
               disabled={!unidadId || estado === 'pendiente' || estado === 'en_proceso'}
-              style={botonPrimario(estado === 'pendiente' || estado === 'en_proceso')}
+              className="btn btn--primary"
             >
               Generar cascada
             </button>
@@ -219,24 +214,24 @@ export default function ProduccionPage(): React.ReactElement {
         )}
 
         {planes.length === 0 && !cargandoPlanes && (
-          <p style={{ fontSize: 13, color: COLOR.suave, marginBottom: 0 }}>
-            No hay planificaciones para este establecimiento. Crea una vía POST /api/aula/planificaciones.
-          </p>
+          <p className="form-hint">No hay planificaciones para este establecimiento. Crea una vía POST /api/aula/planificaciones.</p>
         )}
       </section>
 
       {jobId && estado && (
-        <section style={{ ...card, background: COLOR.fondo }}>
-          <p style={{ margin: 0, fontWeight: 600 }}>
-            Job <code>{jobId}</code> — {ETIQUETA_ESTADO[estado]}
-            {(estado === 'pendiente' || estado === 'en_proceso') && <span> ⏳</span>}
-            {estado === 'hecho' && <span> ✅</span>}
-            {estado === 'fallido' && <span> ⛔</span>}
-          </p>
-        </section>
+        <div className="job-card">
+          <span>Job</span>
+          <span className="job-card__id">{jobId}</span>
+          <span>
+            — {ETIQUETA_ESTADO[estado]}
+            {(estado === 'pendiente' || estado === 'en_proceso') && ' ⏳'}
+            {estado === 'hecho' && ' ✅'}
+            {estado === 'fallido' && ' ⛔'}
+          </span>
+        </div>
       )}
 
-      {error && <p style={{ color: '#b35900', background: '#fff8c5', padding: 12, borderRadius: 6 }}>⚠ {error}</p>}
+      {error && <p className="note note--error">⚠ {error}</p>}
 
       {documentos && <Resultados documentos={documentos} deckDocId={deckDocId} />}
     </main>
@@ -250,47 +245,22 @@ function mensajeError(data: unknown): string {
   return 'Error en la solicitud.';
 }
 
-function botonPrimario(deshabilitado: boolean): React.CSSProperties {
-  return {
-    marginTop: 14,
-    padding: '8px 18px',
-    background: deshabilitado ? COLOR.suave : COLOR.acento,
-    color: '#fff',
-    border: 'none',
-    borderRadius: 6,
-    cursor: deshabilitado ? 'default' : 'pointer',
-    fontWeight: 600,
-  };
-}
-
-function botonSecundario(deshabilitado: boolean): React.CSSProperties {
-  return {
-    padding: '8px 16px',
-    background: '#fff',
-    color: COLOR.acento,
-    border: `1px solid ${COLOR.acento}`,
-    borderRadius: 6,
-    cursor: deshabilitado ? 'default' : 'pointer',
-    fontWeight: 600,
-  };
-}
-
 function Resultados({ documentos, deckDocId }: { documentos: DocumentosCascada; deckDocId: string | null }): React.ReactElement {
   const { unidad, clase, prueba, deck } = documentos;
   return (
     <>
-      <h2 style={{ color: COLOR.acento }}>Borradores generados</h2>
-      <p style={{ fontSize: 13, color: COLOR.suave }}>
+      <h2 className="faro-result-heading">Borradores generados</h2>
+      <p className="result-intro">
         Todos nacen <strong>borrador</strong> y requieren revisión docente (human-in-the-loop).
       </p>
 
       {unidad && (
-        <section style={card}>
-          <h3 style={{ marginTop: 0 }}>📘 Planificación de Unidad</h3>
+        <section className="faro-card">
+          <h3 className="section-title">📘 Planificación de Unidad</h3>
           <p>
             <strong>{unidad.unidad}</strong>
             <br />
-            <span style={{ color: COLOR.suave }}>
+            <span className="text-muted">
               {unidad.asignatura} · {unidad.nivel} · {unidad.duracion_semanas} semanas · {unidad.horas_pedagogicas} hrs
             </span>
           </p>
@@ -306,12 +276,12 @@ function Resultados({ documentos, deckDocId }: { documentos: DocumentosCascada; 
       )}
 
       {clase && (
-        <section style={card}>
-          <h3 style={{ marginTop: 0 }}>🗓 Planificación de Clases ({clase.clases.length})</h3>
+        <section className="faro-card">
+          <h3 className="section-title">🗓 Planificación de Clases ({clase.clases.length})</h3>
           {clase.clases.map((c) => (
-            <div key={c.numero} style={{ borderTop: `1px solid ${COLOR.borde}`, paddingTop: 8, marginTop: 8 }}>
-              <p style={{ fontWeight: 600, margin: 0 }}>
-                Clase {c.numero} · {c.objetivo_clase} <span style={{ color: COLOR.suave, fontWeight: 400 }}>({c.duracion_min} min)</span>
+            <div key={c.numero} className="clase-item">
+              <p className="clase-item__title">
+                Clase {c.numero} · {c.objetivo_clase} <span className="clase-item__duration">({c.duracion_min} min)</span>
               </p>
             </div>
           ))}
@@ -319,12 +289,12 @@ function Resultados({ documentos, deckDocId }: { documentos: DocumentosCascada; 
       )}
 
       {prueba && (
-        <section style={card}>
-          <h3 style={{ marginTop: 0 }}>📝 Prueba ({prueba.items.length} ítems · perfil {prueba.perfil_nivel})</h3>
+        <section className="faro-card">
+          <h3 className="section-title">📝 Prueba ({prueba.items.length} ítems · perfil {prueba.perfil_nivel})</h3>
           <ol>
             {prueba.items.map((it, i) => (
-              <li key={i} style={{ marginBottom: 8 }}>
-                <span>{it.enunciado}</span> <em style={{ color: COLOR.suave }}>({it.oa} · {it.puntaje} pts)</em>
+              <li key={i} className="prueba-item">
+                <span>{it.enunciado}</span> <span className="prueba-item__meta">{it.oa} · {it.puntaje} pts</span>
               </li>
             ))}
           </ol>
@@ -332,18 +302,17 @@ function Resultados({ documentos, deckDocId }: { documentos: DocumentosCascada; 
       )}
 
       {deck && (
-        <section style={{ ...card, background: COLOR.fondo }}>
-          <h3 style={{ marginTop: 0 }}>📽 Deck de la clase · {deck.slides.length} diapositivas</h3>
-          <p style={{ color: COLOR.suave, marginTop: 0 }}>{deck.titulo}</p>
+        <section className="faro-card faro-card--surface">
+          <h3 className="section-title">📽 Deck de la clase · {deck.slides.length} diapositivas</h3>
+          <p className="text-muted">{deck.titulo}</p>
           {deckDocId ? (
-            <a
-              href={`/api/aula/documentos/${deckDocId}/pptx`}
-              style={{ display: 'inline-block', padding: '8px 18px', background: '#1a7f37', color: '#fff', borderRadius: 6, textDecoration: 'none', fontWeight: 600 }}
-            >
-              ⬇ Descargar .pptx
-            </a>
+            <div className="download-row">
+              <a href={`/api/aula/documentos/${deckDocId}/pptx`} className="btn btn--success">
+                ⬇ Descargar .pptx
+              </a>
+            </div>
           ) : (
-            <p style={{ color: COLOR.suave }}>El .pptx no está disponible.</p>
+            <p className="text-muted">El .pptx no está disponible.</p>
           )}
         </section>
       )}

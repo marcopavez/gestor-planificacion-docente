@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Faro · Generar planificación — Generando…</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <main class="faro-page">
+
+    <header class="faro-header">
+      <h1 class="faro-title">Generar planificación de unidad</h1>
+    </header>
+
+    <!-- Estado "generando" — el worker está procesando el job -->
+    <!-- estados del flujo: form | generando | revision -->
+    <section class="faro-card">
+      <p>Generando la planificación… (esto corre en el worker)</p>
+      <!-- Claude Design: considera añadir un spinner o barra de progreso aquí.
+           Este estado puede durar entre 30 segundos y varios minutos dependiendo
+           de la carga del worker y del tamaño de la planificación. -->
+    </section>
+
+    <!-- Nota informativa para el docente -->
+    <div class="note note--info">
+      Puedes cerrar esta ventana — el worker seguirá generando el documento.
+      Cuando esté listo, vuelve a esta pantalla para revisarlo.
+    </div>
+
+  </main>
+</body>
+</html>

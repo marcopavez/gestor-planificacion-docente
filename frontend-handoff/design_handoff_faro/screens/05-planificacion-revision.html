@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Faro · Planificación — Revisión (HIL)</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <main class="faro-page">
+
+    <header class="faro-header">
+      <h1 class="faro-title">Generar planificación de unidad</h1>
+    </header>
+
+    <!-- Estado "revision" — paso 3 del flujo: HIL -->
+    <!-- estados del flujo: form | generando | revision -->
+    <section>
+      <h2>Revisión (HIL) — estado: <span class="badge badge--review">en_revision</span></h2>
+
+      <!-- Hallazgos de gates (aparece cuando hay observaciones) -->
+      <!-- Si no hay hallazgos, este bloque no aparece -->
+      <ul class="hil-warning-list">
+        <li class="hil-warning-item">[marca] El indicador 2 no menciona el OA correspondiente.</li>
+      </ul>
+
+      <!-- OA (datos fijos del corpus, no editables) -->
+      <fieldset class="gen-panel">
+        <legend>Objetivos de Aprendizaje (datos fijos del corpus)</legend>
+        <ul>
+          <li><strong>CN03 OA 01</strong> [basal]: Observar y describir los seres vivos (plantas y animales) según sus características.</li>
+          <li><strong>CN03 OA 02</strong> [basal]: Clasificar seres vivos según características como tipo de cubierta corporal.</li>
+          <li><strong>CN03 OA 03</strong> [complementario]: Investigar y explicar las relaciones entre los seres vivos y su entorno.</li>
+        </ul>
+      </fieldset>
+
+      <!-- Propósito — redactado por IA, editable -->
+      <div class="field field--mt">
+        <label class="field__label" for="proposito-ta">Propósito (IA · editable)</label>
+        <textarea class="field__control" id="proposito-ta" rows="4">Los estudiantes explorarán las características y diversidad de los seres vivos, identificando similitudes y diferencias entre plantas y animales, y comprendiendo cómo interactúan con su entorno natural. A través de observación directa y trabajo cooperativo, desarrollarán habilidades de clasificación y comunicación científica.</textarea>
+      </div>
+
+      <!-- Experiencias — redactadas por IA, editables -->
+      <div class="field field--mt">
+        <label class="field__label" for="experiencias-ta">Experiencias (una por línea · IA · editable)</label>
+        <textarea class="field__control" id="experiencias-ta" rows="5">Observación de muestras reales y láminas de seres vivos en el laboratorio.
+Trabajo grupal de clasificación con tarjetas de animales y plantas.
+Investigación guiada sobre ecosistemas chilenos usando textos de divulgación.
+Exposición oral de hallazgos ante el curso.
+Exit ticket escrito de autoevaluación al final de cada clase.</textarea>
+      </div>
+
+      <!-- Indicadores — editables por OA -->
+      <fieldset class="gen-panel field--mt">
+        <legend>Indicadores de evaluación (IA · editable)</legend>
+        <div class="indicadores-list">
+          <div class="indicador-row">
+            <span class="indicador-row__oa">CN03 OA 01</span>
+            <input class="field__control" type="text" value="Describe al menos tres características observables de un ser vivo seleccionado.">
+          </div>
+          <div class="indicador-row">
+            <span class="indicador-row__oa">CN03 OA 02</span>
+            <input class="field__control" type="text" value="Clasifica un conjunto de seres vivos en vertebrados e invertebrados correctamente.">
+          </div>
+          <div class="indicador-row">
+            <span class="indicador-row__oa">CN03 OA 03</span>
+            <input class="field__control" type="text" value="Explica con sus palabras cómo un animal depende de su ecosistema para sobrevivir.">
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Acciones de revisión HIL -->
+      <div class="hil-actions">
+        <button class="btn btn--secondary" type="button">Guardar cambios</button>
+        <!-- estadoRevision === 'borrador': mostrar solo "Enviar a revisión"
+          <button class="btn btn--primary" type="button">Enviar a revisión</button>
+        -->
+        <!-- estadoRevision === 'en_revision': campo email + Aprobar + Rechazar (mostrado a continuación) -->
+        <input class="field__control hil-actions__email" type="email" placeholder="tu email (autor)" value="prof.silva@colegio.cl">
+        <button class="btn btn--success" type="button">Aprobar</button>
+        <button class="btn btn--danger" type="button">Rechazar</button>
+        <!-- Si autor está vacío: <button class="btn btn--disabled" disabled>Aprobar</button> -->
+      </div>
+
+      <!-- Descarga de la planificación -->
+      <div class="download-row">
+        <a href="#" class="btn btn--secondary">Descargar .docx</a>
+        <a href="#" class="btn btn--secondary">Descargar .pdf</a>
+      </div>
+
+      <!-- ─── PANEL: PRUEBA FORMATIVA ────────────────────────────────────── -->
+      <!-- estados: idle | generando | segundo_plano | listo | error -->
+      <!-- Este panel se muestra en estado "listo" -->
+      <fieldset class="gen-panel">
+        <legend>Prueba formativa (desde esta planificación)</legend>
+
+        <!-- Estado "listo" — se muestran los enlaces de descarga -->
+        <div class="note note--success">Prueba generada (borrador):</div>
+        <div class="download-row">
+          <a href="#" class="btn btn--success">.docx alumno</a>
+          <a href="#" class="btn btn--secondary">.docx pauta</a>
+        </div>
+
+        <!-- Estado "idle": <button class="btn btn--primary">Generar prueba formativa (borrador)</button> -->
+        <!-- Estado "generando": <p class="text-muted">Generando la prueba… (corre en el worker)</p> -->
+        <!-- Estado "segundo_plano":
+          <div class="download-row">
+            <span>La prueba sigue generándose en segundo plano (el worker no la perdió).</span>
+            <button class="btn btn--secondary">Comprobar de nuevo</button>
+          </div>
+        -->
+        <!-- Estado "error":
+          <div class="note note--error">⚠ No se pudo generar la prueba.</div>
+          <button class="btn btn--primary">Generar prueba formativa (borrador)</button>
+        -->
+      </fieldset>
+
+      <!-- ─── PANEL: PPT INFANTIL ──────────────────────────────────────── -->
+      <!-- estados: idle | generando | segundo_plano | listo | error -->
+      <!-- Este panel se muestra en estado "idle" -->
+      <fieldset class="gen-panel">
+        <legend>PPT infantil (desde esta planificación)</legend>
+
+        <!-- Estado "idle" -->
+        <button class="btn btn--primary" type="button">Generar PPT infantil (borrador)</button>
+
+        <!-- Estado "generando": <p class="text-muted">Generando el PPT… (corre en el worker)</p> -->
+        <!-- Estado "segundo_plano":
+          <div class="download-row">
+            <span>El PPT sigue generándose en segundo plano (el worker no lo perdió).</span>
+            <button class="btn btn--secondary">Comprobar de nuevo</button>
+          </div>
+        -->
+        <!-- Estado "listo":
+          <div class="note note--success">PPT generado (borrador):</div>
+          <div class="download-row">
+            <a href="#" class="btn btn--success">.pptx</a>
+          </div>
+        -->
+        <!-- Estado "error":
+          <div class="note note--error">⚠ No se pudo generar el PPT.</div>
+          <button class="btn btn--primary">Generar PPT infantil (borrador)</button>
+        -->
+      </fieldset>
+
+      <!-- ─── PANEL: GUÍA DE TRABAJO DEL ALUMNO ──────────────────────── -->
+      <!-- estados: idle | generando | segundo_plano | listo | error -->
+      <!-- Este panel se muestra en estado "idle" -->
+      <fieldset class="gen-panel">
+        <legend>Guía de trabajo del alumno (desde un OA · 3º–6º)</legend>
+
+        <!-- Controles: selector de OA + campo de conocimiento -->
+        <div class="gen-panel__controls">
+          <div class="field">
+            <label class="field__label" for="guia-oa-select">OA</label>
+            <select class="field__control" id="guia-oa-select">
+              <option value="CN03 OA 01" selected>CN03 OA 01</option>
+              <option value="CN03 OA 02">CN03 OA 02</option>
+              <option value="CN03 OA 03">CN03 OA 03</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field__label" for="guia-conocimiento-input">Conocimiento</label>
+            <input class="field__control" id="guia-conocimiento-input" type="text" placeholder="Ej: Características de los seres vivos">
+          </div>
+        </div>
+
+        <!-- Estado "idle" -->
+        <button class="btn btn--primary" type="button">Generar guía (borrador)</button>
+
+        <!-- Estado "generando": <p class="text-muted">Generando la guía… (corre en el worker)</p> -->
+        <!-- Estado "segundo_plano":
+          <div class="download-row">
+            <span>La guía sigue generándose en segundo plano (el worker no la perdió).</span>
+            <button class="btn btn--secondary">Comprobar de nuevo</button>
+          </div>
+        -->
+        <!-- Estado "listo":
+          <div class="note note--success">Guía generada (borrador):</div>
+          <div class="download-row">
+            <a href="#" class="btn btn--success">.docx</a>
+          </div>
+        -->
+        <!-- Estado "error":
+          <div class="note note--error">⚠ Elige un OA y escribe el conocimiento/tema de la guía.</div>
+          <button class="btn btn--primary">Generar guía (borrador)</button>
+        -->
+      </fieldset>
+
+    </section>
+  </main>
+</body>
+</html>

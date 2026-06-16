@@ -41,6 +41,22 @@ async function getJson<T>(url: string): Promise<T> {
   return (await res.json()) as T;
 }
 
+// Mapeo estado de revisión → variante de badge del sistema de diseño.
+function claseBadgeEstado(estado: string): string {
+  switch (estado) {
+    case 'borrador':
+      return 'badge--draft';
+    case 'en_revision':
+      return 'badge--review';
+    case 'aprobado':
+      return 'badge--approved';
+    case 'rechazado':
+      return 'badge--rejected';
+    default:
+      return 'badge--mode';
+  }
+}
+
 // Presupuesto de sondeo del cliente. La generación real con LLM tarda minutos (y más si el job espera
 // encolado detrás de otro: el worker procesa una llamada a la vez), así que esperamos ~5 min antes de
 // asumir "sigue en segundo plano". Antes era 90s, que daba falsos "tardó demasiado" con el worker corriendo.
@@ -263,67 +279,101 @@ export default function PaginaPlanificacion() {
   const puedeGenerar = asignatura !== '' && nivel !== '' && unidad !== '' && oaSel.length > 0;
 
   return (
-    <main style={{ maxWidth: 880, margin: '0 auto', padding: 24, fontFamily: 'system-ui, sans-serif' }}>
-      <h1>Generar planificación de unidad</h1>
-      {error !== null && <p style={{ color: '#b00020' }}>⚠ {error}</p>}
+    <main className="faro-page">
+      <header className="faro-header">
+        <h1 className="faro-title">Generar planificación de unidad</h1>
+        <p className="faro-subtitle">
+          Elige formato, asignatura/nivel y OA; el worker genera el borrador y lo revisas aquí (HIL) antes de exportar.
+        </p>
+      </header>
+
+      {error !== null && <p className="note note--error">⚠ {error}</p>}
 
       {paso === 'form' && (
-        <section style={{ display: 'grid', gap: 12 }}>
-          <label>
-            Formato:&nbsp;
-            <select value={formato} onChange={(e) => setFormato(e.target.value as 'A' | 'B')}>
+        <section className="faro-card">
+          <label className="field field--narrow">
+            <span className="field__label">Formato</span>
+            <select className="field__control" value={formato} onChange={(e) => setFormato(e.target.value as 'A' | 'B')}>
               <option value="A">A — Planificación de Unidad (denso)</option>
               <option value="B">B — Bloque de Actividades (DUA)</option>
             </select>
           </label>
-          <p style={{ color: '#555', margin: 0 }}>Establecimiento: {establecimiento || '—'}</p>
+          <p className="establecimiento-note">Establecimiento: {establecimiento || '—'}</p>
 
-          <label>
-            Asignatura:&nbsp;
-            <select value={asignatura} onChange={(e) => { setAsignatura(e.target.value); setNivel(''); }}>
+          <label className="field field--narrow">
+            <span className="field__label">Asignatura</span>
+            <select
+              className="field__control"
+              value={asignatura}
+              onChange={(e) => {
+                setAsignatura(e.target.value);
+                setNivel('');
+              }}
+            >
               <option value="">— elige —</option>
-              {asignaturas.map((a) => (<option key={a} value={a}>{a}</option>))}
+              {asignaturas.map((a) => (
+                <option key={a} value={a}>
+                  {a}
+                </option>
+              ))}
             </select>
           </label>
-          <label>
-            Nivel:&nbsp;
-            <select value={nivel} onChange={(e) => setNivel(e.target.value)} disabled={asignatura === ''}>
+          <label className="field field--narrow">
+            <span className="field__label">Nivel</span>
+            <select className="field__control" value={nivel} onChange={(e) => setNivel(e.target.value)} disabled={asignatura === ''}>
               <option value="">— elige —</option>
-              {niveles.map((n) => (<option key={n} value={n}>{n}</option>))}
+              {niveles.map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
             </select>
           </label>
 
           {oaOpciones.length > 0 && (
-            <fieldset>
-              <legend>Objetivos de Aprendizaje</legend>
-              {oaOpciones.map((oa) => (
-                <label key={oa.codigo} style={{ display: 'block' }}>
-                  <input
-                    type="checkbox"
-                    checked={oaSel.includes(oa.codigo)}
-                    onChange={(e) =>
-                      setOaSel((prev) => (e.target.checked ? [...prev, oa.codigo] : prev.filter((c) => c !== oa.codigo)))
-                    }
-                  />
-                  &nbsp;<strong>{oa.codigo}</strong>: {oa.descripcion}
-                </label>
-              ))}
-            </fieldset>
+            <div role="group" aria-labelledby="oa-group-label">
+              <p className="oa-section-label" id="oa-group-label">Objetivos de Aprendizaje</p>
+              <div className="oa-list">
+                {oaOpciones.map((oa) => (
+                  <label key={oa.codigo} className="oa-item">
+                    <input
+                      type="checkbox"
+                      checked={oaSel.includes(oa.codigo)}
+                      onChange={(e) =>
+                        setOaSel((prev) => (e.target.checked ? [...prev, oa.codigo] : prev.filter((c) => c !== oa.codigo)))
+                      }
+                    />
+                    <span>
+                      <strong>{oa.codigo}</strong>: {oa.descripcion}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
           )}
 
-          <label>Unidad:&nbsp;<input value={unidad} onChange={(e) => setUnidad(e.target.value)} style={{ width: '60%' }} /></label>
-          <label>Docente (opcional):&nbsp;<input value={docente} onChange={(e) => setDocente(e.target.value)} /></label>
+          <label className="field field--wide">
+            <span className="field__label">Unidad</span>
+            <input className="field__control" value={unidad} onChange={(e) => setUnidad(e.target.value)} />
+          </label>
+          <label className="field field--narrow">
+            <span className="field__label">Docente (opcional)</span>
+            <input className="field__control" value={docente} onChange={(e) => setDocente(e.target.value)} />
+          </label>
           {formato === 'B' && (
-            <label>Período:&nbsp;<input value={periodo} onChange={(e) => setPeriodo(e.target.value)} /></label>
+            <label className="field field--narrow">
+              <span className="field__label">Período</span>
+              <input className="field__control" value={periodo} onChange={(e) => setPeriodo(e.target.value)} />
+            </label>
           )}
 
-          <button onClick={() => void generar()} disabled={!puedeGenerar} style={{ width: 200 }}>
+          <button onClick={() => void generar()} disabled={!puedeGenerar} className="btn btn--primary">
             Generar (borrador)
           </button>
         </section>
       )}
 
-      {paso === 'generando' && <p>Generando la planificación… (esto corre en el worker)</p>}
+      {paso === 'generando' && <p className="text-muted">Generando la planificación… (esto corre en el worker)</p>}
 
       {paso === 'revision' && plan !== null && documentoId !== null && (
         <RevisionPlan
@@ -357,78 +407,108 @@ function RevisionPlan(props: {
   const aprobado = estadoRevision === 'aprobado';
 
   return (
-    <section style={{ display: 'grid', gap: 12 }}>
-      <h2>Revisión (HIL) — estado: {estadoRevision}</h2>
+    <>
+      <h2 className="faro-result-heading">
+        Revisión (HIL) <span className={`badge ${claseBadgeEstado(estadoRevision)}`}>{estadoRevision}</span>
+      </h2>
 
       {gates !== null && gates.hallazgos.length > 0 && (
-        <ul>
+        <ul className="hil-warning-list">
           {gates.hallazgos.map((h, i) => (
-            <li key={i} style={{ color: h.severidad === 'bloquea' ? '#b00020' : '#a06800' }}>
-              [{h.severidad}] {h.mensaje}
+            <li key={i} className="hil-warning-item">
+              <span className={`sev ${h.severidad === 'bloquea' ? 'sev--block' : 'sev--warn'}`}>{h.severidad}</span> {h.mensaje}
             </li>
           ))}
         </ul>
       )}
 
-      <fieldset>
+      <fieldset className="gen-panel">
         <legend>Objetivos de Aprendizaje (datos fijos del corpus)</legend>
-        <ul>{plan.oa.map((o) => (<li key={o.codigo}><strong>{o.codigo}</strong> [{o.categoria}]: {o.descripcion}</li>))}</ul>
+        <ul>
+          {plan.oa.map((o) => (
+            <li key={o.codigo}>
+              <strong>{o.codigo}</strong> [{o.categoria}]: {o.descripcion}
+            </li>
+          ))}
+        </ul>
       </fieldset>
 
-      <label>
-        Propósito (IA · editable):
-        <textarea
-          value={plan.proposito ?? ''}
-          disabled={aprobado}
-          onChange={(e) => onPlan({ ...plan, proposito: e.target.value })}
-          style={{ width: '100%', minHeight: 70 }}
-        />
-      </label>
+      <section className="faro-card">
+        <label className="field">
+          <span className="field__label">Propósito (IA · editable)</span>
+          <textarea
+            className="field__control"
+            value={plan.proposito ?? ''}
+            disabled={aprobado}
+            onChange={(e) => onPlan({ ...plan, proposito: e.target.value })}
+          />
+        </label>
 
-      <label>
-        Experiencias (una por línea · IA · editable):
-        <textarea
-          value={plan.experiencias.join('\n')}
-          disabled={aprobado}
-          onChange={(e) => onPlan({ ...plan, experiencias: e.target.value.split('\n').filter((s) => s.trim() !== '') })}
-          style={{ width: '100%', minHeight: 90 }}
-        />
-      </label>
+        <label className="field">
+          <span className="field__label">Experiencias (una por línea · IA · editable)</span>
+          <textarea
+            className="field__control"
+            value={plan.experiencias.join('\n')}
+            disabled={aprobado}
+            onChange={(e) => onPlan({ ...plan, experiencias: e.target.value.split('\n').filter((s) => s.trim() !== '') })}
+          />
+        </label>
 
-      <fieldset>
-        <legend>Indicadores de evaluación (IA · editable)</legend>
-        {plan.indicadores_evaluacion.map((ind, i) => (
-          <div key={i} style={{ display: 'flex', gap: 8 }}>
-            <span style={{ minWidth: 90 }}>{ind.oa}</span>
-            <input
-              value={ind.texto}
-              disabled={aprobado}
-              onChange={(e) => {
-                const copia = plan.indicadores_evaluacion.map((x, j) => (j === i ? { ...x, texto: e.target.value } : x));
-                onPlan({ ...plan, indicadores_evaluacion: copia });
-              }}
-              style={{ flex: 1 }}
-            />
-          </div>
-        ))}
-      </fieldset>
+        <p className="oa-section-label">Indicadores de evaluación (IA · editable)</p>
+        <div className="indicadores-list">
+          {plan.indicadores_evaluacion.map((ind, i) => (
+            <div key={i} className="indicador-row">
+              <span className="indicador-row__oa">{ind.oa}</span>
+              <input
+                className="field__control"
+                value={ind.texto}
+                disabled={aprobado}
+                onChange={(e) => {
+                  const copia = plan.indicadores_evaluacion.map((x, j) => (j === i ? { ...x, texto: e.target.value } : x));
+                  onPlan({ ...plan, indicadores_evaluacion: copia });
+                }}
+              />
+            </div>
+          ))}
+        </div>
 
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        <button onClick={onGuardar} disabled={aprobado}>Guardar cambios</button>
-        {estadoRevision === 'borrador' && <button onClick={() => onTransicion('enviar')}>Enviar a revisión</button>}
-        {estadoRevision === 'en_revision' && (
-          <>
-            <input placeholder="tu email (autor)" value={autor} onChange={(e) => setAutor(e.target.value)} />
-            <button onClick={() => onTransicion('aprobar')} disabled={autor.trim() === ''}>Aprobar</button>
-            <button onClick={() => onTransicion('rechazar')}>Rechazar</button>
-          </>
-        )}
-      </div>
+        <div className="hil-actions">
+          <button onClick={onGuardar} disabled={aprobado} className="btn btn--secondary">
+            Guardar cambios
+          </button>
+          {estadoRevision === 'borrador' && (
+            <button onClick={() => onTransicion('enviar')} className="btn btn--primary">
+              Enviar a revisión
+            </button>
+          )}
+          {estadoRevision === 'en_revision' && (
+            <>
+              <input
+                className="field__control hil-actions__email"
+                placeholder="tu email (autor)"
+                value={autor}
+                onChange={(e) => setAutor(e.target.value)}
+                aria-label="Autor (email)"
+              />
+              <button onClick={() => onTransicion('aprobar')} disabled={autor.trim() === ''} className="btn btn--success">
+                Aprobar
+              </button>
+              <button onClick={() => onTransicion('rechazar')} className="btn btn--danger">
+                Rechazar
+              </button>
+            </>
+          )}
+        </div>
 
-      <div style={{ display: 'flex', gap: 8 }}>
-        <a href={`/api/aula/documentos/${documentoId}/docx`}>Descargar .docx</a>
-        <a href={`/api/aula/documentos/${documentoId}/pdf`}>Descargar .pdf</a>
-      </div>
+        <div className="download-row">
+          <a href={`/api/aula/documentos/${documentoId}/docx`} className="btn btn--success">
+            Descargar .docx
+          </a>
+          <a href={`/api/aula/documentos/${documentoId}/pdf`} className="btn btn--success">
+            Descargar .pdf
+          </a>
+        </div>
+      </section>
 
       <GenerarPrueba planificacionDocumentoId={documentoId} />
       <GenerarPptInfantil planificacionDocumentoId={documentoId} />
@@ -438,7 +518,7 @@ function RevisionPlan(props: {
         establecimiento={plan.establecimiento}
         oaCodigos={plan.oa.map((o) => o.codigo)}
       />
-    </section>
+    </>
   );
 }
 
@@ -501,25 +581,35 @@ function GenerarPrueba({ planificacionDocumentoId }: { planificacionDocumentoId:
   }, [jobId, aplicar]);
 
   return (
-    <fieldset>
+    <fieldset className="gen-panel">
       <legend>Prueba formativa (desde esta planificación)</legend>
-      {err !== null && <p style={{ color: '#b00020' }}>⚠ {err}</p>}
+      {err !== null && <p className="note note--error">⚠ {err}</p>}
       {(estado === 'idle' || estado === 'error') && (
-        <button onClick={() => void generar()}>Generar prueba formativa (borrador)</button>
+        <button onClick={() => void generar()} className="btn btn--primary">
+          Generar prueba formativa (borrador)
+        </button>
       )}
-      {estado === 'generando' && <p>Generando la prueba… (corre en el worker)</p>}
+      {estado === 'generando' && <p className="text-muted">Generando la prueba… (corre en el worker)</p>}
       {estado === 'segundo_plano' && (
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-          <span>La prueba sigue generándose en segundo plano (el worker no la perdió).</span>
-          <button onClick={() => void comprobar()}>Comprobar de nuevo</button>
-        </div>
+        <>
+          <p className="note note--info">La prueba sigue generándose en segundo plano (el worker no la perdió).</p>
+          <button onClick={() => void comprobar()} className="btn btn--secondary">
+            Comprobar de nuevo
+          </button>
+        </>
       )}
       {estado === 'listo' && pruebaDocId !== null && (
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-          <span>Prueba generada (borrador):</span>
-          <a href={`/api/aula/documentos/${pruebaDocId}/prueba?variante=alumno`}>.docx alumno</a>
-          <a href={`/api/aula/documentos/${pruebaDocId}/prueba?variante=pauta`}>.docx pauta</a>
-        </div>
+        <>
+          <p className="note note--success">Prueba generada (borrador):</p>
+          <div className="download-row">
+            <a href={`/api/aula/documentos/${pruebaDocId}/prueba?variante=alumno`} className="btn btn--success">
+              .docx alumno
+            </a>
+            <a href={`/api/aula/documentos/${pruebaDocId}/prueba?variante=pauta`} className="btn btn--success">
+              .docx pauta
+            </a>
+          </div>
+        </>
       )}
     </fieldset>
   );
@@ -604,13 +694,13 @@ function GenerarGuia({
   }, [jobId, aplicar]);
 
   return (
-    <fieldset>
+    <fieldset className="gen-panel">
       <legend>Guía de trabajo del alumno (desde un OA · 3º–6º)</legend>
-      {err !== null && <p style={{ color: '#b00020' }}>⚠ {err}</p>}
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 8 }}>
-        <label>
-          OA:{' '}
-          <select value={oaCodigo} onChange={(e) => setOaCodigo(e.target.value)}>
+      {err !== null && <p className="note note--error">⚠ {err}</p>}
+      <div className="gen-panel__controls">
+        <label className="field">
+          <span className="field__label">OA</span>
+          <select className="field__control" value={oaCodigo} onChange={(e) => setOaCodigo(e.target.value)}>
             {oaCodigos.map((c) => (
               <option key={c} value={c}>
                 {c}
@@ -618,32 +708,40 @@ function GenerarGuia({
             ))}
           </select>
         </label>
-        <label style={{ flex: 1 }}>
-          Conocimiento:{' '}
+        <label className="field">
+          <span className="field__label">Conocimiento</span>
           <input
+            className="field__control"
             type="text"
             value={conocimiento}
             placeholder="Ej: Características de los seres vivos"
             onChange={(e) => setConocimiento(e.target.value)}
-            style={{ width: '60%' }}
           />
         </label>
       </div>
       {(estado === 'idle' || estado === 'error') && (
-        <button onClick={() => void generar()}>Generar guía (borrador)</button>
+        <button onClick={() => void generar()} className="btn btn--primary">
+          Generar guía (borrador)
+        </button>
       )}
-      {estado === 'generando' && <p>Generando la guía… (corre en el worker)</p>}
+      {estado === 'generando' && <p className="text-muted">Generando la guía… (corre en el worker)</p>}
       {estado === 'segundo_plano' && (
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-          <span>La guía sigue generándose en segundo plano (el worker no la perdió).</span>
-          <button onClick={() => void comprobar()}>Comprobar de nuevo</button>
-        </div>
+        <>
+          <p className="note note--info">La guía sigue generándose en segundo plano (el worker no la perdió).</p>
+          <button onClick={() => void comprobar()} className="btn btn--secondary">
+            Comprobar de nuevo
+          </button>
+        </>
       )}
       {estado === 'listo' && guiaDocId !== null && (
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-          <span>Guía generada (borrador):</span>
-          <a href={`/api/aula/documentos/${guiaDocId}/guia?formato=docx`}>.docx</a>
-        </div>
+        <>
+          <p className="note note--success">Guía generada (borrador):</p>
+          <div className="download-row">
+            <a href={`/api/aula/documentos/${guiaDocId}/guia?formato=docx`} className="btn btn--success">
+              .docx
+            </a>
+          </div>
+        </>
       )}
     </fieldset>
   );
@@ -707,24 +805,32 @@ function GenerarPptInfantil({ planificacionDocumentoId }: { planificacionDocumen
   }, [jobId, aplicar]);
 
   return (
-    <fieldset>
+    <fieldset className="gen-panel">
       <legend>PPT infantil (desde esta planificación)</legend>
-      {err !== null && <p style={{ color: '#b00020' }}>⚠ {err}</p>}
+      {err !== null && <p className="note note--error">⚠ {err}</p>}
       {(estado === 'idle' || estado === 'error') && (
-        <button onClick={() => void generar()}>Generar PPT infantil (borrador)</button>
+        <button onClick={() => void generar()} className="btn btn--primary">
+          Generar PPT infantil (borrador)
+        </button>
       )}
-      {estado === 'generando' && <p>Generando el PPT… (corre en el worker)</p>}
+      {estado === 'generando' && <p className="text-muted">Generando el PPT… (corre en el worker)</p>}
       {estado === 'segundo_plano' && (
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-          <span>El PPT sigue generándose en segundo plano (el worker no lo perdió).</span>
-          <button onClick={() => void comprobar()}>Comprobar de nuevo</button>
-        </div>
+        <>
+          <p className="note note--info">El PPT sigue generándose en segundo plano (el worker no lo perdió).</p>
+          <button onClick={() => void comprobar()} className="btn btn--secondary">
+            Comprobar de nuevo
+          </button>
+        </>
       )}
       {estado === 'listo' && deckDocId !== null && (
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-          <span>PPT generado (borrador):</span>
-          <a href={`/api/aula/documentos/${deckDocId}/pptx`}>.pptx</a>
-        </div>
+        <>
+          <p className="note note--success">PPT generado (borrador):</p>
+          <div className="download-row">
+            <a href={`/api/aula/documentos/${deckDocId}/pptx`} className="btn btn--success">
+              .pptx
+            </a>
+          </div>
+        </>
       )}
     </fieldset>
   );

@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Faro · Cascada de Aula</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <main class="faro-page">
+
+    <!-- ENCABEZADO DE PANTALLA -->
+    <header class="faro-header">
+      <h1 class="faro-title">Faro · Cascada de Aula</h1>
+      <p class="faro-subtitle">
+        Del Objetivo de Aprendizaje a la planificación, la prueba y el .pptx — alineado al currículum nacional.
+      </p>
+      <!-- Badge de modo: badge--draft = demo (ámbar); usar badge--approved para modo "live" -->
+      <span class="badge badge--draft">modo demo (contenido curado · sin API key)</span>
+    </header>
+
+    <!-- FORMULARIO DE SELECCIÓN -->
+    <section class="faro-card">
+
+      <div class="field">
+        <label class="field__label" for="materia-select">Materia y nivel</label>
+        <select class="field__control" id="materia-select">
+          <option selected>Ciencias Naturales · 3º básico</option>
+          <option>Matemática · 1º básico</option>
+          <option>Lenguaje y Comunicación · 2º básico</option>
+          <option>Historia, Geografía y Cs. Sociales · 4º básico</option>
+        </select>
+      </div>
+
+      <p class="oa-section-label">Objetivos de Aprendizaje (3 seleccionados)</p>
+      <div class="oa-list">
+        <label class="oa-item">
+          <input type="checkbox" checked>
+          <span><strong>CN03 OA 01</strong> — Observar y describir los seres vivos (plantas y animales) según sus características como tamaño, color, textura y estructura.</span>
+        </label>
+        <label class="oa-item">
+          <input type="checkbox" checked>
+          <span><strong>CN03 OA 02</strong> — Clasificar seres vivos según características como tipo de cubierta corporal, tipo de reproducción y presencia de columna vertebral.</span>
+        </label>
+        <label class="oa-item">
+          <input type="checkbox" checked>
+          <span><strong>CN03 OA 03</strong> — Investigar y explicar las relaciones entre los seres vivos y su entorno en ecosistemas cercanos.</span>
+        </label>
+        <label class="oa-item">
+          <input type="checkbox">
+          <span><strong>CN03 OA 04</strong> — Describir y comparar el ciclo de vida de distintos animales (rana, mariposa, ave).</span>
+        </label>
+        <label class="oa-item">
+          <input type="checkbox">
+          <span><strong>CN03 OA 05</strong> — Registrar y comunicar los resultados de sus observaciones e investigaciones de manera organizada.</span>
+        </label>
+      </div>
+
+      <button class="btn btn--primary btn--mt" type="button">Generar cascada</button>
+      <!-- Estado generando: <button class="btn btn--disabled btn--mt" disabled>Generando…</button> -->
+
+      <p class="form-hint">
+        En modo demo se muestra una unidad curada de ejemplo. La selección de OA dirige la generación al activar el modo live.
+      </p>
+    </section>
+
+    <!-- ─── RESULTADOS ──────────────────────────────────────────────────── -->
+    <h2 class="faro-result-heading">Resultado</h2>
+    <p class="result-intro">
+      Todos los artefactos nacen <strong>borrador</strong> y requieren revisión docente (human-in-the-loop).
+    </p>
+
+    <!-- VALIDACIÓN (gates) — estado "ok" -->
+    <section class="faro-card faro-card--ok">
+      <h3 class="section-title">&#9989; Validación: lista para revisar</h3>
+      <p class="gates-desc">
+        Chequeos deterministas (no IA): cobertura de OA, ítem→OA, puntajes y citas al currículum vigente.
+      </p>
+
+      <div class="gate gate--ok">
+        <p class="gate__title">&#9989; Planificación (cobertura OA, indicadores, duración) — <span class="gate__title-note">sin observaciones</span></p>
+      </div>
+
+      <div class="gate gate--ok">
+        <p class="gate__title">&#9989; Prueba (ítem→OA, una correcta, puntajes)</p>
+        <ul>
+          <li class="gate__finding">
+            <span class="sev sev--warn">marca</span>
+            El ítem 3 no tiene alternativa marcada como correcta — verificar antes de aprobar.
+          </li>
+        </ul>
+      </div>
+
+      <div class="gate gate--ok">
+        <p class="gate__title">&#9989; Citas (OA existe + vigente en el corpus) — <span class="gate__title-note">sin observaciones</span></p>
+      </div>
+    </section>
+
+    <!-- PLANIFICACIÓN DE UNIDAD -->
+    <section class="faro-card">
+      <h3 class="section-title">Planificación de Unidad</h3>
+      <p>
+        <strong>Los seres vivos y su entorno</strong><br>
+        <span class="text-muted">Ciencias Naturales · 3º básico · 4 semanas · 12 hrs pedagógicas</span>
+      </p>
+      <p>
+        Los estudiantes explorarán las características y diversidad de los seres vivos, identificando similitudes y diferencias entre plantas y animales, y comprendiendo cómo interactúan con su entorno natural.
+      </p>
+      <p><strong>OA</strong></p>
+      <ul>
+        <li>
+          <strong>CN03 OA 01</strong>
+          <span class="badge badge--ok badge--inline">basal</span>
+          — Observar y describir los seres vivos según sus características.
+        </li>
+        <li>
+          <strong>CN03 OA 02</strong>
+          <span class="badge badge--ok badge--inline">basal</span>
+          — Clasificar seres vivos según características como cubierta corporal y reproducción.
+        </li>
+        <li>
+          <strong>CN03 OA 03</strong>
+          <span class="badge badge--draft badge--inline">complementario</span>
+          — Investigar las relaciones entre los seres vivos y su entorno.
+        </li>
+      </ul>
+      <p><strong>Indicadores de evaluación</strong></p>
+      <ul>
+        <li>
+          Describe al menos tres características observables de un ser vivo seleccionado.
+          <span class="badge badge--ok badge--inline">oficial</span>
+        </li>
+        <li>
+          Clasifica un conjunto de seres vivos en animales vertebrados e invertebrados.
+          <span class="badge badge--draft badge--inline">ia_borrador</span>
+        </li>
+        <li>
+          Explica con sus palabras cómo un animal depende de su ecosistema para sobrevivir.
+          <span class="badge badge--draft badge--inline">ia_borrador</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- PLANIFICACIÓN DE CLASES -->
+    <section class="faro-card">
+      <h3 class="section-title">Planificación de Clases (3)</h3>
+
+      <div class="clase-item">
+        <p class="clase-item__title">Clase 1 · Observamos los seres vivos <span class="clase-item__duration">(90 min)</span></p>
+        <p><span class="clase-item__moment">Inicio:</span> Activación de conocimientos previos mediante una lluvia de ideas sobre seres vivos conocidos.</p>
+        <p><span class="clase-item__moment">Desarrollo:</span> Observación de láminas y muestras reales; los estudiantes completan una tabla de características.</p>
+        <p><span class="clase-item__moment">Cierre:</span> Socialización de hallazgos en plenario; síntesis colectiva en la pizarra.</p>
+      </div>
+      <div class="clase-item">
+        <p class="clase-item__title">Clase 2 · Clasificamos y comparamos <span class="clase-item__duration">(90 min)</span></p>
+        <p><span class="clase-item__moment">Inicio:</span> Revisión de la clase anterior; presentación del concepto de clasificación científica.</p>
+        <p><span class="clase-item__moment">Desarrollo:</span> Trabajo grupal: los estudiantes clasifican tarjetas de animales según criterios dados.</p>
+        <p><span class="clase-item__moment">Cierre:</span> Exposición breve de cada grupo; coevaluación entre pares.</p>
+      </div>
+      <div class="clase-item">
+        <p class="clase-item__title">Clase 3 · Seres vivos y su entorno <span class="clase-item__duration">(90 min)</span></p>
+        <p><span class="clase-item__moment">Inicio:</span> Video breve sobre ecosistemas chilenos (bosque nativo y costa).</p>
+        <p><span class="clase-item__moment">Desarrollo:</span> Investigación guiada: ¿qué pasa si falta un ser vivo en el ecosistema?</p>
+        <p><span class="clase-item__moment">Cierre:</span> Reflexión escrita individual (exit ticket).</p>
+      </div>
+    </section>
+
+    <!-- PRUEBA -->
+    <section class="faro-card">
+      <h3 class="section-title">Prueba (4 ítems · perfil 3_basico)</h3>
+      <ol>
+        <li class="prueba-item">
+          ¿Cuál de las siguientes es una característica de los seres vivos?
+          <span class="prueba-item__meta"> (CN03 OA 01 · 2 pts)</span>
+          <ul>
+            <li>Se mueven solos</li>
+            <li class="prueba-alternativa--correcta">Nacen, crecen, se reproducen y mueren &#10004;</li>
+            <li>Son siempre verdes</li>
+            <li>Viven solo en el agua</li>
+          </ul>
+        </li>
+        <li class="prueba-item">
+          ¿Cómo se llama la cubierta corporal de los peces?
+          <span class="prueba-item__meta"> (CN03 OA 02 · 2 pts)</span>
+          <ul>
+            <li>Pelaje</li>
+            <li>Plumas</li>
+            <li class="prueba-alternativa--correcta">Escamas &#10004;</li>
+            <li>Piel lisa</li>
+          </ul>
+        </li>
+        <li class="prueba-item">
+          Nombra dos seres vivos que viven en un bosque y explica por qué dependen de ese lugar.
+          <span class="prueba-item__meta"> (CN03 OA 03 · 4 pts)</span>
+        </li>
+        <li class="prueba-item">
+          Clasifica los siguientes animales en vertebrados o invertebrados: abeja, perro, pulpo, rana.
+          <span class="prueba-item__meta"> (CN03 OA 02 · 2 pts)</span>
+        </li>
+      </ol>
+      <p class="text-muted text-sm">
+        Pauta: Ítem 1 y 2 selección múltiple (1 correcta). Ítem 3 desarrollo abierto (2 pts por ser vivo + 2 pts por explicación). Ítem 4 clasificación (0,5 pts por animal).
+      </p>
+    </section>
+
+    <!-- DECK / PPT -->
+    <section class="faro-card faro-card--surface">
+      <h3 class="section-title">Deck de la clase · 5 diapositivas</h3>
+      <p class="text-muted">Los seres vivos y su entorno — Ciencias Naturales 3º básico</p>
+      <a href="#" class="btn btn--success">&#8595; Descargar CN03_seres_vivos.pptx (184 KB)</a>
+      <ul class="deck-slides">
+        <li><em class="text-muted">[inicio]</em> <strong>¿Qué es un ser vivo?</strong></li>
+        <li><em class="text-muted">[desarrollo]</em> <strong>Características de los seres vivos</strong></li>
+        <li><em class="text-muted">[desarrollo]</em> <strong>Clasificamos animales</strong></li>
+        <li><em class="text-muted">[cierre]</em> <strong>Los seres vivos necesitan su entorno</strong></li>
+        <li><em class="text-muted">[cierre]</em> <strong>¿Qué aprendimos hoy?</strong></li>
+      </ul>
+    </section>
+
+  </main>
+</body>
+</html>

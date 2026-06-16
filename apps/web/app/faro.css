@@ -1,0 +1,1504 @@
+/*
+ * ============================================================================
+ * Faro · styles.css
+ * Sistema de diseño para el copiloto de planificación docente (K–12 Chile).
+ * ----------------------------------------------------------------------------
+ * Idea rectriz: "papel cálido + faro índigo".
+ *   · Neutros cálidos (tono arena) para fondos y bordes  → calidez, cercanía.
+ *   · Índigo #1A237E como ancla de marca                 → confianza, orden.
+ *   · Estados semánticos (verde/rojo/ámbar/azul) bien
+ *     contrastados, usados solo como acento puntual.
+ * La interfaz de GESTIÓN es sobria y profesional; lo "infantil" vive dentro
+ * de los documentos que genera, no aquí.
+ *
+ * Accesibilidad: contraste ≥ WCAG AA, foco siempre visible (:focus-visible),
+ * área de toque ≥ 44px, tipografía cómoda para lectura prolongada.
+ * CSS puro, sin dependencias externas. Pensado primero para laptop escolar
+ * (~13"–15") y adaptado a tablet y móvil.
+ * ============================================================================
+ */
+
+/* ==========================================================================
+   1. RESET MODERNO
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+}
+
+ul,
+ol {
+  padding-left: 1.25em;
+}
+
+/* ==========================================================================
+   2. TOKENS DE DISEÑO
+   ========================================================================== */
+
+:root {
+  /* ════════════════════════════════════════════════════════════════════
+     PALETA DE MARCA "FARO" — cuatro colores con concepto.
+     Un faro que guía al docente en la noche:
+       · ÍNDIGO  — el cielo nocturno (marca, confianza, estructura)
+       · ORO     — el haz de luz del faro (borrador en curso, energía, aviso)
+       · TURQUESA— el mar en calma (en revisión, información, progreso)
+       · CORAL   — la tierra cálida chilena (peligro, rechazo, acento humano)
+     Cada color tiene base / profundo (texto AA) / suave (fondo) / borde.
+     ════════════════════════════════════════════════════════════════════ */
+
+  /* ── Índigo ── */
+  --brand-indigo:        #1A237E; /* marca principal (se conserva exacto) */
+  --brand-indigo-deep:   #11164f; /* índigo profundo (hover / texto activo) */
+  --brand-indigo-soft:   #e7e9f6; /* tinte muy claro (resaltados, foco) */
+  --brand-indigo-tint:   #f1f2fb; /* tinte casi blanco (filas activas) */
+
+  /* ── Oro (haz del faro) ── */
+  --brand-gold:          #e6a02e; /* oro vivo (acento decorativo, beacon) */
+  --brand-gold-deep:     #875312; /* oro profundo — texto AA sobre suave */
+  --brand-gold-soft:     #fbeed1; /* fondo cálido suave */
+  --brand-gold-border:   #ebcd83;
+
+  /* ── Turquesa (mar) ── */
+  --brand-teal:          #138a8f; /* turquesa vivo (acento, secundario) */
+  --brand-teal-deep:     #0a5e62; /* turquesa profundo — texto AA */
+  --brand-teal-soft:     #d7efef;
+  --brand-teal-border:   #a3dadc;
+
+  /* ── Coral (tierra) ── */
+  --brand-coral:         #e0584a; /* coral-rojo cálido (acento + peligro) */
+  --brand-coral-deep:    #b3392c; /* coral profundo — texto AA */
+  --brand-coral-soft:    #fce6e2;
+  --brand-coral-border:  #f3bcb2;
+
+  /* ── Verde (éxito — único color funcional fuera de la paleta de 4) ── */
+  --brand-green:         #1f8a4c;
+  --brand-green-deep:    #15693a;
+  --brand-green-soft:    #e3f6ea;
+  --brand-green-border:  #a6e0bb;
+
+  /* ---- Alias de marca (lo que usan los componentes) ---- */
+  --color-brand:         var(--brand-indigo);
+  --color-brand-strong:  var(--brand-indigo-deep);
+  --color-brand-soft:    var(--brand-indigo-soft);
+  --color-brand-tint:    var(--brand-indigo-tint);
+
+  /* ---- Superficies cálidas (tono arena) ---- */
+  --color-bg:            #faf7f1; /* fondo de página: papel cálido */
+  --color-card:          #ffffff; /* tarjetas: blanco puro para que "floten" */
+  --color-surface:       #f4efe5; /* superficie secundaria cálida (paneles, jobs) */
+  --color-surface-2:     #ece6d9; /* superficie un punto más marcada */
+
+  /* ---- Bordes cálidos ---- */
+  --color-border:        #e7ded0; /* borde estándar */
+  --color-border-strong: #d7ccb7; /* borde de mayor contraste (campos, hover) */
+
+  /* ---- Texto ---- */
+  --color-text:          #221d14; /* texto principal (negro cálido) ~15:1 */
+  --color-text-muted:    #6b6051; /* texto secundario cálido ~5.7:1 sobre bg AA */
+
+  /* ---- Semánticos mapeados a la paleta de marca ---- */
+  /* éxito / aprobado / descargar → verde */
+  --color-success:       var(--brand-green);
+  --color-success-strong:var(--brand-green-deep);
+  --color-success-bg:    var(--brand-green-soft);
+  --color-success-border:var(--brand-green-border);
+
+  /* peligro / rechazado / bloquea → coral */
+  --color-danger:        var(--brand-coral);
+  --color-danger-strong: var(--brand-coral-deep);
+  --color-danger-bg:     var(--brand-coral-soft);
+  --color-danger-border: var(--brand-coral-border);
+
+  /* aviso / borrador / "marca" → oro */
+  --color-warning:       var(--brand-gold-deep);
+  --color-warning-bg:    var(--brand-gold-soft);
+  --color-warning-border:var(--brand-gold-border);
+
+  /* info / en revisión → turquesa */
+  --color-info:          var(--brand-teal-deep);
+  --color-info-bg:       var(--brand-teal-soft);
+  --color-info-border:   var(--brand-teal-border);
+
+  /* ---- Tipografía ---- */
+  /* Pila humanista del sistema: legible, profesional, cero peso de red. */
+  --font-body: "Segoe UI", system-ui, -apple-system, "Helvetica Neue",
+               "Noto Sans", Arial, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Code", Consolas,
+               "Liberation Mono", monospace;
+
+  --font-size-base: 16px;
+  --font-size-sm:   14px;
+  --font-size-xs:   12.5px;
+
+  /* ---- Espaciado ---- */
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  32px;
+  --space-2xl: 48px;
+
+  /* ---- Radios ---- */
+  --radius-sm:   6px;
+  --radius-md:   9px;
+  --radius-lg:   14px;
+  --radius-pill: 999px;
+
+  /* ---- Sombras (cálidas y suaves) ---- */
+  --shadow-sm:   0 1px 2px rgba(48, 38, 20, 0.06);
+  --shadow-card: 0 1px 2px rgba(48, 38, 20, 0.05),
+                 0 8px 20px -12px rgba(48, 38, 20, 0.16);
+  --shadow-pop:  0 6px 24px -8px rgba(48, 38, 20, 0.18);
+
+  /* ---- Foco accesible ---- */
+  --focus-ring:  0 0 0 3px var(--color-bg), 0 0 0 5.5px var(--color-brand);
+}
+
+/* ==========================================================================
+   3. BASE
+   ========================================================================== */
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  /* Profundidad cálida + un velo casi imperceptible de oro y mar arriba,
+     como el resplandor de un faro sobre el papel. */
+  background-color: var(--color-bg);
+  background-image:
+    radial-gradient(900px 380px at 12% -120px, color-mix(in srgb, var(--brand-gold) 12%, transparent), transparent 70%),
+    radial-gradient(900px 420px at 92% -160px, color-mix(in srgb, var(--brand-teal) 10%, transparent), transparent 70%),
+    radial-gradient(1200px 600px at 50% -280px, #ffffff 0%, transparent 70%);
+  background-attachment: fixed;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Firma de marca: franja superior con los cuatro colores del faro. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 4px;
+  z-index: 1000;
+  background: linear-gradient(
+    90deg,
+    var(--brand-indigo) 0%,
+    var(--brand-teal) 40%,
+    var(--brand-gold) 72%,
+    var(--brand-coral) 100%);
+}
+
+h1, h2, h3, h4 {
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--color-brand);
+  text-decoration-color: color-mix(in srgb, var(--color-brand) 35%, transparent);
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  color: var(--brand-teal-deep); /* el enlace "navega" hacia el mar al pasar */
+  text-decoration-color: currentColor;
+}
+
+strong {
+  font-weight: 700;
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+}
+
+/* Foco global accesible: anillo índigo nítido con halo del color de fondo.
+   Solo en navegación por teclado (no roba claridad al click de ratón). */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-sm);
+}
+
+::selection {
+  background: var(--color-brand-soft);
+  color: var(--color-brand-strong);
+}
+
+/* ==========================================================================
+   4. LAYOUT — contenedor de página
+   ========================================================================== */
+
+/* .faro-page — wrapper principal: centra y limita el ancho de lectura. */
+.faro-page {
+  max-width: 940px;
+  margin: 0 auto;
+  padding: var(--space-2xl) var(--space-lg) var(--space-2xl);
+}
+
+/* .faro-header — cabecera de cada pantalla. La línea inferior es un degradado
+   tenue de los cuatro colores: el haz del faro recorriendo el horizonte. */
+.faro-header {
+  position: relative;
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-lg);
+}
+.faro-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--brand-indigo) 0%,
+    var(--brand-teal) 42%,
+    var(--brand-gold) 74%,
+    var(--brand-coral) 100%);
+}
+
+/* .faro-title — H1. Lleva el "faro" de marca: una baliza de luz dorada.
+   El diamante (cuadrado rotado) es la figura simple que evoca el faro;
+   el doble halo (oro → índigo) es el resplandor del haz. Constante en todas
+   las pantallas como ancla de identidad. */
+.faro-title {
+  display: flex;
+  align-items: center;
+  gap: 0.62em;
+  color: var(--color-brand);
+  font-size: clamp(1.7rem, 1.3rem + 1.8vw, 2.3rem);
+  margin-bottom: var(--space-xs);
+}
+
+.faro-title::before {
+  content: "";
+  flex: none;
+  width: 0.66em;
+  height: 0.66em;
+  /* Luz dorada con punto de brillo desplazado */
+  background:
+    radial-gradient(circle at 34% 32%, #f7cf76, var(--brand-gold) 62%);
+  transform: rotate(45deg);
+  border-radius: 4px;
+  /* Doble resplandor: aura dorada + anillo índigo de marca */
+  box-shadow:
+    0 0 0 4px var(--brand-gold-soft),
+    0 0 0 5.5px color-mix(in srgb, var(--brand-indigo) 22%, transparent),
+    0 3px 8px -2px color-mix(in srgb, var(--brand-gold) 55%, transparent);
+}
+
+/* .faro-subtitle — bajada descriptiva. */
+.faro-subtitle {
+  color: var(--color-text-muted);
+  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.12rem);
+  max-width: 65ch;
+  margin-top: 0;
+}
+
+.faro-subtitle strong {
+  color: var(--color-text);
+}
+
+/* .faro-result-heading — H2 que abre la sección de resultados. Subrayado
+   en degradado índigo→mar, como una línea de costa. */
+.faro-result-heading {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  color: var(--color-brand);
+  font-size: clamp(1.3rem, 1.1rem + 0.8vw, 1.6rem);
+  margin-top: var(--space-2xl);
+  margin-bottom: var(--space-xs);
+  padding-bottom: var(--space-sm);
+}
+.faro-result-heading::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg,
+    var(--brand-indigo), var(--brand-teal) 55%,
+    color-mix(in srgb, var(--brand-teal) 18%, transparent));
+}
+
+/* H2 sueltos (p. ej. el encabezado "Revisión (HIL) — estado:") */
+.faro-page > section > h2,
+.faro-page > form h2 {
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+/* ==========================================================================
+   5. TARJETAS
+   ========================================================================== */
+
+/* .faro-card — bloque principal de agrupación. */
+.faro-card {
+  position: relative;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-md);
+  box-shadow: var(--shadow-card);
+}
+
+/* Ritmo vertical interno cómodo y predecible dentro de las tarjetas. */
+.faro-card > * + * {
+  margin-top: var(--space-md);
+}
+.faro-card > p + p,
+.faro-card ul + p,
+.faro-card p + ul {
+  margin-top: var(--space-sm);
+}
+
+/* .faro-card--surface — variante cálida (resultados / paneles secundarios). */
+.faro-card--surface {
+  background: var(--color-surface);
+  border-color: var(--color-border-strong);
+  box-shadow: none;
+}
+
+/* .faro-card--ok / --error — validación. Acento por borde superior grueso
+   + barra lateral, para que el estado se lea de un vistazo. */
+.faro-card--ok,
+.faro-card--error {
+  border-width: 1px;
+  padding-left: calc(var(--space-lg) + 4px);
+}
+.faro-card--ok::before,
+.faro-card--error::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+}
+.faro-card--ok {
+  border-color: var(--color-success-border);
+  background: linear-gradient(0deg, var(--color-card), var(--color-card)),
+              var(--color-success-bg);
+}
+.faro-card--ok::before {
+  background: var(--color-success);
+}
+.faro-card--error {
+  border-color: var(--color-danger-border);
+}
+.faro-card--error::before {
+  background: var(--color-danger);
+}
+
+/* Listas dentro de tarjetas de contenido: respiración entre ítems. */
+.faro-card ul li,
+.faro-card ol li {
+  margin-bottom: var(--space-xs);
+}
+
+/* ==========================================================================
+   6. BADGES / ETIQUETAS
+   ========================================================================== */
+
+/* .badge — píldora de estado. Texto + fondo suave + borde a juego, con un
+   punto de color al inicio para reforzar el estado sin depender solo del color. */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+  padding: 3px 10px 3px 9px;
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+
+.badge--draft {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+  border-color: var(--color-warning-border);
+}
+
+.badge--review {
+  background: var(--color-info-bg);
+  color: var(--color-info);
+  border-color: var(--color-info-border);
+}
+
+.badge--approved,
+.badge--ok {
+  background: var(--color-success-bg);
+  color: var(--color-success-strong);
+  border-color: var(--color-success-border);
+}
+
+.badge--rejected {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-strong);
+  border-color: var(--color-danger-border);
+}
+
+/* .badge--mode — modo demo/live en la cascada de aula. Neutro índigo. */
+.badge--mode {
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+  border-color: color-mix(in srgb, var(--color-brand) 22%, transparent);
+}
+
+/* .badge--inline — badge embebido en una línea de texto. Más compacto y sin
+   el punto, porque acompaña a un fragmento (basal / oficial / ia_borrador). */
+.badge--inline {
+  margin-left: var(--space-xs);
+  font-size: 11.5px;
+  padding: 1px 8px;
+  vertical-align: baseline;
+}
+.badge--inline::before {
+  display: none;
+}
+
+/* ==========================================================================
+   7. BOTONES
+   ========================================================================== */
+
+/* .btn — base. Altura ≥ 44px (área de toque), transición sobria. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  min-height: 44px;
+  padding: 10px 20px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  line-height: 1.3;
+  white-space: nowrap;
+  transition: background-color .15s ease, border-color .15s ease,
+              color .15s ease, box-shadow .15s ease, transform .05s ease;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+/* .btn--primary — acción principal: índigo sólido. */
+.btn--primary {
+  background: var(--color-brand);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+.btn--primary:hover {
+  background: var(--color-brand-strong);
+}
+
+/* .btn--secondary — acción secundaria: contorno índigo sobre blanco. */
+.btn--secondary {
+  background: var(--color-card);
+  color: var(--color-brand);
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-sm);
+}
+.btn--secondary:hover {
+  border-color: var(--color-brand);
+  background: var(--color-brand-tint);
+}
+
+/* .btn--success — aprobar / descargar. */
+.btn--success {
+  background: var(--color-success);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+.btn--success:hover {
+  background: var(--color-success-strong);
+}
+
+/* .btn--danger — rechazar. */
+.btn--danger {
+  background: var(--color-card);
+  color: var(--color-danger-strong);
+  border-color: var(--color-danger-border);
+}
+.btn--danger:hover {
+  background: var(--color-danger);
+  border-color: var(--color-danger);
+  color: #fff;
+}
+
+/* .btn--disabled — y :disabled real: visualmente apagado, sin interacción. */
+.btn--disabled,
+.btn:disabled {
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+  cursor: not-allowed;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+/* .btn--mt — separación respecto al bloque anterior. */
+.btn--mt {
+  margin-top: var(--space-md);
+}
+
+/* ==========================================================================
+   8. FORMULARIOS
+   ========================================================================== */
+
+/* .field — bloque de un campo (label + control + hint). */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field--mt {
+  margin-top: var(--space-md);
+}
+
+.field--narrow {
+  max-width: 340px;
+}
+
+.field--wide {
+  max-width: 420px;
+}
+
+/* .field__label — etiqueta del campo. */
+.field__label {
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+/* .field__control — input / select / textarea. Altura cómoda (≥44px), borde
+   cálido, foco índigo claro. */
+.field__control {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  background: var(--color-card);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: inset 0 1px 2px rgba(48, 38, 20, 0.04);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.field__control::placeholder {
+  color: color-mix(in srgb, var(--color-text-muted) 80%, transparent);
+}
+
+.field__control:hover {
+  border-color: var(--color-brand);
+}
+
+/* Foco accesible en controles: borde índigo + halo. Reemplaza el outline
+   básico del starter por uno coherente con el resto del sistema. */
+.field__control:focus,
+.field__control:focus-visible {
+  outline: none;
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px var(--color-brand-soft);
+}
+
+/* textarea: altura mínima legible y redimensionado vertical. */
+textarea.field__control {
+  min-height: 96px;
+  line-height: 1.55;
+  resize: vertical;
+}
+
+/* select: aire a la derecha para el caret nativo. */
+select.field__control {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 40px;
+  cursor: pointer;
+  /* Caret cálido dibujado con gradientes (sin imagen de red) */
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--color-text-muted) 50%),
+    linear-gradient(135deg, var(--color-text-muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) calc(50% - 2px),
+    calc(100% - 13px) calc(50% - 2px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+/* .field__hint — ayuda bajo el campo. */
+.field__hint {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* ==========================================================================
+   9. SELECTOR DE OA
+   ========================================================================== */
+
+/* .oa-section-label — encabezado del bloque de OA. */
+.oa-section-label {
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+/* .oa-list — lista scrollable de OA. Fondo cálido, borde definido. */
+.oa-list {
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  padding: var(--space-xs);
+  /* Scrollbar discreto */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
+}
+
+/* .oa-item — una fila de OA (checkbox + texto). Toda la fila es clicable
+   (es un <label>): hover y foco claros, padding cómodo. */
+.oa-item {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: flex-start;
+  padding: 10px 12px;
+  font-size: var(--font-size-sm);
+  line-height: 1.45;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color .12s ease;
+}
+
+.oa-item:hover {
+  background: var(--color-card);
+}
+
+.oa-item:focus-within {
+  background: var(--color-card);
+  box-shadow: 0 0 0 2px var(--color-brand-soft);
+}
+
+.oa-item input[type="checkbox"] {
+  margin-top: 2px;
+  width: 18px;
+  height: 18px;
+  flex: none;
+  accent-color: var(--color-brand);
+  cursor: pointer;
+}
+
+/* OA seleccionado: fila resaltada con tinte índigo y código en color marca. */
+.oa-item:has(input:checked) {
+  background: var(--color-brand-tint);
+}
+.oa-item:has(input:checked) strong {
+  color: var(--color-brand);
+}
+
+.oa-item strong {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   10. PANEL DE VALIDACIÓN (GATES)
+   ========================================================================== */
+
+/* .gate — chequeo individual. Se presenta como fila con superficie propia. */
+.gate {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+.gate:last-child {
+  margin-bottom: 0;
+}
+
+/* .gate--ok — sin bloqueos (puede tener "marcas"). Acento verde sutil. */
+.gate--ok {
+  border-left: 3px solid var(--color-success-border);
+}
+
+/* .gate--block — con hallazgos bloqueantes. Acento rojo. */
+.gate--block {
+  border-left: 3px solid var(--color-danger);
+  background: var(--color-danger-bg);
+}
+
+/* .gate__title — título/estado del gate. */
+.gate__title {
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+/* .gate__title-note — nota inline "sin observaciones". */
+.gate__title-note {
+  font-weight: 500;
+  color: var(--color-success-strong);
+}
+
+/* Lista de hallazgos del gate. */
+.gate ul {
+  list-style: none;
+  padding: 0;
+  margin: var(--space-sm) 0 0;
+}
+
+/* .gate__finding — un hallazgo. */
+.gate__finding {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+  font-size: var(--font-size-sm);
+  line-height: 1.45;
+  color: var(--color-text);
+  margin-top: 6px;
+}
+
+/* .sev — píldora de severidad del hallazgo. */
+.sev {
+  display: inline-block;
+  flex: none;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+}
+
+/* .sev--block — "bloquea" (rojo). */
+.sev--block {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-strong);
+  border-color: var(--color-danger-border);
+}
+
+/* .sev--warn — "marca" (ámbar). */
+.sev--warn {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+  border-color: var(--color-warning-border);
+}
+
+/* .gates-desc — descripción bajo el título del panel de gates. */
+.gates-desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-top: 0;
+  max-width: 70ch;
+}
+
+/* El título del panel de gates (h3) en la tarjeta ok/error. */
+.faro-card--ok .section-title,
+.faro-card--error .section-title {
+  font-size: 1.1rem;
+}
+
+/* ==========================================================================
+   11. PANELES DE GENERACIÓN (fieldset)
+   ========================================================================== */
+
+/* .gen-panel — <fieldset> que agrupa controles de un artefacto generado.
+   La leyenda actúa como título de sección, con un punto índigo de marca. */
+.gen-panel {
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-top: var(--space-lg);
+  background: var(--color-card);
+  box-shadow: var(--shadow-sm);
+}
+
+.gen-panel legend {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-weight: 700;
+  font-size: 1.02rem;
+  color: var(--color-brand);
+  padding: 0 var(--space-sm);
+  margin-left: calc(-1 * var(--space-xs));
+}
+.gen-panel legend::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: var(--color-brand);
+  transform: rotate(45deg);
+  border-radius: 2px;
+}
+
+/* Contenido del panel: ritmo vertical cómodo. */
+.gen-panel > * + * {
+  margin-top: var(--space-sm);
+}
+.gen-panel ul {
+  margin-top: var(--space-sm);
+}
+.gen-panel ul li {
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-xs);
+}
+
+/* .gen-panel--mt — usado en el fieldset de OA dentro del formulario. */
+.gen-panel--mt {
+  margin-top: var(--space-md);
+}
+
+/* .gen-panel__controls — fila de controles inline (OA + conocimiento). */
+.gen-panel__controls {
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: var(--space-md);
+}
+
+.gen-panel__controls .field {
+  flex: 1;
+  min-width: 180px;
+}
+
+/* ==========================================================================
+   12. NOTAS DE ESTADO / ALERTAS
+   ========================================================================== */
+
+/* .note — mensaje en línea. Barra lateral de color + fondo suave + buen
+   contraste de texto (los tokens de texto van oscurecidos para AA). */
+.note {
+  position: relative;
+  padding: 12px var(--space-md) 12px calc(var(--space-md) + 6px);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  border-left-width: 4px;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  margin: var(--space-md) 0;
+}
+
+.note strong {
+  font-weight: 700;
+}
+
+/* .note--info — informativo (turquesa / mar). */
+.note--info {
+  background: var(--color-info-bg);
+  border-color: var(--color-info-border);
+  border-left-color: var(--brand-teal);
+  color: var(--brand-teal-deep);
+}
+
+/* .note--success — éxito (verde). */
+.note--success {
+  background: var(--color-success-bg);
+  border-color: var(--color-success-border);
+  border-left-color: var(--color-success);
+  color: var(--color-success-strong);
+  font-weight: 600;
+}
+
+/* .note--error — aviso/error (ámbar, según el stub). */
+.note--error {
+  background: var(--color-warning-bg);
+  border-color: var(--color-warning-border);
+  border-left-color: var(--color-warning);
+  color: var(--color-warning);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   13. LISTA DE DOCUMENTOS (HIL)
+   ========================================================================== */
+
+/* .doc-list — lista de pendientes (sin viñetas). */
+.doc-list {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* .doc-row — fila de documento: etiqueta + badge + fecha + acción. */
+.doc-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-top: 1px solid var(--color-border);
+  transition: background-color .12s ease;
+}
+.doc-row:first-child {
+  border-top: none;
+}
+.doc-row:hover {
+  background: var(--color-surface);
+}
+
+/* .doc-row__label — nombre del tipo de documento (ocupa el resto). */
+.doc-row__label {
+  flex: 1;
+  min-width: 140px;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+}
+
+/* .doc-row__date — fecha (pequeña, tabular, color suave). */
+.doc-row__date {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* El botón "Abrir" en la fila puede ser más compacto. */
+.doc-row .btn {
+  min-height: 38px;
+  padding: 6px 16px;
+}
+
+/* ==========================================================================
+   14. JOB STATUS (Producción)
+   ========================================================================== */
+
+/* .job-card — estado del job asíncrono. Superficie cálida, acento índigo. */
+.job-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  border: 1px solid var(--color-border-strong);
+  border-left: 4px solid var(--color-brand);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin: var(--space-md) 0;
+  background: var(--color-surface);
+  font-weight: 600;
+  font-size: var(--font-size-base);
+}
+
+/* .job-card__id — código del job (monoespaciado, chip). */
+.job-card__id {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.9em;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  color: var(--color-brand-strong);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+/* ==========================================================================
+   15. INDICADORES DE EVALUACIÓN (lista editable)
+   ========================================================================== */
+
+/* .indicadores-list — pares OA-código / input. */
+.indicadores-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* .indicador-row — fila: código OA + input editable. */
+.indicador-row {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+/* .indicador-row__oa — código del OA: chip fijo, monoespaciado, color marca. */
+.indicador-row__oa {
+  flex: none;
+  min-width: 104px;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-brand);
+  background: var(--color-brand-soft);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  text-align: center;
+}
+
+/* ==========================================================================
+   16. SECCIÓN DE ACCIONES HIL
+   ========================================================================== */
+
+/* .hil-actions — botones + email del revisor en el detalle de revisión. */
+.hil-actions {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: var(--space-md);
+}
+
+/* .hil-actions__email — input de email del revisor. */
+.hil-actions__email {
+  flex: 1;
+  min-width: 220px;
+  max-width: 280px;
+}
+
+/* ==========================================================================
+   17. CLASE ITEM (clases de la unidad)
+   ========================================================================== */
+
+/* .clase-item — bloque de una clase. Separada por línea + número índigo. */
+.clase-item {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-md);
+  margin-top: var(--space-md);
+}
+.clase-item:first-of-type {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+/* .clase-item__title — título de la clase. */
+.clase-item__title {
+  font-weight: 700;
+  font-size: 1.02rem;
+  color: var(--color-brand);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+/* .clase-item__duration — duración (suave, peso normal). */
+.clase-item__duration {
+  font-weight: 400;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* .clase-item__moment — Inicio / Desarrollo / Cierre. */
+.clase-item__moment {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.clase-item p {
+  margin-bottom: var(--space-xs);
+}
+
+/* ==========================================================================
+   18. ÍTEM DE PRUEBA
+   ========================================================================== */
+
+/* .prueba-item — ítem de la prueba (dentro de <ol>). */
+.prueba-item {
+  margin-bottom: var(--space-md);
+  line-height: 1.5;
+}
+
+/* .prueba-item__meta — metadata (OA + puntos). */
+.prueba-item__meta {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 1px 9px;
+  margin-left: 4px;
+  white-space: nowrap;
+}
+
+/* Alternativas de la prueba: lista limpia con sangría. */
+.prueba-item ul {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--space-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.prueba-item ul li {
+  font-size: var(--font-size-sm);
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+}
+
+/* .prueba-alternativa--correcta — alternativa correcta resaltada en verde. */
+.prueba-alternativa--correcta {
+  color: var(--color-success-strong);
+  font-weight: 600;
+  background: var(--color-success-bg);
+  border-color: var(--color-success-border) !important;
+}
+
+/* ==========================================================================
+   19. MISCELÁNEOS / UTILIDADES
+   ========================================================================== */
+
+/* .text-muted — texto secundario. */
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+/* .text-sm / .text-xs — escalas pequeñas. */
+.text-sm {
+  font-size: var(--font-size-sm);
+}
+.text-xs {
+  font-size: var(--font-size-xs);
+}
+
+/* .section-title — H3 título de sección dentro de tarjeta (sin margen sup.). */
+.section-title {
+  margin-top: 0 !important;
+  font-size: 1.18rem;
+  color: var(--color-text);
+  margin-bottom: var(--space-sm);
+}
+
+/* .divider — separación horizontal. */
+.divider {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+/* .download-row — fila de enlaces de descarga. */
+.download-row {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: var(--space-md);
+}
+
+/* .deck-slides — diapositivas del deck: lista con numeración índigo. */
+.deck-slides {
+  margin-top: var(--space-md);
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  counter-reset: slide;
+}
+.deck-slides li {
+  counter-increment: slide;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  font-size: var(--font-size-sm);
+  padding: 8px 12px;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+.deck-slides li::before {
+  content: counter(slide);
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: var(--font-size-xs);
+  color: var(--color-brand);
+  background: var(--color-brand-soft);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.deck-slides li em {
+  color: var(--color-text-muted);
+  font-style: normal;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* .nav-list — índice de pantallas (index.html). Filas tipo tarjeta clicable. */
+.nav-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* .nav-list__item — un ítem del índice. Banda lateral que rota por los cuatro
+   colores de la paleta: el índice se vuelve la carta de color de la marca. */
+.nav-list__item {
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  padding: var(--space-md) var(--space-md) var(--space-md) calc(var(--space-md) + 4px);
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  transition: border-color .12s ease, box-shadow .12s ease, transform .08s ease;
+}
+.nav-list__item:nth-child(4n + 1) { border-left-color: var(--brand-indigo); }
+.nav-list__item:nth-child(4n + 2) { border-left-color: var(--brand-teal); }
+.nav-list__item:nth-child(4n + 3) { border-left-color: var(--brand-gold); }
+.nav-list__item:nth-child(4n + 4) { border-left-color: var(--brand-coral); }
+.nav-list__item a { color: var(--color-text); }
+.nav-list__item:hover {
+  border-color: var(--color-brand);
+  border-left-color: var(--color-brand);
+  box-shadow: var(--shadow-card);
+  transform: translateY(-1px);
+}
+.nav-list__item a {
+  font-weight: 700;
+  text-decoration: none;
+}
+.nav-list__item a:hover {
+  text-decoration: underline;
+}
+
+/* .form-hint — ayuda bajo un formulario completo. */
+.form-hint {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: var(--space-md);
+  margin-bottom: 0;
+  max-width: 70ch;
+}
+
+/* .establecimiento-note — establecimiento inferido del formato. */
+.establecimiento-note {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-top: var(--space-sm);
+  margin-bottom: 0;
+  padding: 8px 12px;
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  display: inline-block;
+}
+
+/* .hil-warning-list — hallazgos de gates en el paso de revisión HIL. */
+.hil-warning-list {
+  list-style: none;
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-md);
+  background: var(--color-warning-bg);
+  border: 1px solid var(--color-warning-border);
+  border-left: 4px solid var(--color-warning);
+  border-radius: var(--radius-md);
+}
+
+/* .hil-warning-item — un hallazgo. */
+.hil-warning-item {
+  color: var(--color-warning);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+/* .result-intro — párrafo introductorio de los resultados. */
+.result-intro {
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-lg);
+  max-width: 70ch;
+}
+.result-intro strong {
+  color: var(--color-warning);
+  font-weight: 700;
+}
+
+/* Listas genéricas de OA/indicadores dentro de tarjetas de contenido. */
+.faro-card > ul > li {
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   20. RESPONSIVE
+   ========================================================================== */
+
+/* Tablet (~768px) — reduce el aire exterior. */
+@media (max-width: 768px) {
+  .faro-page {
+    padding: var(--space-xl) var(--space-md) var(--space-xl);
+  }
+  .faro-card,
+  .gen-panel {
+    padding: var(--space-md);
+  }
+  .faro-result-heading {
+    margin-top: var(--space-xl);
+  }
+}
+
+/* Móvil (~480px y menos) — apila controles y prioriza legibilidad. */
+@media (max-width: 480px) {
+  :root {
+    --font-size-base: 15.5px;
+  }
+  .faro-page {
+    padding: var(--space-lg) var(--space-md) var(--space-2xl);
+  }
+
+  /* Filas de documentos: pasan a dos niveles (etiqueta+fecha / badge+acción). */
+  .doc-row {
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+  .doc-row__label {
+    flex-basis: 100%;
+  }
+  .doc-row .btn {
+    margin-left: auto;
+  }
+
+  /* Indicadores: el código del OA pasa arriba del input. */
+  .indicador-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-xs);
+  }
+  .indicador-row__oa {
+    min-width: 0;
+    align-self: flex-start;
+  }
+
+  /* Acciones HIL y descargas: botones a ancho completo y apilados. */
+  .hil-actions,
+  .download-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .hil-actions__email {
+    max-width: none;
+  }
+  .btn {
+    width: 100%;
+  }
+  /* Excepción: el botón compacto "Abrir" no necesita ancho completo. */
+  .doc-row .btn {
+    width: auto;
+  }
+
+  .gen-panel__controls .field {
+    min-width: 100%;
+  }
+}
+
+/* ==========================================================================
+   21. PREFERENCIAS DEL USUARIO
+   ========================================================================== */
+
+/* Respeta a quien prefiere menos movimiento. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Impresión: las planificaciones se imprimen a menudo. Quita sombras y
+   fondos para ahorrar tinta y maximizar legibilidad en papel. */
+@media print {
+  body {
+    background: #fff;
+  }
+  .faro-page {
+    max-width: none;
+    padding: 0;
+  }
+  .faro-card,
+  .gen-panel,
+  .job-card {
+    box-shadow: none;
+    border-color: #bbb;
+    break-inside: avoid;
+  }
+  .btn {
+    display: none;
+  }
+}
