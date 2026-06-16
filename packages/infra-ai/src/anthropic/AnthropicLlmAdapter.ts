@@ -1,7 +1,8 @@
 // packages/infra-ai/src/anthropic/AnthropicLlmAdapter.ts
 // Implementa LlmPort sobre el SDK de Anthropic (RF-0.9/0.10/0.11; blueprint §7).
-// Estructurado vía messages.parse() + zodOutputFormat; thinking adaptive; caching del corpus;
-// log de usage. parsed_output puede ser null (refusal/max_tokens) → se devuelve null, nunca basura.
+// Estructurado vía messages.stream()+finalMessage() + zodOutputFormat; thinking adaptive; caching
+// del corpus; log de usage. En refusal/max_tokens el contenido viene truncado/vacío → parsed=null,
+// nunca basura (RF-0.9).
 
 import Anthropic from '@anthropic-ai/sdk';
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
@@ -10,8 +11,10 @@ import type { Logger } from '@faro/observability';
 import type { ZodType } from 'zod';
 import { effortCapado, rutaPara } from './router.js';
 
-// Límite seguro sin streaming (skill claude-api): por encima de ~16K hay riesgo de timeout HTTP.
-const MAX_TOKENS = 16000;
+// Con streaming no hay límite de timeout HTTP (skill claude-api). Sonnet 4.6 admite hasta 64K de
+// salida; 32K da holgura cómoda para pruebas/PPT grandes sin desperdiciar tokens. 'max' solo aplica
+// a Opus (lo capa el router); 32K es válido en los 3 modelos del router.
+const MAX_TOKENS = 32000;
 
 export class AnthropicLlmAdapter implements LlmPort {
   constructor(
@@ -43,7 +46,9 @@ export class AnthropicLlmAdapter implements LlmPort {
         : { type: 'text' as const, text: b.texto },
     );
 
-    const respuesta = await this.client.messages.parse({
+    // Streaming (no .parse): por encima de ~16K una respuesta no-stream arriesga timeout HTTP
+    // (skill claude-api). finalMessage() ensambla el mensaje completo del stream.
+    const stream = this.client.messages.stream({
       model: ruta.modelo,
       max_tokens: MAX_TOKENS,
       thinking: { type: 'adaptive' },
@@ -51,6 +56,7 @@ export class AnthropicLlmAdapter implements LlmPort {
       system,
       messages: [{ role: 'user', content: args.entradaUsuario }],
     });
+    const respuesta = await stream.finalMessage();
 
     const usage: UsoTokens = {
       input: respuesta.usage.input_tokens,
@@ -68,16 +74,38 @@ export class AnthropicLlmAdapter implements LlmPort {
       );
     }
 
+    const stopReason = respuesta.stop_reason ?? 'desconocido';
+
+    // RF-0.9: en max_tokens/refusal el contenido viene truncado o vacío → parsed=null SIN intentar
+    // parsearlo. Antes .parse() lanzaba un error de JSON ("Unterminated string") que el worker
+    // malinterpretaba como transitorio; ahora devuelve null y exigirParsedConMeta lo vuelve un
+    // GeneracionError limpio (reintento acotado).
+    let parsed: T | null = null;
+    if (stopReason !== 'max_tokens' && stopReason !== 'refusal') {
+      let json = '';
+      for (const bloque of respuesta.content) {
+        if (bloque.type === 'text') json += bloque.text;
+      }
+      parsed = safeJsonSchema(args.schema, json);
+    }
+
     this.log.info(
-      { modelo: ruta.modelo, tarea: args.tarea, effort, stopReason: respuesta.stop_reason, usage },
+      { modelo: ruta.modelo, tarea: args.tarea, effort, stopReason, usage },
       'llm.generar',
     );
 
-    return {
-      parsed: (respuesta.parsed_output ?? null) as T | null,
-      stopReason: respuesta.stop_reason ?? 'desconocido',
-      usage,
-      modelo: ruta.modelo,
-    };
+    return { parsed, stopReason, usage, modelo: ruta.modelo };
   }
+}
+
+/** Parsea texto→JSON y lo valida contra el schema; si algo falla, null (INV-2: basura nunca pasa). */
+function safeJsonSchema<T>(schema: ZodType<T>, texto: string): T | null {
+  let data: unknown;
+  try {
+    data = JSON.parse(texto);
+  } catch {
+    return null;
+  }
+  const r = schema.safeParse(data);
+  return r.success ? r.data : null;
 }
