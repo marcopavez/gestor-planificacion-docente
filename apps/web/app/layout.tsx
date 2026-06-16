@@ -7,7 +7,7 @@ import './faro.css';
 
 export const metadata = {
   title: 'Faro — Copiloto de planificación docente',
-  description: 'Genera documentos pedagógicos alineados al currículum y normativa MINEDUC.',
+  description: 'Genera documentos pedagógicos alineados al currículum nacional (MINEDUC).',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
