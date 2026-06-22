@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { CATALOGO_IMAGENES, EntradaImagen, IMAGENES_VERSION } from './catalogo.js';
 
-const FUENTES_PERMITIDAS = new Set(['openclipart', 'undraw', 'pixabay']);
+const FUENTES_PERMITIDAS = new Set(['openclipart', 'undraw', 'pixabay', 'noto-emoji']);
 
 describe('catálogo de imágenes', () => {
   it('expone una versión inmutable', () => {

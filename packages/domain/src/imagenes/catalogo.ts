@@ -16,7 +16,7 @@ export const EntradaImagen = z.object({
   tramo: z.enum(TRAMOS_IMAGEN),
   tipo: z.enum(TIPOS_IMAGEN),
   archivo: z.string(), // ruta RELATIVA al dir de assets (PNG)
-  fuente: z.enum(['openclipart', 'undraw', 'pixabay']),
+  fuente: z.enum(['openclipart', 'undraw', 'pixabay', 'noto-emoji']),
   licencia: z.string(), // "CC0", "unDraw", "Pixabay"
 });
 export type EntradaImagenT = z.infer<typeof EntradaImagen>;
@@ -24,27 +24,32 @@ export type EntradaImagenT = z.infer<typeof EntradaImagen>;
 // Inmutable (como corpus_version): un documento puede registrar qué versión del banco vio.
 export const IMAGENES_VERSION = '2026.1';
 
-// El set semilla real lo llena la curación (Task 7). Arranca con una entrada de cada tipo para
-// que los tests de integridad tengan algo válido; crece sin tocar el código.
-export const CATALOGO_IMAGENES: readonly EntradaImagenT[] = [
-  {
-    id: 'numero_3-bn',
-    topico: 'numero_3',
-    materia: null,
-    tramo: '1-2',
-    tipo: 'linea_bn',
-    archivo: 'transversal/numero_3-bn.png',
-    fuente: 'openclipart',
-    licencia: 'CC0',
-  },
-  {
-    id: 'conteo-color',
-    topico: 'conteo',
-    materia: 'Matemática',
+// Set semilla curado (2026-06-21): emojis de Noto Emoji (Apache-2.0; PNG 512px en
+// packages/infra-export/assets/imagenes/), revisados visualmente uno por uno. Tramo 1-2, tipo color
+// (el consumidor cableado hoy es el PPT). Crece sin tocar el código: añadir un PNG + una línea aquí.
+function entradaColor(topico: string, materia: string | null, sub: string): EntradaImagenT {
+  return {
+    id: `${topico}-color`,
+    topico,
+    materia,
     tramo: '1-2',
     tipo: 'color',
-    archivo: 'matematica/conteo-color.png',
-    fuente: 'undraw',
-    licencia: 'unDraw',
-  },
+    archivo: `${sub}/${topico}-color.png`,
+    fuente: 'noto-emoji',
+    licencia: 'Apache-2.0',
+  };
+}
+
+// Transversales (sirven a cualquier asignatura): números, frutas, animales, formas, objetos de aula.
+const TRANSVERSALES = [
+  'numero_1', 'numero_2', 'numero_3', 'numero_4', 'numero_5',
+  'manzana', 'platano', 'uvas', 'perro', 'gato', 'pajaro', 'pez',
+  'estrella', 'pelota', 'circulo', 'cuadrado', 'triangulo', 'lapiz', 'libro',
+];
+// Matemática 1º-2º.
+const MATEMATICA = ['suma', 'resta', 'numeros', 'conteo'];
+
+export const CATALOGO_IMAGENES: readonly EntradaImagenT[] = [
+  ...TRANSVERSALES.map((t) => entradaColor(t, null, 'transversal')),
+  ...MATEMATICA.map((t) => entradaColor(t, 'Matemática', 'matematica')),
 ];
