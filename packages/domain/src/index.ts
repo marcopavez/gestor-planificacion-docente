@@ -242,3 +242,7 @@ export { CitaInvalidaError, GeneracionError, ReglaDominioError } from './errors/
 
 // --- Utils de dominio (funciones puras, deterministas — INV-1) ---
 export { estaVigente } from './utils/vigencia.js';
+
+// --- Banco de imágenes curado (catálogo versionado + resolución — INV-1/INV-4) ---
+export { EntradaImagen, TRAMOS_IMAGEN, TIPOS_IMAGEN, IMAGENES_VERSION, CATALOGO_IMAGENES } from './imagenes/catalogo.js';
+export type { EntradaImagenT, TramoImagen, TipoImagen } from './imagenes/catalogo.js';
