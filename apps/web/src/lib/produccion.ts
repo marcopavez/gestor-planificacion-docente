@@ -22,6 +22,7 @@ import { CatalogoRepositoryCorpus, PlantillaRepositoryCorpus } from '@faro/infra
 import {
   DocxExportAdapter,
   GuiaExportAdapter,
+  LaminaExportAdapter,
   PdfExportAdapter,
   PptxExportAdapter,
   PruebaExportAdapter,
@@ -84,6 +85,7 @@ export function produccion() {
   // (H-2.7). Las plantillas/catálogos son config de archivo; el export es bajo demanda en la web.
   const corpusDir = join(raizRepo(), 'corpus');
   const dirExport = join(raizRepo(), 'generated');
+  const dirBanco = join(raizRepo(), 'generated', 'imagenes-ia');
   const logExport = crearLoggerHijo('infra-export');
   const plantillas = new PlantillaRepositoryCorpus(corpusDir, crearLoggerHijo('infra-corpus'));
   const catalogoRepo = new CatalogoRepositoryCorpus(corpusDir, crearLoggerHijo('infra-corpus'));
@@ -102,6 +104,8 @@ export function produccion() {
     pruebaExport: new PruebaExportAdapter(dirExport, logExport),
     // Export bajo demanda de la guía del alumno (.docx/.pdf vía LibreOffice) — Tanda 1.
     guiaExport: new GuiaExportAdapter(dirExport, logExport),
+    // Export bajo demanda de la lámina para colorear (.docx/.pdf). Resuelve el PNG del banco generado.
+    laminaExport: new LaminaExportAdapter(dirExport, logExport, dirBanco),
     // Export bajo demanda del PPT infantil (.pptx; el deck es autocontenido) — Fase 3.
     pptxExport: new PptxExportAdapter(dirExport, logExport, join(raizRepo(), 'packages/infra-export/assets/imagenes')),
     // Use cases (escritura con gate) — encapsulan la lógica de dominio.
