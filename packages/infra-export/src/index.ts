@@ -28,3 +28,6 @@ export type { PruebaPlano, SeccionPruebaPlano, ItemPlano, EncabezadoPlano } from
 export { GuiaExportAdapter } from './docx/GuiaExportAdapter.js';
 export { planoGuia } from './docx/planoGuia.js';
 export type { GuiaPlano, EncabezadoGuiaPlano } from './docx/planoGuia.js';
+
+// --- Cache file-backed del banco de imágenes generadas (material para colorear, Fase 5) ---
+export { BancoImagenesFsAdapter } from './imagenes/BancoImagenesFsAdapter.js';
