@@ -4,6 +4,7 @@
 
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type {
   ArchivoExportado,
   ClaseDeck,
@@ -11,6 +12,8 @@ import type {
   SlideDeckType,
   TemaDeckInfantilType,
 } from '@faro/domain';
+// Valores (no tipos): resuelven el tópico de imagen del banco a una entrada del catálogo (INV-6).
+import { resolverImagen, tramoDeNivel } from '@faro/domain';
 import type { Logger } from '@faro/observability';
 // pptxgenjs es CJS (`module.exports = PptxGenJS`) con tipos `export default`: bajo NodeNext el
 // default import liga al namespace, así que tomamos la clase desde `.default` (válido en types y runtime).
@@ -45,6 +48,9 @@ export class PptxExportAdapter implements ExportPort {
   constructor(
     private readonly dirSalida: string,
     private readonly log: Logger,
+    // Dir raíz de los PNG del banco de imágenes. Default: assets del propio paquete infra-export.
+    // En producción (código compilado en dist/) los roots pasan la ruta explícita (ver spec/plan).
+    private readonly dirAssets: string = fileURLToPath(new URL('../../assets/imagenes', import.meta.url)),
   ) {}
 
   async exportarPptx(deck: ClaseDeck): Promise<ArchivoExportado> {
@@ -59,7 +65,7 @@ export class PptxExportAdapter implements ExportPort {
     if (deck.tema) {
       this.portadaInfantil(pptx, deck, deck.tema);
       for (const slide of deck.slides) {
-        this.slideInfantil(pptx, slide, deck.tema);
+        this.slideInfantil(pptx, slide, deck.tema, deck);
       }
     } else {
       this.portada(pptx, deck);
@@ -134,7 +140,26 @@ export class PptxExportAdapter implements ExportPort {
     slide: ReturnType<Pptx['addSlide']>,
     s: SlideDeckType,
     tema: TemaDeckInfantilType,
+    deck: ClaseDeck,
   ): void {
+    // 1) Imagen real del banco: la IA eligió un topico_imagen del catálogo → lo resolvemos (color).
+    // Seed = título del deck → selección determinista y reproducible para ese documento.
+    if (s.topico_imagen) {
+      const entrada = resolverImagen(s.topico_imagen, deck.asignatura, tramoDeNivel(deck.nivel), 'color', deck.titulo);
+      if (entrada) {
+        // pptxgenjs lee el archivo al escribir; le pasamos la ruta absoluta (dirAssets + relativo).
+        slide.addImage({
+          path: join(this.dirAssets, entrada.archivo),
+          x: 3.0,
+          y: 2.0,
+          w: 4.0,
+          h: 2.6,
+          sizing: { type: 'contain', w: 4.0, h: 2.6 },
+        });
+        return;
+      }
+    }
+    // 2) Fallback: el placeholder punteado de siempre (sin tópico, o el tópico no resuelve a imagen).
     const sugerencia = s.sugerencia_imagen?.trim();
     if (!sugerencia) return;
     // y+h debe caber en el layout 16:9 (10" x 5.625"): y:4.3 + h:1.0 = 5.3" (antes 5.0+1.2=6.2 se salía).
@@ -230,17 +255,17 @@ export class PptxExportAdapter implements ExportPort {
   }
 
   /** Despacha por tipo de slide (Fase 3); la respuesta correcta nunca se revela en la lámina del alumno. */
-  private slideInfantil(pptx: Pptx, s: SlideDeckType, tema: TemaDeckInfantilType): void {
+  private slideInfantil(pptx: Pptx, s: SlideDeckType, tema: TemaDeckInfantilType, deck: ClaseDeck): void {
     switch (s.tipo) {
       case 'pregunta':
       case 'elige':
-        this.slideInteraccion(pptx, s, tema);
+        this.slideInteraccion(pptx, s, tema, deck);
         break;
       case 'que_sigue':
-        this.slideQueSigue(pptx, s, tema);
+        this.slideQueSigue(pptx, s, tema, deck);
         break;
       default:
-        this.slideContenidoInfantil(pptx, s, tema);
+        this.slideContenidoInfantil(pptx, s, tema, deck);
     }
   }
 
@@ -264,7 +289,7 @@ export class PptxExportAdapter implements ExportPort {
   }
 
   /** 'contenido': título grande + viñetas grandes con la paleta/fuente/tamaño del tema. */
-  private slideContenidoInfantil(pptx: Pptx, s: SlideDeckType, tema: TemaDeckInfantilType): void {
+  private slideContenidoInfantil(pptx: Pptx, s: SlideDeckType, tema: TemaDeckInfantilType, deck: ClaseDeck): void {
     const slide = this.slideBaseInfantil(pptx, s, tema);
     slide.addText(s.titulo, {
       x: 0.5,
@@ -292,12 +317,12 @@ export class PptxExportAdapter implements ExportPort {
         },
       );
     }
-    this.placeholderImagen(slide, s, tema);
+    this.placeholderImagen(slide, s, tema, deck);
     slide.addNotes(this.notas(s));
   }
 
   /** '¿Qué sigue?': título grande centrado + el contenido como pistas grandes y centradas. */
-  private slideQueSigue(pptx: Pptx, s: SlideDeckType, tema: TemaDeckInfantilType): void {
+  private slideQueSigue(pptx: Pptx, s: SlideDeckType, tema: TemaDeckInfantilType, deck: ClaseDeck): void {
     const slide = this.slideBaseInfantil(pptx, s, tema);
     slide.addText(s.titulo, {
       x: 0.5,
@@ -324,12 +349,12 @@ export class PptxExportAdapter implements ExportPort {
         lineSpacingMultiple: 1.3,
       });
     }
-    this.placeholderImagen(slide, s, tema);
+    this.placeholderImagen(slide, s, tema, deck);
     slide.addNotes(this.notas(s));
   }
 
   /** 'pregunta'/'elige': la pregunta GRANDE centrada + opciones; la correcta SOLO en notas_docente. */
-  private slideInteraccion(pptx: Pptx, s: SlideDeckType, tema: TemaDeckInfantilType): void {
+  private slideInteraccion(pptx: Pptx, s: SlideDeckType, tema: TemaDeckInfantilType, deck: ClaseDeck): void {
     const slide = pptx.addSlide();
     this.fondoInfantil(pptx, slide, tema);
     // El ENUNCIADO de la pregunta va en color consigna (rojo) como en los PPT reales del colegio.
@@ -361,7 +386,7 @@ export class PptxExportAdapter implements ExportPort {
         },
       );
     }
-    this.placeholderImagen(slide, s, tema);
+    this.placeholderImagen(slide, s, tema, deck);
     // La respuesta correcta y las notas docentes van en el orador (HIL); nunca en la slide del alumno.
     const correctas = s.opciones.filter((o) => o.correcta).map((o) => o.texto);
     const lineaCorrecta = correctas.length > 0 ? `Respuesta correcta: ${correctas.join(', ')}` : '';

@@ -1,9 +1,16 @@
-import { readFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { inflateRawSync } from 'node:zlib';
-import { SchemaClaseDeck, TEMAS_DECK_INFANTIL, temaDeckInfantil, type ClaseDeck } from '@faro/domain';
+import {
+  resolverImagen,
+  SchemaClaseDeck,
+  TEMAS_DECK_INFANTIL,
+  temaDeckInfantil,
+  topicosDisponiblesPara,
+  type ClaseDeck,
+} from '@faro/domain';
 import { logger } from '@faro/observability';
 import { describe, expect, it } from 'vitest';
 import { PptxExportAdapter } from './PptxExportAdapter.js';
@@ -267,5 +274,84 @@ describe('PptxExportAdapter (RF-2.8, CA-2.12)', () => {
 
     expect(todasLasSlides(buf)).not.toContain('IMAGEN:');
     expect(todasLasNotas(buf)).toContain('Sugerencia de imagen: una recta numérica del 0 al 10');
+  });
+});
+
+describe('PptxExportAdapter — imágenes reales del banco', () => {
+  // PNG 1×1 válido (no se inspecciona el contenido; solo que addImage lo embeba sin fallar).
+  const PNG_DUMMY = Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+    'base64',
+  );
+
+  it('embebe la imagen real (ppt/media) cuando topico_imagen resuelve', async () => {
+    const topicos = topicosDisponiblesPara('Matemática', '1-2', 'color');
+    expect(topicos.length).toBeGreaterThan(0); // el catálogo semilla trae ≥1 tópico color de Mate 1-2
+    const topico = topicos[0]!;
+    const titulo = 'Clase 1 · Conteo';
+    // El adapter resuelve con `deck.titulo` como seed; usamos el mismo para crear el dummy donde toca.
+    const entrada = resolverImagen(topico, 'Matemática', '1-2', 'color', titulo);
+    expect(entrada).not.toBeNull();
+
+    const dirAssets = await mkdtemp(join(tmpdir(), 'faro-assets-'));
+    await mkdir(dirname(join(dirAssets, entrada!.archivo)), { recursive: true });
+    await writeFile(join(dirAssets, entrada!.archivo), PNG_DUMMY);
+
+    const deck: ClaseDeck = SchemaClaseDeck.parse({
+      titulo,
+      asignatura: 'Matemática',
+      nivel: '1º básico',
+      oa: ['MA01 OA 03'],
+      tramo_edad: '1-2',
+      tema: TEMAS_DECK_INFANTIL['1-2'],
+      slides: [
+        {
+          momento: 'inicio',
+          tipo: 'contenido',
+          titulo: 'Contemos',
+          contenido: ['Del 0 al 10'],
+          notas_docente: 'Rutina.',
+          topico_imagen: topico,
+        },
+      ],
+    });
+    const dir = await mkdtemp(join(tmpdir(), 'faro-pptx-img-'));
+    const adapter = new PptxExportAdapter(dir, logger, dirAssets);
+    const archivo = await adapter.exportarPptx(deck);
+
+    // Solo ARCHIVOS dentro de ppt/media/ (el regex `.+` excluye la entrada de directorio que el zip trae).
+    const media = entradasPptx(await readFile(archivo.ruta)).filter((e) => /^ppt\/media\/.+/.test(e));
+    expect(media.length).toBeGreaterThan(0); // la imagen real quedó embebida en el .pptx
+  });
+
+  it('cae al placeholder (no embebe imagen) cuando topico_imagen no resuelve', async () => {
+    const deck: ClaseDeck = SchemaClaseDeck.parse({
+      titulo: 'Clase fallback',
+      asignatura: 'Matemática',
+      nivel: '1º básico',
+      oa: ['MA01 OA 03'],
+      tramo_edad: '1-2',
+      tema: TEMAS_DECK_INFANTIL['1-2'],
+      slides: [
+        {
+          momento: 'inicio',
+          tipo: 'contenido',
+          titulo: 'X',
+          contenido: ['y'],
+          notas_docente: 'n',
+          topico_imagen: 'inexistente-xyz',
+          sugerencia_imagen: 'una recta numérica',
+        },
+      ],
+    });
+    const dirAssets = await mkdtemp(join(tmpdir(), 'faro-assets-'));
+    const dir = await mkdtemp(join(tmpdir(), 'faro-pptx-img-'));
+    const adapter = new PptxExportAdapter(dir, logger, dirAssets);
+    const archivo = await adapter.exportarPptx(deck);
+    const buf = await readFile(archivo.ruta);
+
+    // Sin archivo en ppt/media/ (el regex `.+` ignora la entrada de directorio): no se embebió imagen.
+    expect(entradasPptx(buf).filter((e) => /^ppt\/media\/.+/.test(e))).toEqual([]);
+    expect(todasLasSlides(buf)).toContain('IMAGEN: una recta numérica'); // placeholder visible
   });
 });
