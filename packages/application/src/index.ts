@@ -39,6 +39,8 @@ export { GenerarGuiaUseCase } from './aula/cascada/GenerarGuiaUseCase.js';
 export { GenerarDescripcionDibujoUseCase } from './aula/cascada/GenerarDescripcionDibujoUseCase.js';
 export { GenerarMaterialColorearUseCase } from './aula/cascada/GenerarMaterialColorearUseCase.js';
 export type { DependenciasGenerarMaterialColorear } from './aula/cascada/GenerarMaterialColorearUseCase.js';
+export { ProcesarTrabajoMaterialColorearUseCase } from './aula/cascada/ProcesarTrabajoMaterialColorearUseCase.js';
+export type { ResultadoProcesarMaterialColorear, DependenciasProcesarMaterialColorear } from './aula/cascada/ProcesarTrabajoMaterialColorearUseCase.js';
 export { ProcesarTrabajoGuiaUseCase } from './aula/cascada/ProcesarTrabajoGuiaUseCase.js';
 export type {
   DependenciasProcesarGuia,
