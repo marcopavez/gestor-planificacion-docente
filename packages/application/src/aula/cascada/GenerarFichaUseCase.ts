@@ -76,6 +76,7 @@ export class GenerarFichaUseCase {
 // La ficha hace 2 llamadas a la IA (descripción del dibujo + ejercicios). Para una sola traza, se suma el
 // uso; el modelo/stopReason del principal (ejercicios, que dominan el costo). En cache-hit del dibujo su
 // uso es ceros → no distorsiona.
+// La traza registra el modelo/stopReason de EJERCICIOS (principal); el modelo de imagen no se registra por separado (una traza por artefacto).
 function combinarMeta(principal: MetaGeneracion, secundaria: MetaGeneracion): MetaGeneracion {
   return {
     modelo: principal.modelo,

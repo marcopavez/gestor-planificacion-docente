@@ -73,4 +73,40 @@ describe('ProcesarTrabajoFichaUseCase', () => {
     expect(r.tipo).toBe('reintenta');
     expect(jobs.reintentar).toHaveBeenCalledOnce();
   });
+
+  it('OA con indicadores no-vacíos: crearBorrador recibe shape correcto y job queda hecho', async () => {
+    // OA con indicadores: ejercita la rama `...(oa.indicadores.length > 0 ? { indicadores } : {})`
+    const oaConIndicadores = { codigo: 'MA01 OA 01', descripcion: 'Contar.', indicadores: ['Reconoce cantidades.'], corpusVersionId: 'cv-1' };
+    const oasConInd = { porAsignaturaNivel: vi.fn(async () => [oaConIndicadores]) } as unknown as OaRepository;
+
+    const sink: { hecho?: { jobId: string; documentoId: string }; crearBorrador?: unknown } = {};
+    const uow: UnidadDeTrabajo = {
+      enTransaccion: vi.fn(async (fn: (r: ReposTransaccion) => Promise<unknown>) => {
+        const repos = {
+          documentos: {
+            crearBorrador: vi.fn(async (input: unknown) => {
+              sink.crearBorrador = input;
+              return { id: 'doc-2' };
+            }),
+          },
+          trazas: { registrar: vi.fn(async () => {}) },
+          jobs: { marcarHecho: vi.fn(async (id: string, docId: string) => { sink.hecho = { jobId: id, documentoId: docId }; }) },
+        } as unknown as ReposTransaccion;
+        return fn(repos);
+      }),
+    } as unknown as UnidadDeTrabajo;
+
+    const uc = new ProcesarTrabajoFichaUseCase({ jobs: jobsCon({ id: 'job-5', payload, intentos: 1 }), oas: oasConInd, generar: generarOk, uow });
+    const r = await uc.ejecutarSiguiente('w1');
+
+    expect(r).toEqual({ tipo: 'hecho', jobId: 'job-5', documentoId: 'doc-2' });
+    expect(sink.hecho).toEqual({ jobId: 'job-5', documentoId: 'doc-2' });
+    // Shape de persistencia: tipo, estadoGeneracion, corpusVersionId correctos; sin origenId (ficha standalone).
+    expect(sink.crearBorrador).toMatchObject({
+      tipo: 'ficha_colorear',
+      estadoGeneracion: 'validado',
+      corpusVersionId: 'cv-1',
+    });
+    expect((sink.crearBorrador as Record<string, unknown>)['origenId']).toBeUndefined();
+  });
 });
