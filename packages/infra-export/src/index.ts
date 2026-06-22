@@ -37,3 +37,9 @@ export { planoLamina } from './docx/planoLamina.js';
 export type { LaminaPlano } from './docx/planoLamina.js';
 export { construirDocumentoLamina } from './docx/construirDocumentoLamina.js';
 export { LaminaExportAdapter } from './docx/LaminaExportAdapter.js';
+
+// --- Export de la Ficha educativa para colorear a .docx/.pdf (Plan 2, Fase 5) ---
+export { planoFicha } from './docx/planoFicha.js';
+export type { FichaPlano } from './docx/planoFicha.js';
+export { construirDocumentoFicha } from './docx/construirDocumentoFicha.js';
+export { FichaExportAdapter } from './docx/FichaExportAdapter.js';
