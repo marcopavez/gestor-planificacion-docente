@@ -259,6 +259,8 @@ export type {
   MetaDibujo,
   ExportLaminaPort,
   TrabajoMaterialColorear,
+  ExportFichaPort,
+  TrabajoFicha,
 } from './ports/index.js';
 
 // --- Material para colorear (Plan 1, 1º-3º básico — lámina + descripción del dibujo) ---

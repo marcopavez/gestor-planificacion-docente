@@ -32,6 +32,8 @@ import type { PayloadPptInfantil } from '../schemas/payloadPptInfantil.js';
 import type { PayloadGuia } from '../schemas/payloadGuia.js';
 import type { PayloadMaterialColorear } from '../schemas/payloadMaterialColorear.js';
 import type { Lamina } from '../schemas/lamina.js';
+import type { PayloadFicha } from '../schemas/payloadFicha.js';
+import type { Ficha } from '../schemas/ficha.js';
 import type { Prueba } from '../schemas/prueba.js';
 import type { EncabezadoPrueba } from '../schemas/encabezadoPrueba.js';
 import type { Guia } from '../schemas/guia.js';
@@ -196,6 +198,14 @@ export interface ExportLaminaPort {
   aPdf(lamina: Lamina, inst: DatosInstitucionalesGuia, idDocumento?: string): Promise<ArchivoExportado>;
 }
 
+// --- Export de la Ficha educativa para colorear (.docx/.pdf) — Plan 2, INV-6 ---
+// Reusa DatosInstitucionalesGuia. Combina ejercicios (motor de prueba) + 1 dibujo line-art del banco
+// generado por `ficha.imagen_clave`; si falta el PNG, degrada a un placeholder.
+export interface ExportFichaPort {
+  aDocx(ficha: Ficha, inst: DatosInstitucionalesGuia, idDocumento?: string): Promise<ArchivoExportado>;
+  aPdf(ficha: Ficha, inst: DatosInstitucionalesGuia, idDocumento?: string): Promise<ArchivoExportado>;
+}
+
 // --- Verificación ---
 
 export interface ResultadoVerificacion {
@@ -320,6 +330,13 @@ export interface TrabajoMaterialColorear {
   readonly intentos: number; // ya incrementado por tomarSiguienteMaterialColorear (cuenta el intento en curso)
 }
 
+// Un trabajo de generación de FICHA para colorear (Plan 2): standalone desde un OA (como la lámina).
+export interface TrabajoFicha {
+  readonly id: string;
+  readonly payload: PayloadFicha;
+  readonly intentos: number; // ya incrementado por tomarSiguienteFicha (cuenta el intento en curso)
+}
+
 // Estado de un job de la cola, leído por la web para hacer polling del avance (H-PA.9).
 // documentoId = id del documento raíz de la cascada (la unidad generada) cuando estado='hecho'.
 export interface EstadoJob {
@@ -343,6 +360,8 @@ export interface JobRepository {
   encolarGuia(payload: PayloadGuia): Promise<string>;
   // Encola una generación de MATERIAL PARA COLOREAR (Plan 1) standalone desde un OA.
   encolarMaterialColorear(payload: PayloadMaterialColorear): Promise<string>;
+  // Encola una generación de FICHA para colorear (Plan 2) standalone desde un OA.
+  encolarFicha(payload: PayloadFicha): Promise<string>;
   // FOR UPDATE SKIP LOCKED — ADR-003. Marca el job 'en_proceso' e incrementa intentos atómicamente.
   // Filtra por tipo de trabajo 'cascada_unidad' (coexiste con la cola de planificación, H-2.7).
   tomarSiguiente(workerId: string): Promise<TrabajoCascada | null>;
@@ -356,6 +375,8 @@ export interface JobRepository {
   tomarSiguienteGuia(workerId: string): Promise<TrabajoGuia | null>;
   // Análogo para la cola 'material_colorear': su propia cola por tipo de trabajo.
   tomarSiguienteMaterialColorear(workerId: string): Promise<TrabajoMaterialColorear | null>;
+  // Análogo para la cola 'ficha_colorear' (Plan 2): su propia cola por tipo de trabajo.
+  tomarSiguienteFicha(workerId: string): Promise<TrabajoFicha | null>;
   // Estado del job para el polling de la web; null si el id no existe (H-PA.9).
   obtenerEstado(jobId: string): Promise<EstadoJob | null>;
   // Éxito: estado='hecho' y documento_id = id del documento raíz de la cascada (la unidad generada).
