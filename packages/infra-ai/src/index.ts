@@ -19,3 +19,11 @@ export type { EntornoLlm, ModoLlm } from './crearLlm.js';
 
 // Re-exportar tipos de puertos para conveniencia de la composition root
 export type { EmbeddingsPort, LlmPort, RerankerPort } from '@faro/domain';
+
+// Imagen generada (line-art para colorear) — Fase material-colorear Plan 1
+export { construirPromptLineArt } from './gemini/promptLineArt.js';
+export { PlaceholderImageGen } from './gemini/PlaceholderImageGen.js';
+export { ImagenLineArtAdapter } from './gemini/ImagenLineArtAdapter.js';
+export { GeminiFlashImageAdapter, extraerImagenDeRespuesta } from './gemini/GeminiFlashImageAdapter.js';
+export { crearImageGen } from './crearImageGen.js';
+export type { ModoImageGen, EntornoImageGen } from './crearImageGen.js';
