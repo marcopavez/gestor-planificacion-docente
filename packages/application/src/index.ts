@@ -37,6 +37,8 @@ export { GenerarGuiaUseCase } from './aula/cascada/GenerarGuiaUseCase.js';
 
 // --- Material para colorear (Plan 1): descripción del dibujo anclada al OA ---
 export { GenerarDescripcionDibujoUseCase } from './aula/cascada/GenerarDescripcionDibujoUseCase.js';
+export { GenerarMaterialColorearUseCase } from './aula/cascada/GenerarMaterialColorearUseCase.js';
+export type { DependenciasGenerarMaterialColorear } from './aula/cascada/GenerarMaterialColorearUseCase.js';
 export { ProcesarTrabajoGuiaUseCase } from './aula/cascada/ProcesarTrabajoGuiaUseCase.js';
 export type {
   DependenciasProcesarGuia,
