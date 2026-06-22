@@ -10,7 +10,9 @@ import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import {
   CascadaAulaUseCase,
+  GenerarDescripcionDibujoUseCase,
   GenerarGuiaUseCase,
+  GenerarMaterialColorearUseCase,
   GenerarPlanificacionUseCase,
   GenerarPptInfantilUseCase,
   GenerarPruebaFormativaUseCase,
@@ -19,9 +21,10 @@ import {
   ProcesarTrabajoPlanificacionUseCase,
   ProcesarTrabajoPptInfantilUseCase,
   ProcesarTrabajoPruebaUseCase,
+  ProcesarTrabajoMaterialColorearUseCase,
 } from '@faro/application';
 import type { ClockPort } from '@faro/domain';
-import { crearLlm } from '@faro/infra-ai';
+import { crearImageGen, crearLlm } from '@faro/infra-ai';
 import { CatalogoRepositoryCorpus, PlantillaRepositoryCorpus } from '@faro/infra-corpus';
 import {
   crearDb,
@@ -31,7 +34,7 @@ import {
   PlanificacionAnualRepositoryDrizzle,
   UnidadDeTrabajoDrizzle,
 } from '@faro/infra-db';
-import { PptxExportAdapter } from '@faro/infra-export';
+import { BancoImagenesFsAdapter, PptxExportAdapter } from '@faro/infra-export';
 import { crearLoggerHijo } from '@faro/observability';
 
 const log = crearLoggerHijo('worker');
@@ -144,6 +147,31 @@ async function main(): Promise<void> {
     uow: new UnidadDeTrabajoDrizzle(db),
   });
 
+  // --- Cola de material para colorear (Plan 1), en paralelo a las otras (no las toca) ---
+  // La lámina es standalone desde un OA (como la guía). El dibujo (Imagen 4 Fast por defecto, o Gemini
+  // Flash Image si FARO_IMAGE_PROVIDER=flash) se cachea en el banco generado; sin API key el adapter
+  // degrada a placeholder (la lámina sale igual, en borrador).
+  const { imageGen, modo: modoImg } = crearImageGen(
+    {
+      GEMINI_API_KEY: process.env['GEMINI_API_KEY'],
+      GOOGLE_API_KEY: process.env['GOOGLE_API_KEY'],
+      FARO_IMAGE_PROVIDER: process.env['FARO_IMAGE_PROVIDER'],
+    },
+    crearLoggerHijo('infra-ai'),
+  );
+  const dirBanco = join(raizRepo(), 'generated', 'imagenes-ia');
+  const banco = new BancoImagenesFsAdapter(dirBanco);
+  const materialColorearUseCase = new ProcesarTrabajoMaterialColorearUseCase({
+    jobs: new JobRepositoryDrizzle(db),
+    oas,
+    generar: new GenerarMaterialColorearUseCase({
+      descripcion: new GenerarDescripcionDibujoUseCase(llm),
+      imageGen,
+      banco,
+    }),
+    uow: new UnidadDeTrabajoDrizzle(db),
+  });
+
   let corriendo = true;
   const apagar = (senal: string): void => {
     if (!corriendo) return;
@@ -153,11 +181,11 @@ async function main(): Promise<void> {
   process.on('SIGTERM', () => apagar('SIGTERM'));
   process.on('SIGINT', () => apagar('SIGINT'));
 
-  log.info({ workerId, modo, samplesDir }, 'worker: iniciado (H-PA.8)');
+  log.info({ workerId, modo, modoImg, samplesDir }, 'worker: iniciado (H-PA.8)');
 
-  // Loop principal: en CADA iteración intenta las cinco colas (cascada, planificación, prueba, PPT
-  // infantil y guías) para que una cola con trabajo continuo no inanice a las otras; el backoff solo
-  // aplica si TODAS están vacías.
+  // Loop principal: en CADA iteración intenta las seis colas (cascada, planificación, prueba, PPT
+  // infantil, guías y material para colorear) para que una cola con trabajo continuo no inanice a
+  // las otras; el backoff solo aplica si TODAS están vacías.
   while (corriendo) {
     const r = await useCase.ejecutarSiguiente(workerId);
     switch (r.tipo) {
@@ -234,13 +262,29 @@ async function main(): Promise<void> {
         break;
     }
 
-    // Backoff fijo solo si las cinco colas quedaron vacías (no saturar la DB cuando no hay trabajo).
+    const rmc = await materialColorearUseCase.ejecutarSiguiente(workerId);
+    switch (rmc.tipo) {
+      case 'sin_trabajo':
+        break;
+      case 'hecho':
+        log.info({ jobId: rmc.jobId, documentoId: rmc.documentoId }, 'worker: material para colorear hecho');
+        break;
+      case 'reintenta':
+        log.warn({ jobId: rmc.jobId, error: rmc.error }, 'worker: material reencolado para reintento');
+        break;
+      case 'fallido':
+        log.error({ jobId: rmc.jobId, error: rmc.error }, 'worker: material fallido');
+        break;
+    }
+
+    // Backoff fijo solo si las seis colas quedaron vacías (no saturar la DB cuando no hay trabajo).
     if (
       r.tipo === 'sin_trabajo' &&
       rp.tipo === 'sin_trabajo' &&
       rt.tipo === 'sin_trabajo' &&
       rpp.tipo === 'sin_trabajo' &&
-      rg.tipo === 'sin_trabajo'
+      rg.tipo === 'sin_trabajo' &&
+      rmc.tipo === 'sin_trabajo'
     ) {
       await esperar(INTERVALO_VACIO_MS);
     }

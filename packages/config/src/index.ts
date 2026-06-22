@@ -17,6 +17,10 @@ const EnvSchema = z.object({
 
   // Voyage (Fase 1 — opcional en Fase 0, FakeEmbeddings corre sin ella)
   VOYAGE_API_KEY: z.string().optional(),
+
+  // Imagen 4 Fast (material para colorear — opcional; sin ella el adapter degrada a placeholder).
+  GEMINI_API_KEY: z.string().optional(),
+  GOOGLE_API_KEY: z.string().optional(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;
