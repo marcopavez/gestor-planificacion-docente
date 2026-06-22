@@ -200,6 +200,20 @@ export const INSTR_DIBUJO = instruccion(
   ].join('\n'),
 );
 
+// Ficha educativa para colorear (Plan 2): ejercicios cortos anclados al OA para 1º-3º. REUSA el motor de
+// PRUEBA (que sí soporta 1º-2º pre-lectores e ítems pictóricos); decisión del dueño. No es una prueba
+// calificada: es práctica para colorear. La restricción de no-fuga es la misma de la prueba/guía.
+export const INSTR_FICHA = instruccion(
+  [
+    'Genera 2 o 3 EJERCICIOS CORTOS para una FICHA PARA COLOREAR (niños de 1º a 3º básico), anclados al OA y al concepto provistos.',
+    'Es para practicar y colorear (no es una prueba calificada). Lenguaje MUY simple y concreto.',
+    "- Tipos apropiados al nivel: 'seleccion_multiple', 'verdadero_falso', 'completacion', 'ordenar' (con 'secuencia_correcta'), 'terminos_pareados' (con 'pares' columnaA↔columnaB) o 'pictorico' (con 'imagen' = una DESCRIPCIÓN BREVE, 1 frase, del apoyo visual; nunca una imagen real). Selección múltiple y verdadero/falso con EXACTAMENTE una alternativa correcta.",
+    '- En 1º–2º (pre-lectores): enunciados muy breves para que el/la docente los lea en voz alta; prefiere apoyo visual (ítems pictóricos).',
+    "- Cada ítem lleva 'oa' = el código del OA provisto, y 'retroalimentacion' = qué orientar si el/la estudiante falla.",
+    "- Cada campo de texto contiene SOLO el contenido del ítem para el/la estudiante: NUNCA escribas notas para ti, razonamiento ni instrucciones de formato dentro de un campo (sobre todo en 'imagen').",
+  ].join('\n'),
+);
+
 // --- Entradas de usuario (la petición concreta + artefactos aguas arriba) ---
 
 export function entradaUnidad(ctx: ContextoCascada): string {
@@ -271,6 +285,21 @@ export function entradaDibujo(ctx: ContextoCascada, concepto?: string): string {
     `OA: ${oa?.codigo} — ${oa?.descripcion}`,
     lineaConcepto,
     'Propón el dibujo para colorear (concepto en español + descripcion_en en inglés), anclado al OA.',
+  ].join('\n');
+}
+
+/** Entrada para los ejercicios de la ficha: asignatura/nivel/OA + el concepto (tema) opcional. */
+export function entradaFicha(ctx: ContextoCascada, concepto?: string): string {
+  const oa = ctx.oaSeleccionados[0];
+  const lineaConcepto = concepto !== undefined && concepto.trim() !== ''
+    ? `Tema de la ficha: ${concepto}`
+    : 'Tema de la ficha: (derívalo del OA)';
+  return [
+    `Asignatura: ${ctx.asignatura}`,
+    `Nivel: ${ctx.nivel}`,
+    `OA: ${oa?.codigo} — ${oa?.descripcion}`,
+    lineaConcepto,
+    'Genera 2 o 3 ejercicios cortos para una ficha para colorear, anclados a ESE OA.',
   ].join('\n');
 }
 
