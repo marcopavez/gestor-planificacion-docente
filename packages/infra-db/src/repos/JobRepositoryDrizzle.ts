@@ -7,12 +7,14 @@ import { eq, sql } from 'drizzle-orm';
 import type {
   EstadoJob,
   JobRepository,
+  PayloadFicha,
   PayloadGuia,
   PayloadMaterialColorear,
   PayloadPlanificacion,
   PayloadPptInfantil,
   PayloadPrueba,
   TrabajoCascada,
+  TrabajoFicha,
   TrabajoGuia,
   TrabajoMaterialColorear,
   TrabajoPlanificacion,
@@ -20,6 +22,7 @@ import type {
   TrabajoPrueba,
 } from '@faro/domain';
 import {
+  SchemaPayloadFicha,
   SchemaPayloadGuia,
   SchemaPayloadMaterialColorear,
   SchemaPayloadPlanificacion,
@@ -366,6 +369,53 @@ export class JobRepositoryDrizzle implements JobRepository {
       if (!actualizado) throw new Error('No se pudo bloquear el job de material para colorear tomado');
 
       const payload = SchemaPayloadMaterialColorear.parse(row.payload);
+      return { id: row.id, payload, intentos: actualizado.intentos };
+    });
+  }
+
+  async encolarFicha(payload: PayloadFicha): Promise<string> {
+    const [row] = await this.db
+      .insert(jobGeneracion)
+      .values({
+        tipoTrabajo: 'ficha_colorear',
+        estado: 'pendiente',
+        // Payload OA + contexto de la ficha; el worker genera los ejercicios al tomarlo.
+        payload: payload as unknown as Record<string, unknown>,
+      })
+      .returning({ id: jobGeneracion.id });
+
+    if (!row) throw new Error('No se pudo encolar el job de ficha para colorear');
+    return row.id;
+  }
+
+  /** Análogo a tomarSiguienteMaterialColorear para la cola 'ficha_colorear' (Plan 2). */
+  async tomarSiguienteFicha(workerId: string): Promise<TrabajoFicha | null> {
+    return this.db.transaction(async (tx) => {
+      const rows = await tx.execute<{ id: string; payload: unknown }>(
+        sql`SELECT id, payload FROM job_generacion
+            WHERE estado = 'pendiente' AND tipo_trabajo = 'ficha_colorear'
+            ORDER BY created_at ASC
+            LIMIT 1
+            FOR UPDATE SKIP LOCKED`,
+      );
+
+      const row = (rows as unknown as { rows: Array<{ id: string; payload: unknown }> }).rows[0];
+      if (!row) return null;
+
+      const [actualizado] = await tx
+        .update(jobGeneracion)
+        .set({
+          estado: 'en_proceso',
+          lockedBy: workerId,
+          lockedAt: new Date(),
+          intentos: sql`${jobGeneracion.intentos} + 1`,
+        })
+        .where(eq(jobGeneracion.id, row.id))
+        .returning({ intentos: jobGeneracion.intentos });
+
+      if (!actualizado) throw new Error('No se pudo bloquear el job de ficha para colorear tomado');
+
+      const payload = SchemaPayloadFicha.parse(row.payload); // revalida el jsonb opaco
       return { id: row.id, payload, intentos: actualizado.intentos };
     });
   }
