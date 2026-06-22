@@ -249,3 +249,13 @@ export type { EntradaImagenT, TramoImagen, TipoImagen } from './imagenes/catalog
 export { topicosDisponiblesPara, resolverImagen } from './imagenes/resolver.js';
 export { claveDibujo } from './imagenes/claveDibujo.js';
 export type { ImageGenPort, OpcionesLineArt } from './ports/index.js';
+
+// --- Material para colorear (Plan 1, 1º-3º básico — lámina + descripción del dibujo) ---
+export {
+  SchemaLamina,
+  SchemaDescripcionDibujo,
+  fugaDeTextoEnDescripcion,
+  LIMITE_TEXTO_DESCRIPCION,
+  gradoDeNivel,
+} from './schemas/lamina.js';
+export type { Lamina, DescripcionDibujo } from './schemas/lamina.js';
