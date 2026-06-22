@@ -11,12 +11,15 @@ import { dirname, join } from 'node:path';
 import {
   CascadaAulaUseCase,
   GenerarDescripcionDibujoUseCase,
+  GenerarEjerciciosFichaUseCase,
+  GenerarFichaUseCase,
   GenerarGuiaUseCase,
   GenerarMaterialColorearUseCase,
   GenerarPlanificacionUseCase,
   GenerarPptInfantilUseCase,
   GenerarPruebaFormativaUseCase,
   ProcesarTrabajoCascadaUseCase,
+  ProcesarTrabajoFichaUseCase,
   ProcesarTrabajoGuiaUseCase,
   ProcesarTrabajoPlanificacionUseCase,
   ProcesarTrabajoPptInfantilUseCase,
@@ -172,6 +175,21 @@ async function main(): Promise<void> {
     uow: new UnidadDeTrabajoDrizzle(db),
   });
 
+  // --- Cola de ficha educativa para colorear (Plan 2), en paralelo a las otras (no las toca) ---
+  // La ficha es standalone desde un OA (como la lámina): suma el dibujo (mismos imageGen/banco) y los
+  // ejercicios redactados por la IA. Reutiliza las MISMAS instancias de la cola material_colorear.
+  const fichaUseCase = new ProcesarTrabajoFichaUseCase({
+    jobs: new JobRepositoryDrizzle(db),
+    oas,
+    generar: new GenerarFichaUseCase({
+      descripcion: new GenerarDescripcionDibujoUseCase(llm),
+      imageGen,
+      banco,
+      ejercicios: new GenerarEjerciciosFichaUseCase(llm),
+    }),
+    uow: new UnidadDeTrabajoDrizzle(db),
+  });
+
   let corriendo = true;
   const apagar = (senal: string): void => {
     if (!corriendo) return;
@@ -183,9 +201,9 @@ async function main(): Promise<void> {
 
   log.info({ workerId, modo, modoImg, samplesDir }, 'worker: iniciado (H-PA.8)');
 
-  // Loop principal: en CADA iteración intenta las seis colas (cascada, planificación, prueba, PPT
-  // infantil, guías y material para colorear) para que una cola con trabajo continuo no inanice a
-  // las otras; el backoff solo aplica si TODAS están vacías.
+  // Loop principal: en CADA iteración intenta las siete colas (cascada, planificación, prueba, PPT
+  // infantil, guías, material para colorear y ficha educativa) para que una cola con trabajo continuo
+  // no inanice a las otras; el backoff solo aplica si TODAS están vacías.
   while (corriendo) {
     const r = await useCase.ejecutarSiguiente(workerId);
     switch (r.tipo) {
@@ -277,14 +295,30 @@ async function main(): Promise<void> {
         break;
     }
 
-    // Backoff fijo solo si las seis colas quedaron vacías (no saturar la DB cuando no hay trabajo).
+    const rf = await fichaUseCase.ejecutarSiguiente(workerId);
+    switch (rf.tipo) {
+      case 'sin_trabajo':
+        break;
+      case 'hecho':
+        log.info({ jobId: rf.jobId, documentoId: rf.documentoId }, 'worker: ficha para colorear hecha');
+        break;
+      case 'reintenta':
+        log.warn({ jobId: rf.jobId, error: rf.error }, 'worker: ficha reencolada para reintento');
+        break;
+      case 'fallido':
+        log.error({ jobId: rf.jobId, error: rf.error }, 'worker: ficha fallida');
+        break;
+    }
+
+    // Backoff fijo solo si las siete colas quedaron vacías (no saturar la DB cuando no hay trabajo).
     if (
       r.tipo === 'sin_trabajo' &&
       rp.tipo === 'sin_trabajo' &&
       rt.tipo === 'sin_trabajo' &&
       rpp.tipo === 'sin_trabajo' &&
       rg.tipo === 'sin_trabajo' &&
-      rmc.tipo === 'sin_trabajo'
+      rmc.tipo === 'sin_trabajo' &&
+      rf.tipo === 'sin_trabajo'
     ) {
       await esperar(INTERVALO_VACIO_MS);
     }
