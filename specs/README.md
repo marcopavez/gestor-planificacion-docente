@@ -40,8 +40,8 @@ Cada fase entrega funcionalidad **vertical, íntegra y de calidad de producción
 | **0** | [`00-cimientos.md`](./00-cimientos.md) | Cimientos: monorepo hexagonal + persistencia + worker asíncrono + HIL + export base | ✅ **construido** |
 | **1** | [`01-curriculum-oa.md`](./01-curriculum-oa.md) | **Datos de currículum:** OA de 1º–6º básico, todas las asignaturas, como JSON versionado. Sin RAG. | ✅ **construido** — 56 bloques / 791 OA + 32 OAT, todas las asignaturas, `corpus@2026.1` |
 | **2** | [`02-planificacion.md`](./02-planificacion.md) | **Núcleo:** generar la planificación en **2 formatos reales** (A denso, B DUA), configurable, export **.docx + .pdf**. Generación **híbrida** (datos fijos + IA). | ✅ **construido** — núcleo + auditoría de fidelidad resuelta |
-| **3** | [`03-ppt-infantil.md`](./03-ppt-infantil.md) | Desde la planificación, un **PPT colorido e interactivo** para 6–12 años. | 🟡 **MVP construido** — tramo 5º–6º en calibración (refs en investigación) |
-| **4** | [`04-prueba-formativa.md`](./04-prueba-formativa.md) | Desde la planificación, una **prueba formativa evaluable apta para niños**. | 🟡 **motor construido** — falta cablear en web/worker + UI |
+| **3** | [`03-ppt-infantil.md`](./03-ppt-infantil.md) | Desde la planificación, un **PPT colorido e interactivo** para 6–12 años. | ✅ **construido + cableado** (web/worker/UI) — tramo 5º–6º calibrado (refs MINEDUC); banco de íconos a color (Noto Emoji) inserta imágenes reales |
+| **4** | [`04-prueba-formativa.md`](./04-prueba-formativa.md) | Desde la planificación, una **prueba formativa evaluable apta para niños**. | ✅ **construido + cableado** (web/worker/UI) |
 | **5** | `05-piloto.md` *(por escribir)* | Pulido + piloto en 1–2 colegios. | ⬜ |
 
 > **Aparcada (no es fase v2):** [`01-nucleo-rag.md`](./01-nucleo-rag.md) — el RAG/grafo normativo del producto v1. Mantenida como referencia (ver nota al inicio del archivo).
@@ -106,7 +106,7 @@ Son **criterios de aceptación globales**: ninguna fase puede violarlos. Versió
 
 ## 7. Alcance del producto — v2
 
-> Ya no estamos en etapa MVP: las Fases 0–4 están construidas y el currículum cubre todas las asignaturas. Lo que sigue es productización (cablear Fases 3/4 en web/worker + UI), calibración del tramo 5º–6º y piloto.
+> Ya no estamos en etapa MVP: las Fases 0–4 están construidas y **cableadas** (web/worker/UI), y el currículum cubre todas las asignaturas. Lo que sigue es enriquecer el material (imágenes reales en el PPT; **material para colorear** generado para 1º–3º) y el piloto (Fase 5).
 
 **Entra:** datos de currículum OA (1º–6º, todas las asignaturas); generador de planificación en **2 formatos reales** configurables; export **.docx + .pdf**; generación **híbrida** (OA/listas = datos fijos, experiencias/indicadores = IA borrador); **PPT infantil**; **prueba formativa** apta para niños; HIL (revisión docente).
 
@@ -116,6 +116,6 @@ Son **criterios de aceptación globales**: ninguna fase puede violarlos. Versió
 
 ## 8. Estado y próximos pasos
 
-- ✅ **Construido:** Fases 0–2 completas (cimientos, corpus OA completo, núcleo de planificación con export `.docx`/`.pdf` fiel) + Fase 3 (PPT infantil, MVP) y Fase 4 (motor de prueba formativa).
-- ▶️ **Siguiente:** cablear los motores de Fase 3 (PPT) y Fase 4 (prueba) en web/worker + UI; calibrar el tema del tramo **5º–6º** con las referencias de estilo en investigación; limpiar rótulos "Decreto 67" stale; Fase 5 (piloto).
-- ⏸️ **En espera del dueño:** referencias de estilo del tramo **5º–6º** (sin material local) — en investigación vía deep research; estrategia de banco de imágenes con licencia.
+- ✅ **Construido y cableado (web/worker/UI):** Fases 0–2 (cimientos, corpus OA completo, núcleo de planificación con export `.docx`/`.pdf` fiel), Fase 3 (PPT infantil, tramo 5º–6º calibrado) y Fase 4 (prueba formativa). Guías del alumno (Tanda 1) también cableadas. Banco de **íconos a color** (Noto Emoji, Apache-2.0) inserta imágenes reales en el PPT con fallback.
+- ▶️ **Siguiente:** **material para colorear** (line-art generado por IA, ligado al OA, 1º–3º — diseño aprobado en [`docs/superpowers/specs/2026-06-22-material-colorear-design.md`](../docs/superpowers/specs/2026-06-22-material-colorear-design.md), pendiente de ejecución); Fase 5 (piloto).
+- ⏸️ **En espera del dueño:** `GEMINI_API_KEY` para el material para colorear; smoke en vivo de los 4 artefactos con `ANTHROPIC_API_KEY`.

@@ -17,9 +17,9 @@
 - **Construido (Fase 0 + productización previa):** monorepo hexagonal (pnpm), persistencia (Postgres + Drizzle), worker asíncrono (cola), HIL (`borrador→revisado`), cascada de Aula y export `.pptx`. Suite verde en `main`.
 - **Fase 1 — corpus OA: ✅ completo.** 56 bloques / 791 OA, **1º–6º, todas las asignaturas de las Bases Curriculares** (Inglés solo 5º–6º) + 32 OAT, `corpus_version 2026.1`, con test de integridad. *(No es MVP: es el currículum nacional completo de básica.)*
 - **Fase 2 — núcleo de planificación: ✅ completo.** 2 formatos reales (A denso / B DUA), generación híbrida, export `.docx`/`.pdf` que calcan las tablas (auditoría de fidelidad resuelta).
-- **Fase 3 — PPT infantil: ✅ MVP construido.** Motor data-driven por clase, tema por tramo de edad. **Tramo 5º–6º en calibración** (se está investigando referencias de estilo reales).
-- **Fase 4 — prueba formativa: ✅ motor construido.** `GenerarPruebaFormativaUseCase` + export `.docx` alumno/pauta. **Falta cablear en web/worker + UI.**
-- **Lo siguiente:** cablear Fases 3/4 en web/worker + UI; calibrar el tramo 5º–6º con las referencias en investigación; limpieza de rótulos "Decreto 67" stale; Fase 5 (piloto). Ver `specs/`.
+- **Fase 3 — PPT infantil: ✅ construido + cableado (web/worker/UI).** Motor data-driven por clase, tema por tramo; tramo 5º–6º calibrado (refs MINEDUC). Banco de **íconos a color** (Noto Emoji, Apache-2.0) inserta imágenes reales con fallback al placeholder.
+- **Fase 4 — prueba formativa: ✅ construido + cableado (web/worker/UI).** `GenerarPruebaFormativaUseCase` + export `.docx` alumno/pauta. *(Guías del alumno — Tanda 1 — también cableadas.)*
+- **Lo siguiente:** **material para colorear** (line-art generado por IA, ligado al OA, 1º–3º — diseño aprobado en `docs/superpowers/specs/2026-06-22-material-colorear-design.md`, pendiente de ejecución + `GEMINI_API_KEY`); Fase 5 (piloto). Ver `specs/`.
 
 ## 3. Objetivo y alcance (v2)
 
