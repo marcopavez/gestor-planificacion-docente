@@ -166,6 +166,7 @@ export const INSTR_DECK_INFANTIL = instruccion(
     "- Incluye 2–4 slides de interacción ('pregunta'/'elige') apoyadas en los OA e indicadores de la unidad.",
     "- 'notas_docente' para el/la docente: cómo guiar el slide y, en interacción, cuál es la respuesta correcta y por qué.",
     '- NO inventes OA ni alteres su texto; apóyate en el propósito, experiencias e indicadores de la unidad.',
+    "- Si un slide se beneficia de una imagen, pon en 'topico_imagen' UN valor EXACTO de la lista de tópicos disponibles de la entrada (no inventes tópicos). Si ninguno aplica, omite el campo.",
     "- Completa también 'titulo' (del deck), 'asignatura', 'nivel' y 'oa' (códigos de la unidad), pero la aplicación FIJA esos campos y el tema visual desde la planificación: tu aporte real son los slides.",
   ].join('\n'),
 );
@@ -212,10 +213,18 @@ export function entradaDeck(unidad: PlanificacionUnidad, clase: ClasePlanificada
 }
 
 /** Entrada para el PPT infantil: la planificación completa + el tramo de edad que fija el lenguaje. */
-export function entradaDeckInfantil(unidad: PlanificacionUnidad, tramo: '1-2' | '3-4' | '5-6'): string {
+export function entradaDeckInfantil(
+  unidad: PlanificacionUnidad,
+  tramo: '1-2' | '3-4' | '5-6',
+  topicosColor: readonly string[],
+): string {
+  const listaTopicos = topicosColor.length
+    ? topicosColor.join(', ')
+    : '(no hay imágenes disponibles para este nivel; omite topico_imagen)';
   return [
     `Unidad: ${unidad.unidad} (${unidad.asignatura} · ${unidad.nivel})`,
     `Tramo de edad: ${tramo} básico`,
+    `Tópicos de imagen disponibles (elige uno EXACTO de esta lista para 'topico_imagen', o ninguno): ${listaTopicos}`,
     `Planificación de unidad (JSON):`,
     JSON.stringify(unidad),
     '',

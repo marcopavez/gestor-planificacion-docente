@@ -151,4 +151,26 @@ describe('GenerarPptInfantilUseCase (Fase 3, PPT infantil sin API key)', () => {
     expect(meta.stopReason).toBe('end_turn');
     expect(meta.usage).toEqual({ input: 0, output: 0, cacheRead: 0, cacheCreation: 0 });
   });
+
+  it('inyecta los tópicos de imagen disponibles en la entrada del LLM (banco)', async () => {
+    let entradaCapturada = '';
+    const llm: LlmPort = {
+      async generar(args) {
+        entradaCapturada = args.entradaUsuario;
+        return {
+          parsed: args.schema.parse(deckMuestra),
+          stopReason: 'end_turn',
+          usage: { input: 0, output: 0, cacheRead: 0, cacheCreation: 0 },
+          modelo: 'muestras',
+        };
+      },
+    };
+    // Unidad de Matemática 1º: el catálogo semilla trae 'conteo' (Matemática, 1-2, color).
+    const unidadMate: PlanificacionUnidad = { ...unidadMuestra('1º básico'), asignatura: 'Matemática' };
+
+    await new GenerarPptInfantilUseCase(llm).ejecutar(unidadMate);
+
+    expect(entradaCapturada).toContain('conteo'); // el tópico disponible se ofrece a la IA
+    expect(entradaCapturada.toLowerCase()).toContain('topico_imagen');
+  });
 });
