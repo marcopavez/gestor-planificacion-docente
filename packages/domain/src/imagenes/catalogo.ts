@@ -16,7 +16,8 @@ export const EntradaImagen = z.object({
   tramo: z.enum(TRAMOS_IMAGEN),
   tipo: z.enum(TIPOS_IMAGEN),
   archivo: z.string(), // ruta RELATIVA al dir de assets (PNG)
-  fuente: z.enum(['openclipart', 'undraw', 'pixabay', 'noto-emoji']),
+  // 'imagen-ia' = dibujos line-art generados (banco auto-llenado en runtime), coexisten con los curados.
+  fuente: z.enum(['openclipart', 'undraw', 'pixabay', 'noto-emoji', 'imagen-ia']),
   licencia: z.string(), // "CC0", "unDraw", "Pixabay"
 });
 export type EntradaImagenT = z.infer<typeof EntradaImagen>;

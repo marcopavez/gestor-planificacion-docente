@@ -84,6 +84,18 @@ export interface LlmPort {
   }): Promise<SalidaEstructurada<T>>;
 }
 
+// --- Generación de imágenes (line-art para colorear) — INV-6: proveedor tras puerto ---
+// generarLineArt devuelve el PNG, o null si el proveedor no está disponible (modo degradado sin
+// API key) → el caller ensambla la lámina con un placeholder. Errores transitorios del proveedor
+// se lanzan (el worker reintenta), null es un estado degradado explícito (no se reintenta).
+export interface OpcionesLineArt {
+  readonly aspectRatio?: '1:1' | '3:4' | '4:3' | '9:16' | '16:9';
+}
+
+export interface ImageGenPort {
+  generarLineArt(descripcion: string, opts?: OpcionesLineArt): Promise<Buffer | null>;
+}
+
 // --- Export (.pptx/.docx) — INV-6: render tras puerto; cambiarlo no toca la cascada ---
 
 export interface ArchivoExportado {
