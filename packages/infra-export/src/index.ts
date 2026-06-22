@@ -31,3 +31,9 @@ export type { GuiaPlano, EncabezadoGuiaPlano } from './docx/planoGuia.js';
 
 // --- Cache file-backed del banco de imágenes generadas (material para colorear, Fase 5) ---
 export { BancoImagenesFsAdapter } from './imagenes/BancoImagenesFsAdapter.js';
+
+// --- Export de la Lámina para colorear a .docx/.pdf (Plan 1, Fase 5) ---
+export { planoLamina } from './docx/planoLamina.js';
+export type { LaminaPlano } from './docx/planoLamina.js';
+export { construirDocumentoLamina } from './docx/construirDocumentoLamina.js';
+export { LaminaExportAdapter } from './docx/LaminaExportAdapter.js';
