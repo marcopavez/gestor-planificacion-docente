@@ -21,6 +21,7 @@ import type { ClockPort } from '@faro/domain';
 import { CatalogoRepositoryCorpus, PlantillaRepositoryCorpus } from '@faro/infra-corpus';
 import {
   DocxExportAdapter,
+  FichaExportAdapter,
   GuiaExportAdapter,
   LaminaExportAdapter,
   PdfExportAdapter,
@@ -106,6 +107,8 @@ export function produccion() {
     guiaExport: new GuiaExportAdapter(dirExport, logExport),
     // Export bajo demanda de la lámina para colorear (.docx/.pdf). Resuelve el PNG del banco generado.
     laminaExport: new LaminaExportAdapter(dirExport, logExport, dirBanco),
+    // Export bajo demanda de la ficha para colorear (.docx/.pdf). Comparte el banco de PNG con la lámina — Plan 2.
+    fichaExport: new FichaExportAdapter(dirExport, logExport, dirBanco),
     // Export bajo demanda del PPT infantil (.pptx; el deck es autocontenido) — Fase 3.
     pptxExport: new PptxExportAdapter(dirExport, logExport, join(raizRepo(), 'packages/infra-export/assets/imagenes')),
     // Use cases (escritura con gate) — encapsulan la lógica de dominio.

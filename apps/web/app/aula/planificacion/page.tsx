@@ -524,6 +524,12 @@ function RevisionPlan(props: {
         establecimiento={plan.establecimiento}
         oaCodigos={plan.oa.map((o) => o.codigo)}
       />
+      <GenerarFicha
+        asignatura={plan.asignatura}
+        nivel={plan.nivel}
+        establecimiento={plan.establecimiento}
+        oaCodigos={plan.oa.map((o) => o.codigo)}
+      />
     </>
   );
 }
@@ -970,6 +976,147 @@ function GenerarMaterialColorear({
               .docx
             </a>
             <a href={`/api/aula/documentos/${materialDocId}/material-colorear?formato=pdf`} className="btn btn--success">
+              .pdf
+            </a>
+          </div>
+          {/* HIL: el docente puede regenerar el dibujo si no le convence (re-encola con regenerar=true). */}
+          <button onClick={() => void encolar(true)} className="btn btn--secondary">
+            Regenerar dibujo
+          </button>
+        </>
+      )}
+    </fieldset>
+  );
+}
+
+// Genera una FICHA PARA COLOREAR (Plan 2) desde un OA de la planificación: encola el job, hace polling
+// y ofrece la descarga .docx/.pdf. Gated a 1º–3º básico (grado ≤ 3): desde 4º no se ofrece la ficha.
+// El docente puede "Regenerar el dibujo" (HIL) si no le convence (re-encola con regenerar=true).
+function GenerarFicha({
+  asignatura,
+  nivel,
+  establecimiento,
+  oaCodigos,
+}: {
+  asignatura: string;
+  nivel: string;
+  establecimiento: string;
+  oaCodigos: readonly string[];
+}) {
+  // Parseo local del grado (primer dígito del nivel): no importamos del dominio para no aumentar el bundle.
+  const grado = Number(nivel.match(/\d/)?.[0] ?? '0');
+  const permitido = grado >= 1 && grado <= 3;
+
+  const [oaCodigo, setOaCodigo] = useState<string>(oaCodigos[0] ?? '');
+  const [estado, setEstado] = useState<'idle' | 'generando' | 'listo' | 'error' | 'segundo_plano'>('idle');
+  const [fichaDocId, setFichaDocId] = useState<string | null>(null);
+  const [jobId, setJobId] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  // Traduce el resultado del sondeo a estado de UI. 'sigue' NO es error: el worker puede seguir y el
+  // documento no se pierde, así que ofrecemos "comprobar de nuevo" en vez de re-encolar (evita duplicar).
+  const aplicar = useCallback((r: ResultadoSondeo) => {
+    if (r.estado === 'fallido') {
+      setErr(r.error);
+      setEstado('error');
+    } else if (r.estado === 'listo') {
+      setFichaDocId(r.documentoId);
+      setEstado('listo');
+    } else {
+      setEstado('segundo_plano');
+    }
+  }, []);
+
+  const encolar = useCallback(
+    async (regenerar: boolean) => {
+      if (oaCodigo === '') {
+        setErr('Elige un OA.');
+        setEstado('error');
+        return;
+      }
+      setErr(null);
+      setEstado('generando');
+      try {
+        const res = await fetch('/api/aula/ficha', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ establecimiento, asignatura, nivel, oaCodigo, ...(regenerar ? { regenerar: true } : {}) }),
+        });
+        if (!res.ok) {
+          const j = (await res.json()) as { error?: string };
+          throw new Error(j.error ?? `POST → ${res.status}`);
+        }
+        const { jobId: nuevo } = (await res.json()) as { jobId: string };
+        setJobId(nuevo);
+        aplicar(await sondearJob('/api/aula/ficha', nuevo));
+      } catch (e) {
+        setErr(e instanceof Error ? e.message : 'No se pudo generar la ficha.');
+        setEstado('error');
+      }
+    },
+    [establecimiento, asignatura, nivel, oaCodigo, aplicar],
+  );
+
+  // Reanuda el sondeo del MISMO job (no re-encola): recupera el documento si el worker terminó mientras tanto.
+  const comprobar = useCallback(async () => {
+    if (jobId === null) return;
+    setErr(null);
+    setEstado('generando');
+    try {
+      aplicar(await sondearJob('/api/aula/ficha', jobId));
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'No se pudo comprobar la ficha.');
+      setEstado('error');
+    }
+  }, [jobId, aplicar]);
+
+  if (!permitido) {
+    return (
+      <fieldset className="gen-panel">
+        <legend>Ficha para colorear (1º–3º básico)</legend>
+        <p className="text-muted">Disponible solo para 1º a 3º básico (este nivel es {nivel}).</p>
+      </fieldset>
+    );
+  }
+
+  return (
+    <fieldset className="gen-panel">
+      <legend>Ficha para colorear (1º–3º básico)</legend>
+      {err !== null && <p className="note note--error">⚠ {err}</p>}
+      <div className="gen-panel__controls">
+        <label className="field">
+          <span className="field__label">OA</span>
+          <select className="field__control" value={oaCodigo} onChange={(e) => setOaCodigo(e.target.value)}>
+            {oaCodigos.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      {(estado === 'idle' || estado === 'error') && (
+        <button onClick={() => void encolar(false)} className="btn btn--primary">
+          Generar ficha para colorear (borrador)
+        </button>
+      )}
+      {estado === 'generando' && <p className="text-muted">Generando la ficha… (corre en el worker)</p>}
+      {estado === 'segundo_plano' && (
+        <>
+          <p className="note note--info">La ficha sigue generándose en segundo plano.</p>
+          <button onClick={() => void comprobar()} className="btn btn--secondary">
+            Comprobar de nuevo
+          </button>
+        </>
+      )}
+      {estado === 'listo' && fichaDocId !== null && (
+        <>
+          <p className="note note--success">Ficha generada (borrador):</p>
+          <div className="download-row">
+            <a href={`/api/aula/documentos/${fichaDocId}/ficha?formato=docx`} className="btn btn--success">
+              .docx
+            </a>
+            <a href={`/api/aula/documentos/${fichaDocId}/ficha?formato=pdf`} className="btn btn--success">
               .pdf
             </a>
           </div>
