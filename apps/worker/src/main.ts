@@ -89,7 +89,11 @@ async function main(): Promise<void> {
     oas,
     // uow: persiste los 4 documentos + 4 trazas + marcarHecho en UNA transacción (atomicidad).
     uow: new UnidadDeTrabajoDrizzle(db),
-    export: new PptxExportAdapter(join(raizRepo(), 'generated'), crearLoggerHijo('infra-export')),
+    export: new PptxExportAdapter(
+      join(raizRepo(), 'generated'),
+      crearLoggerHijo('infra-export'),
+      join(raizRepo(), 'packages/infra-export/assets/imagenes'),
+    ),
     cascada: new CascadaAulaUseCase(llm),
     clock: relojSistema,
   });

@@ -354,4 +354,35 @@ describe('PptxExportAdapter — imágenes reales del banco', () => {
     expect(entradasPptx(buf).filter((e) => /^ppt\/media\/.+/.test(e))).toEqual([]);
     expect(todasLasSlides(buf)).toContain('IMAGEN: una recta numérica'); // placeholder visible
   });
+
+  it('cae al placeholder si el tópico resuelve pero el PNG no está en disco (set sin curar)', async () => {
+    const topico = topicosDisponiblesPara('Matemática', '1-2', 'color')[0]!;
+    const dirAssets = await mkdtemp(join(tmpdir(), 'faro-assets-')); // vacío: el PNG anunciado no existe
+    const deck: ClaseDeck = SchemaClaseDeck.parse({
+      titulo: 'Clase sin archivo',
+      asignatura: 'Matemática',
+      nivel: '1º básico',
+      oa: ['MA01 OA 03'],
+      tramo_edad: '1-2',
+      tema: TEMAS_DECK_INFANTIL['1-2'],
+      slides: [
+        {
+          momento: 'inicio',
+          tipo: 'contenido',
+          titulo: 'X',
+          contenido: ['y'],
+          notas_docente: 'n',
+          topico_imagen: topico,
+          sugerencia_imagen: 'apoyo visual',
+        },
+      ],
+    });
+    const dir = await mkdtemp(join(tmpdir(), 'faro-pptx-img-'));
+    const adapter = new PptxExportAdapter(dir, logger, dirAssets);
+    const archivo = await adapter.exportarPptx(deck);
+    const buf = await readFile(archivo.ruta);
+
+    expect(entradasPptx(buf).filter((e) => /^ppt\/media\/.+/.test(e))).toEqual([]); // no embebió
+    expect(todasLasSlides(buf)).toContain('IMAGEN: apoyo visual'); // degradó al placeholder
+  });
 });

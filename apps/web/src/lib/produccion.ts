@@ -103,7 +103,7 @@ export function produccion() {
     // Export bajo demanda de la guía del alumno (.docx/.pdf vía LibreOffice) — Tanda 1.
     guiaExport: new GuiaExportAdapter(dirExport, logExport),
     // Export bajo demanda del PPT infantil (.pptx; el deck es autocontenido) — Fase 3.
-    pptxExport: new PptxExportAdapter(dirExport, logExport),
+    pptxExport: new PptxExportAdapter(dirExport, logExport, join(raizRepo(), 'packages/infra-export/assets/imagenes')),
     // Use cases (escritura con gate) — encapsulan la lógica de dominio.
     crearPlan: new CrearPlanificacionAnualUseCase(planes, oas, corpus, relojSistema),
     listarPlanes: new ListarPlanificacionAnualUseCase(planes),

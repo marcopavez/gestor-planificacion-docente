@@ -89,7 +89,11 @@ export async function ejecutarCascadaDemo(input: EntradaCascadaDemo): Promise<Sa
   const resultado = await new CascadaAulaUseCase(llm).ejecutar(ctx);
 
   // Render del deck a .pptx en /generated (gitignored) y lectura para descarga inline.
-  const exporter = new PptxExportAdapter(join(raizRepo(), 'generated'), crearLoggerHijo('infra-export'));
+  const exporter = new PptxExportAdapter(
+    join(raizRepo(), 'generated'),
+    crearLoggerHijo('infra-export'),
+    join(raizRepo(), 'packages/infra-export/assets/imagenes'),
+  );
   const archivo = await exporter.exportarPptx(resultado.deck);
   const contenido = await readFile(archivo.ruta);
 

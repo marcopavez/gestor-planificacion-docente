@@ -2,6 +2,7 @@
 // Implementa ExportPort.exportarPptx: renderiza un ClaseDeck del dominio a .pptx (RF-2.8/2.17; INV-6).
 // El adapter es reemplazable tras el puerto; la cascada no conoce pptxgenjs.
 
+import { existsSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -146,16 +147,12 @@ export class PptxExportAdapter implements ExportPort {
     // Seed = título del deck → selección determinista y reproducible para ese documento.
     if (s.topico_imagen) {
       const entrada = resolverImagen(s.topico_imagen, deck.asignatura, tramoDeNivel(deck.nivel), 'color', deck.titulo);
-      if (entrada) {
+      const ruta = entrada ? join(this.dirAssets, entrada.archivo) : null;
+      // existsSync: el catálogo puede anunciar un tópico cuyo PNG aún no está en disco (set sin curar);
+      // degradamos al placeholder en vez de romper el export (pptxgenjs falla si el path no existe).
+      if (ruta && existsSync(ruta)) {
         // pptxgenjs lee el archivo al escribir; le pasamos la ruta absoluta (dirAssets + relativo).
-        slide.addImage({
-          path: join(this.dirAssets, entrada.archivo),
-          x: 3.0,
-          y: 2.0,
-          w: 4.0,
-          h: 2.6,
-          sizing: { type: 'contain', w: 4.0, h: 2.6 },
-        });
+        slide.addImage({ path: ruta, x: 3.0, y: 2.0, w: 4.0, h: 2.6, sizing: { type: 'contain', w: 4.0, h: 2.6 } });
         return;
       }
     }
