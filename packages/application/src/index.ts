@@ -42,6 +42,8 @@ export type { DependenciasGenerarMaterialColorear } from './aula/cascada/Generar
 export { ResolverDibujoUseCase } from './aula/cascada/ResolverDibujoUseCase.js';
 export type { DependenciasResolverDibujo, DibujoResuelto } from './aula/cascada/ResolverDibujoUseCase.js';
 export { GenerarEjerciciosFichaUseCase } from './aula/cascada/GenerarEjerciciosFichaUseCase.js';
+export { GenerarFichaUseCase } from './aula/cascada/GenerarFichaUseCase.js';
+export type { DependenciasGenerarFicha } from './aula/cascada/GenerarFichaUseCase.js';
 export { ProcesarTrabajoMaterialColorearUseCase } from './aula/cascada/ProcesarTrabajoMaterialColorearUseCase.js';
 export type { ResultadoProcesarMaterialColorear, DependenciasProcesarMaterialColorear } from './aula/cascada/ProcesarTrabajoMaterialColorearUseCase.js';
 export { ProcesarTrabajoGuiaUseCase } from './aula/cascada/ProcesarTrabajoGuiaUseCase.js';
