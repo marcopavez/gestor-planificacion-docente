@@ -249,6 +249,15 @@ export type { EntradaImagenT, TramoImagen, TipoImagen } from './imagenes/catalog
 export { topicosDisponiblesPara, resolverImagen } from './imagenes/resolver.js';
 export { claveDibujo } from './imagenes/claveDibujo.js';
 export type { ImageGenPort, OpcionesLineArt } from './ports/index.js';
+export { SchemaPayloadMaterialColorear } from './schemas/payloadMaterialColorear.js';
+export type { PayloadMaterialColorear } from './schemas/payloadMaterialColorear.js';
+export type {
+  BancoImagenesGeneradasPort,
+  DibujoCacheado,
+  MetaDibujo,
+  ExportLaminaPort,
+  TrabajoMaterialColorear,
+} from './ports/index.js';
 
 // --- Material para colorear (Plan 1, 1º-3º básico — lámina + descripción del dibujo) ---
 export {

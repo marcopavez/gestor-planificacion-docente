@@ -30,6 +30,8 @@ import type { PayloadPlanificacion } from '../schemas/generarPlanificacion.js';
 import type { PayloadPrueba } from '../schemas/payloadPrueba.js';
 import type { PayloadPptInfantil } from '../schemas/payloadPptInfantil.js';
 import type { PayloadGuia } from '../schemas/payloadGuia.js';
+import type { PayloadMaterialColorear } from '../schemas/payloadMaterialColorear.js';
+import type { Lamina } from '../schemas/lamina.js';
 import type { Prueba } from '../schemas/prueba.js';
 import type { EncabezadoPrueba } from '../schemas/encabezadoPrueba.js';
 import type { Guia } from '../schemas/guia.js';
@@ -94,6 +96,28 @@ export interface OpcionesLineArt {
 
 export interface ImageGenPort {
   generarLineArt(descripcion: string, opts?: OpcionesLineArt): Promise<Buffer | null>;
+}
+
+// --- Banco de imágenes generadas (cache por clave determinista) — INV-1/INV-4 ---
+// El dibujo se genera una vez por (OA/concepto) y se reusa. File-backed: el adapter guarda el PNG +
+// metadata por clave; el dominio/aplicación solo ven el puerto (testeable con un doble en memoria).
+export interface MetaDibujo {
+  readonly oaCodigo: string;
+  readonly concepto: string;
+  readonly descripcion: string; // descripción (EN) con la que se generó — para alt-text/placeholder
+  readonly modelo: string; // modelo de imagen (p. ej. imagen-4.0-fast-generate-001) o 'placeholder'
+  readonly imagenesVersion: string; // IMAGENES_VERSION (INV-4)
+}
+
+export interface DibujoCacheado {
+  readonly png: Buffer;
+  readonly descripcion: string;
+  readonly concepto: string;
+}
+
+export interface BancoImagenesGeneradasPort {
+  buscar(clave: string): Promise<DibujoCacheado | null>;
+  guardar(clave: string, png: Buffer, meta: MetaDibujo): Promise<void>;
 }
 
 // --- Export (.pptx/.docx) — INV-6: render tras puerto; cambiarlo no toca la cascada ---
@@ -162,6 +186,14 @@ export interface DatosInstitucionalesGuia {
 export interface ExportGuiaPort {
   aDocx(guia: Guia, inst: DatosInstitucionalesGuia, idDocumento?: string): Promise<ArchivoExportado>;
   aPdf(guia: Guia, inst: DatosInstitucionalesGuia, idDocumento?: string): Promise<ArchivoExportado>;
+}
+
+// --- Export de la Lámina para colorear (.docx/.pdf) — Plan 1, INV-6 ---
+// Reusa DatosInstitucionalesGuia (mismos campos institucionales). El PNG line-art lo resuelve el
+// adapter desde el banco generado por `lamina.imagen_clave`; si falta, degrada a un placeholder.
+export interface ExportLaminaPort {
+  aDocx(lamina: Lamina, inst: DatosInstitucionalesGuia, idDocumento?: string): Promise<ArchivoExportado>;
+  aPdf(lamina: Lamina, inst: DatosInstitucionalesGuia, idDocumento?: string): Promise<ArchivoExportado>;
 }
 
 // --- Verificación ---
@@ -281,6 +313,13 @@ export interface TrabajoGuia {
   readonly intentos: number; // ya incrementado por tomarSiguienteGuia (cuenta el intento en curso)
 }
 
+// Un trabajo de generación de MATERIAL PARA COLOREAR (Plan 1): standalone desde un OA (como la guía).
+export interface TrabajoMaterialColorear {
+  readonly id: string;
+  readonly payload: PayloadMaterialColorear;
+  readonly intentos: number; // ya incrementado por tomarSiguienteMaterialColorear (cuenta el intento en curso)
+}
+
 // Estado de un job de la cola, leído por la web para hacer polling del avance (H-PA.9).
 // documentoId = id del documento raíz de la cascada (la unidad generada) cuando estado='hecho'.
 export interface EstadoJob {
@@ -302,6 +341,8 @@ export interface JobRepository {
   encolarPptInfantil(payload: PayloadPptInfantil): Promise<string>;
   // Encola una generación de GUÍA (Tanda 1) standalone desde un OA.
   encolarGuia(payload: PayloadGuia): Promise<string>;
+  // Encola una generación de MATERIAL PARA COLOREAR (Plan 1) standalone desde un OA.
+  encolarMaterialColorear(payload: PayloadMaterialColorear): Promise<string>;
   // FOR UPDATE SKIP LOCKED — ADR-003. Marca el job 'en_proceso' e incrementa intentos atómicamente.
   // Filtra por tipo de trabajo 'cascada_unidad' (coexiste con la cola de planificación, H-2.7).
   tomarSiguiente(workerId: string): Promise<TrabajoCascada | null>;
@@ -313,6 +354,8 @@ export interface JobRepository {
   tomarSiguientePptInfantil(workerId: string): Promise<TrabajoPptInfantil | null>;
   // Análogo para la cola 'guia': su propia cola por tipo de trabajo.
   tomarSiguienteGuia(workerId: string): Promise<TrabajoGuia | null>;
+  // Análogo para la cola 'material_colorear': su propia cola por tipo de trabajo.
+  tomarSiguienteMaterialColorear(workerId: string): Promise<TrabajoMaterialColorear | null>;
   // Estado del job para el polling de la web; null si el id no existe (H-PA.9).
   obtenerEstado(jobId: string): Promise<EstadoJob | null>;
   // Éxito: estado='hecho' y documento_id = id del documento raíz de la cascada (la unidad generada).
