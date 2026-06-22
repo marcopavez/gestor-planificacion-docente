@@ -8,17 +8,20 @@ import type {
   EstadoJob,
   JobRepository,
   PayloadGuia,
+  PayloadMaterialColorear,
   PayloadPlanificacion,
   PayloadPptInfantil,
   PayloadPrueba,
   TrabajoCascada,
   TrabajoGuia,
+  TrabajoMaterialColorear,
   TrabajoPlanificacion,
   TrabajoPptInfantil,
   TrabajoPrueba,
 } from '@faro/domain';
 import {
   SchemaPayloadGuia,
+  SchemaPayloadMaterialColorear,
   SchemaPayloadPlanificacion,
   SchemaPayloadPptInfantil,
   SchemaPayloadPrueba,
@@ -316,6 +319,53 @@ export class JobRepositoryDrizzle implements JobRepository {
       if (!actualizado) throw new Error('No se pudo bloquear el job de guía tomado');
 
       const payload = SchemaPayloadGuia.parse(row.payload);
+      return { id: row.id, payload, intentos: actualizado.intentos };
+    });
+  }
+
+  async encolarMaterialColorear(payload: PayloadMaterialColorear): Promise<string> {
+    const [row] = await this.db
+      .insert(jobGeneracion)
+      .values({
+        tipoTrabajo: 'material_colorear',
+        estado: 'pendiente',
+        // Payload OA + contexto del material; el worker genera el line-art al tomarlo.
+        payload: payload as unknown as Record<string, unknown>,
+      })
+      .returning({ id: jobGeneracion.id });
+
+    if (!row) throw new Error('No se pudo encolar el job de material para colorear');
+    return row.id;
+  }
+
+  /** Análogo a tomarSiguienteGuia para la cola 'material_colorear'. */
+  async tomarSiguienteMaterialColorear(workerId: string): Promise<TrabajoMaterialColorear | null> {
+    return this.db.transaction(async (tx) => {
+      const rows = await tx.execute<{ id: string; payload: unknown }>(
+        sql`SELECT id, payload FROM job_generacion
+            WHERE estado = 'pendiente' AND tipo_trabajo = 'material_colorear'
+            ORDER BY created_at ASC
+            LIMIT 1
+            FOR UPDATE SKIP LOCKED`,
+      );
+
+      const row = (rows as unknown as { rows: Array<{ id: string; payload: unknown }> }).rows[0];
+      if (!row) return null;
+
+      const [actualizado] = await tx
+        .update(jobGeneracion)
+        .set({
+          estado: 'en_proceso',
+          lockedBy: workerId,
+          lockedAt: new Date(),
+          intentos: sql`${jobGeneracion.intentos} + 1`,
+        })
+        .where(eq(jobGeneracion.id, row.id))
+        .returning({ intentos: jobGeneracion.intentos });
+
+      if (!actualizado) throw new Error('No se pudo bloquear el job de material para colorear tomado');
+
+      const payload = SchemaPayloadMaterialColorear.parse(row.payload);
       return { id: row.id, payload, intentos: actualizado.intentos };
     });
   }

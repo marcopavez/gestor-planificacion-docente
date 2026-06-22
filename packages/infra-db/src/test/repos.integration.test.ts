@@ -551,6 +551,35 @@ describe('JobRepository — cola de guía del alumno (Tanda 1)', () => {
 });
 
 // ---------------------------------------------------------------------------
+// JobRepository.encolarMaterialColorear / tomarSiguienteMaterialColorear — cola de material para colorear
+// ---------------------------------------------------------------------------
+describe('JobRepository — cola de material para colorear', () => {
+  it('encolarMaterialColorear → tomarSiguienteMaterialColorear devuelve el payload; otras colas NO la toman', async () => {
+    const db = await crearDb();
+    const jobs = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
+
+    const id = await jobs.encolarMaterialColorear({
+      asignatura: 'Ciencias Naturales',
+      nivel: '2º básico',
+      oaCodigo: 'CN02 OA 01',
+      establecimiento: 'Colegio Demo',
+    });
+    expect(id).toBeDefined();
+
+    // Aislamiento de colas: ninguna cola vecina toma un job de material para colorear (filtran por tipo_trabajo).
+    expect(await jobs.tomarSiguiente('w-cascada')).toBeNull();
+    expect(await jobs.tomarSiguientePrueba('w-prueba')).toBeNull();
+    expect(await jobs.tomarSiguientePptInfantil('w-ppt')).toBeNull();
+    expect(await jobs.tomarSiguienteGuia('w-guia')).toBeNull();
+
+    const t = await jobs.tomarSiguienteMaterialColorear('w-colorear');
+    expect(t?.id).toBe(id);
+    expect(t?.payload.oaCodigo).toBe('CN02 OA 01');
+    expect(t?.intentos).toBe(1);
+  }, T);
+});
+
+// ---------------------------------------------------------------------------
 // JobRepository.obtenerEstado — lectura del estado para el polling de la web (H-PA.9)
 // ---------------------------------------------------------------------------
 describe('JobRepository — obtenerEstado (H-PA.9)', () => {
