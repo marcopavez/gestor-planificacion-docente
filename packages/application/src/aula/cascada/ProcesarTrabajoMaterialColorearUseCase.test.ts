@@ -68,7 +68,8 @@ function oasCon(oa: ObjetivoAprendizaje | null): OaRepository {
 }
 
 // uow doble: ejecuta la fn con repos en memoria, devuelve un id fijo.
-function uowFake(creado: { doc?: NuevoDocumento }): UnidadDeTrabajo {
+// `creado.marcarHecho` captura la llamada a repos.jobs.marcarHecho dentro de la transacción.
+function uowFake(creado: { doc?: NuevoDocumento; marcarHecho?: { jobId: string; documentoId: string } }): UnidadDeTrabajo {
   return {
     async enTransaccion(fn) {
       const repos: ReposTransaccion = {
@@ -79,7 +80,12 @@ function uowFake(creado: { doc?: NuevoDocumento }): UnidadDeTrabajo {
           },
         },
         trazas: { async registrar() {} },
-        jobs: { async marcarHecho() {} },
+        jobs: {
+          async marcarHecho(jobId: string, documentoId: string) {
+            // Registra la llamada para que el test pueda verificarla.
+            creado.marcarHecho = { jobId, documentoId };
+          },
+        },
       } as unknown as ReposTransaccion;
       return fn(repos);
     },
@@ -104,12 +110,14 @@ const TRABAJO: TrabajoMaterialColorear = {
 describe('ProcesarTrabajoMaterialColorearUseCase', () => {
   it('happy path: persiste un material_colorear borrador y marca el job hecho', async () => {
     const sink: { hecho?: string } = {};
-    const creado: { doc?: NuevoDocumento } = {};
+    const creado: { doc?: NuevoDocumento; marcarHecho?: { jobId: string; documentoId: string } } = {};
     const uc = nuevoUseCase(jobsConUno(TRABAJO, sink), oasCon(OA), uowFake(creado));
     const r = await uc.ejecutarSiguiente('w1');
     expect(r.tipo).toBe('hecho');
     expect(creado.doc?.tipo).toBe('material_colorear');
     expect(creado.doc?.corpusVersionId).toBe('cv-1');
+    // Verifica que marcarHecho se llamó dentro de la transacción (sobre repos.jobs, no el outer JobRepository).
+    expect(creado.marcarHecho).toStrictEqual({ jobId: 'job-1', documentoId: 'doc-1' });
   });
 
   it('sin trabajo → sin_trabajo', async () => {
