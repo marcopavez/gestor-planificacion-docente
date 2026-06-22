@@ -268,3 +268,7 @@ export {
   gradoDeNivel,
 } from './schemas/lamina.js';
 export type { Lamina, DescripcionDibujo } from './schemas/lamina.js';
+
+// --- Ficha educativa para colorear (Plan 2, 1º-3º básico) ---
+export { SchemaFicha, SchemaEjerciciosFicha, fugaDeTextoEnFicha } from './schemas/ficha.js';
+export type { Ficha, EjerciciosFicha } from './schemas/ficha.js';
