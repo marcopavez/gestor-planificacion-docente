@@ -251,6 +251,8 @@ export { claveDibujo } from './imagenes/claveDibujo.js';
 export type { ImageGenPort, OpcionesLineArt } from './ports/index.js';
 export { SchemaPayloadMaterialColorear } from './schemas/payloadMaterialColorear.js';
 export type { PayloadMaterialColorear } from './schemas/payloadMaterialColorear.js';
+export { SchemaPayloadFicha } from './schemas/payloadFicha.js';
+export type { PayloadFicha } from './schemas/payloadFicha.js';
 export type {
   BancoImagenesGeneradasPort,
   DibujoCacheado,
