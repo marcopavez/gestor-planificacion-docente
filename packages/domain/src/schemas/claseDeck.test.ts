@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import {
   acentoAsignatura5y6,
   SchemaClaseDeck,
+  SlideDeck,
   TEMAS_DECK_INFANTIL,
   temaDeckInfantil,
   tramoDeNivel,
@@ -180,5 +181,18 @@ describe('temaDeckInfantil (acento por asignatura en 5-6 — refs MINEDUC)', () 
     expect(() =>
       SchemaClaseDeck.parse({ ...deckPrevio, tema: temaDeckInfantil('5º básico', 'Matemática') }),
     ).not.toThrow();
+  });
+});
+
+describe('SlideDeck.topico_imagen (banco de imágenes — aditivo)', () => {
+  it('acepta un slide con topico_imagen', () => {
+    const s = SlideDeck.parse({
+      momento: 'inicio', titulo: 'T', contenido: ['a'], notas_docente: 'n', topico_imagen: 'conteo',
+    });
+    expect(s.topico_imagen).toBe('conteo');
+  });
+  it('sigue siendo opcional (slides previos sin el campo validan)', () => {
+    const s = SlideDeck.parse({ momento: 'inicio', titulo: 'T', contenido: [], notas_docente: 'n' });
+    expect(s.topico_imagen).toBeUndefined();
   });
 });
