@@ -34,6 +34,9 @@ export { GenerarPruebaFormativaUseCase } from './aula/cascada/GenerarPruebaForma
 
 // --- Guía del alumno (Tanda 1): guía híbrida standalone desde OA + conocimiento ---
 export { GenerarGuiaUseCase } from './aula/cascada/GenerarGuiaUseCase.js';
+
+// --- Material para colorear (Plan 1): descripción del dibujo anclada al OA ---
+export { GenerarDescripcionDibujoUseCase } from './aula/cascada/GenerarDescripcionDibujoUseCase.js';
 export { ProcesarTrabajoGuiaUseCase } from './aula/cascada/ProcesarTrabajoGuiaUseCase.js';
 export type {
   DependenciasProcesarGuia,

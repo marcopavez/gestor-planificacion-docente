@@ -184,6 +184,22 @@ export const INSTR_GUIA = instruccion(
   ].join('\n'),
 );
 
+// Material para colorear: la IA propone QUÉ dibujar anclado al OA. 'descripcion_en' va a Imagen
+// (solo-inglés). Restricción legal: dibujos originales; NUNCA personajes con copyright/marca.
+export const INSTR_DIBUJO = instruccion(
+  [
+    'Propón UN dibujo simple para COLOREAR (line-art), apropiado para niños de 1º a 3º básico, ligado al OA y al conocimiento provistos.',
+    'El dibujo es pedagógico, NO decorativo: refleja lo que se aprende (p. ej. conteo → objetos para contar; "seres vivos" → un animal concreto).',
+    "- 'concepto': etiqueta CORTA en español de lo que se dibuja (p. ej. 'conteo de frutas').",
+    "- 'descripcion_en': descripción visual EN INGLÉS, concreta y breve (1–2 frases), de UNA escena simple apta para line-art de contornos gruesos.",
+    'Reglas del dibujo (obligatorias):',
+    '  · Sin texto, letras ni números dentro del dibujo.',
+    '  · Formas simples y grandes, fáciles de pintar para un niño pequeño.',
+    '  · PROHIBIDO: personajes con copyright o marca (Disney, Frozen, Pokémon, logos, etc.). Solo objetos/animales/escenas genéricos y originales.',
+    '  · Evita escenas con personas si puedes (prefiere animales/objetos).',
+  ].join('\n'),
+);
+
 // --- Entradas de usuario (la petición concreta + artefactos aguas arriba) ---
 
 export function entradaUnidad(ctx: ContextoCascada): string {
@@ -240,6 +256,21 @@ export function entradaGuia(ctx: ContextoCascada, conocimiento: string): string 
     `OA: ${oa?.codigo} — ${oa?.descripcion}`,
     `Conocimiento a trabajar en esta guía: ${conocimiento}`,
     'Genera una guía de trabajo para el alumno sobre ESE conocimiento, anclada al OA.',
+  ].join('\n');
+}
+
+/** Entrada para la descripción del dibujo de la lámina: asignatura/nivel/OA + el conocimiento opcional. */
+export function entradaDibujo(ctx: ContextoCascada, concepto?: string): string {
+  const oa = ctx.oaSeleccionados[0];
+  const lineaConcepto = concepto !== undefined && concepto.trim() !== ''
+    ? `Concepto a representar: ${concepto}`
+    : 'Concepto a representar: (propón uno apropiado al OA)';
+  return [
+    `Asignatura: ${ctx.asignatura}`,
+    `Nivel: ${ctx.nivel}`,
+    `OA: ${oa?.codigo} — ${oa?.descripcion}`,
+    lineaConcepto,
+    'Propón el dibujo para colorear (concepto en español + descripcion_en en inglés), anclado al OA.',
   ].join('\n');
 }
 
