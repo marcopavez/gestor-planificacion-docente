@@ -199,6 +199,37 @@ describe('GenerarPruebaFormativaUseCase (Fase 4, prueba formativa sin API key)',
     await expect(uc.ejecutar(unidadMuestra('1º básico'))).rejects.toThrow(GeneracionError);
   });
 
+  it('rechaza (GeneracionError) una prueba con dos ítems de enunciado idéntico (#3)', async () => {
+    const itm: Prueba['items'][number] = {
+      oa: 'CN01 OA 01',
+      habilidad: 'recordar',
+      tipo: 'seleccion_multiple',
+      enunciado: '¿Cuál de estos es un ser vivo?',
+      alternativas: [
+        { texto: 'Una roca', correcta: false },
+        { texto: 'Un árbol', correcta: true },
+      ],
+      retroalimentacion: 'Observa cuál puede crecer.',
+    };
+    const pruebaDup: Prueba = {
+      ...pruebaMuestra,
+      tabla_especificaciones: [{ oa: 'CN01 OA 01', n_items: 2 }],
+      items: [itm, { ...itm }],
+    };
+    const llm: LlmPort = {
+      async generar(args) {
+        return {
+          parsed: args.schema.parse(pruebaDup),
+          stopReason: 'end_turn',
+          usage: { input: 0, output: 0, cacheRead: 0, cacheCreation: 0 },
+          modelo: 'm',
+        };
+      },
+    };
+    const uc = new GenerarPruebaFormativaUseCase(llm);
+    await expect(uc.ejecutar(unidadMuestra('1º básico'))).rejects.toThrow(GeneracionError);
+  });
+
   it('ejecutarConMeta expone los metadatos de la llamada (traza_ia)', async () => {
     const uc = new GenerarPruebaFormativaUseCase(llmDeMuestras([]));
 

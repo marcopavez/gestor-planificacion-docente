@@ -9,7 +9,7 @@
 // no este use case (misma convención que la cascada y el PPT infantil).
 
 import type { LlmPort, PlanificacionUnidad, Prueba } from '@faro/domain';
-import { fugaDeTextoEnPrueba, GeneracionError, SchemaPrueba, tramoDeNivel } from '@faro/domain';
+import { fugaDeTextoEnPrueba, GeneracionError, itemsDuplicados, SchemaPrueba, tramoDeNivel } from '@faro/domain';
 import { bloqueCorpusUnidad, entradaPrueba, exigirParsedConMeta, INSTR_PRUEBA } from './generacion.js';
 import type { MetaGeneracion } from './generacion.js';
 
@@ -45,6 +45,13 @@ export class GenerarPruebaFormativaUseCase {
     const fuga = fugaDeTextoEnPrueba(valido);
     if (fuga !== null) {
       throw new GeneracionError(`fuga_texto:${fuga.campo}#${fuga.itemIndex}(${fuga.largo})`);
+    }
+
+    // Anti-duplicados: la IA a veces repite el mismo enunciado en dos ítems (sólo cambia la imagen).
+    // Un duplicado es contenido inválido → rechazo + reintento (INV-2), igual que la fuga.
+    const dup = itemsDuplicados(valido.items);
+    if (dup !== null) {
+      throw new GeneracionError(`items_duplicados:#${dup.itemIndex}`);
     }
 
     return { valor: valido, meta };
