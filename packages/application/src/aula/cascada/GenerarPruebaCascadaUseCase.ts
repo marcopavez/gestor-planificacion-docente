@@ -3,7 +3,7 @@
 // Distinta de GenerarPruebaUseCase (esqueleto H-0.8, ruta DB/RAG): aquí no hay repos ni cola.
 
 import type { LlmPort, PlanificacionUnidad, Prueba } from '@faro/domain';
-import { SchemaPrueba } from '@faro/domain';
+import { SchemaPrueba, tramoDeNivel } from '@faro/domain';
 import { bloqueCorpus, entradaPrueba, exigirParsedConMeta, INSTR_PRUEBA } from './generacion.js';
 import type { MetaGeneracion } from './generacion.js';
 import type { ContextoCascada } from './tipos.js';
@@ -19,7 +19,7 @@ export class GenerarPruebaCascadaUseCase {
       tarea: 'redaccion',
       schema: SchemaPrueba,
       system: [bloqueCorpus(ctx), INSTR_PRUEBA],
-      entradaUsuario: entradaPrueba(unidad),
+      entradaUsuario: entradaPrueba(unidad, tramoDeNivel(unidad.nivel)),
     });
     return exigirParsedConMeta(salida);
   }
