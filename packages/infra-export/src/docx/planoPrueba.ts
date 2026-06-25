@@ -78,6 +78,8 @@ export type ItemPlano =
       readonly enunciado: string;
       readonly puntaje?: number;
       readonly imagenPlaceholder: string;
+      readonly imagenClave?: string; // clave del PNG en el banco (el adapter resuelve el Buffer)
+      readonly imagenPng?: Buffer; // PNG ya leído del banco (lo inyecta el adapter); si falta → placeholder
       readonly solucion?: string;
       readonly retro?: string;
     };
@@ -265,6 +267,7 @@ export function itemPlano(it: ItemPruebaType, numero: number, mostrarSolucion: b
         tipo: 'pictorico',
         ...base,
         imagenPlaceholder: `IMAGEN: ${it.imagen ?? '(sin descripción)'}`,
+        ...(it.imagen_clave !== undefined ? { imagenClave: it.imagen_clave } : {}),
         ...solucion,
         ...retro,
       };

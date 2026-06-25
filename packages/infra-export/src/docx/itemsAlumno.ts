@@ -6,6 +6,7 @@
 import {
   AlignmentType,
   BorderStyle,
+  ImageRun,
   Paragraph,
   ShadingType,
   Table,
@@ -105,12 +106,31 @@ export function renderItemAlumno(item: ItemPlano): Array<Paragraph | Table> {
     }
     case 'pictorico': {
       out.push(enunciadoParrafo(item.numero, item.enunciado, item.puntaje));
-      out.push(cajaPlaceholder(item.imagenPlaceholder));
+      out.push(imagenOPlaceholder(item.imagenPng, item.imagenPlaceholder));
       break;
     }
   }
 
   return out;
+}
+
+// Tamaño del apoyo visual del ítem pictórico (cuadrado moderado: comparte página con el resto del ítem).
+const IMG_ITEM_PX = 320;
+
+/** ImageRun centrado si hay PNG; si no, la caja placeholder "IMAGEN: …" de siempre. */
+export function imagenOPlaceholder(png: Buffer | undefined, textoPlaceholder: string): Paragraph | Table {
+  if (png === undefined) return cajaPlaceholder(textoPlaceholder);
+  return new Paragraph({
+    alignment: AlignmentType.CENTER,
+    children: [
+      new ImageRun({
+        type: 'png',
+        data: png,
+        transformation: { width: IMG_ITEM_PX, height: IMG_ITEM_PX },
+        altText: { name: 'apoyo', title: 'Apoyo visual', description: textoPlaceholder },
+      }),
+    ],
+  });
 }
 
 export function titSeccion(texto: string): Paragraph {

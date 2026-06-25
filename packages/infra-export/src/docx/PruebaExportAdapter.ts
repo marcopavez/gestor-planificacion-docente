@@ -7,7 +7,7 @@
 // "IMAGEN: …" (nunca asset real), pauta = DOCUMENTO SEPARADO (con respuesta + retroalimentación por ítem
 // + tabla de especificaciones). `.pdf` = el .docx renderizado por LibreOffice (cero divergencia).
 
-import { mkdir, mkdtemp, rm, stat, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -39,6 +39,7 @@ import {
   rutaPdfEsperada,
 } from './PdfExportAdapter.js';
 import { planoPrueba, type EncabezadoPlano, type ItemPlano, type PruebaPlano, type SeccionPruebaPlano } from './planoPrueba.js';
+import { imagenOPlaceholder } from './itemsAlumno.js';
 
 const execFileP = promisify(execFile);
 
@@ -61,7 +62,28 @@ export class PruebaExportAdapter {
   constructor(
     private readonly dirSalida: string,
     private readonly log: Logger,
+    // Banco de PNG generados: el ítem pictórico con `imagen_clave` se resuelve a <dirBanco>/<clave>.png;
+    // si falta, cae al placeholder de texto. Mismo patrón que FichaExportAdapter/LaminaExportAdapter.
+    private readonly dirBanco: string,
   ) {}
+
+  /** Resuelve el PNG del banco para cada ítem pictórico con `imagenClave` y lo inyecta en el IR. */
+  private async inyectarImagenes(plano: PruebaPlano): Promise<PruebaPlano> {
+    const secciones = await Promise.all(
+      plano.secciones.map(async (sec) => ({
+        ...sec,
+        items: await Promise.all(
+          sec.items.map(async (it) => {
+            if (it.tipo !== 'pictorico' || it.imagenClave === undefined) return it;
+            const ruta = join(this.dirBanco, `${it.imagenClave}.png`);
+            if (!existsSync(ruta)) return it;
+            return { ...it, imagenPng: await readFile(ruta) };
+          }),
+        ),
+      })),
+    );
+    return { ...plano, secciones };
+  }
 
   async aDocx(
     prueba: Prueba,
@@ -69,7 +91,8 @@ export class PruebaExportAdapter {
     variante: VariantePrueba,
     idDocumento?: string,
   ): Promise<ArchivoExportado> {
-    const plano = planoPrueba(prueba, encabezado, variante);
+    const planoBase = planoPrueba(prueba, encabezado, variante);
+    const plano = await this.inyectarImagenes(planoBase);
     const doc = construirDocumentoPrueba(plano);
 
     const data = await Packer.toBuffer(doc);
@@ -319,7 +342,7 @@ function renderItem(item: ItemPlano, mostrarSolucion: boolean): Array<Paragraph 
     }
     case 'pictorico': {
       out.push(enunciadoParrafo(item.numero, item.enunciado, item.puntaje));
-      out.push(cajaPlaceholder(item.imagenPlaceholder));
+      out.push(imagenOPlaceholder(item.imagenPng, item.imagenPlaceholder));
       break;
     }
   }

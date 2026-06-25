@@ -4,16 +4,18 @@
 // como el test de DocxExportAdapter). Clave: alumno OCULTA soluciones; pauta las MUESTRA; documento
 // VERTICAL; placeholder "IMAGEN: " del pictórico; fuente Arial.
 
+import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { inflateRawSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 import type { EncabezadoPrueba, Prueba } from '@faro/domain';
 import { crearLoggerHijo } from '@faro/observability';
 import { Packer } from 'docx';
-import { construirDocumentoPrueba } from './PruebaExportAdapter.js';
+import { construirDocumentoPrueba, PruebaExportAdapter } from './PruebaExportAdapter.js';
 import { planoPrueba } from './planoPrueba.js';
 
 const log = crearLoggerHijo('infra-export-prueba-test');
-void log; // logger disponible si se añaden tests de aDocx en disco; el render por XML no lo necesita.
 
 /**
  * Extrae una parte (p. ej. word/document.xml) de un .docx (zip) SIN dependencias externas: lee el
@@ -51,6 +53,29 @@ function parteXml(buf: Buffer, parte: string): string {
 }
 
 const documentXml = (buf: Buffer): string => parteXml(buf, 'word/document.xml');
+
+/** Lista los nombres de todas las entradas del zip (.docx) — para descubrir si embebe word/media/. */
+function entradasDocx(buf: Buffer): string[] {
+  let eocd = -1;
+  for (let i = buf.length - 22; i >= 0; i--) {
+    if (buf.readUInt32LE(i) === 0x06054b50) {
+      eocd = i;
+      break;
+    }
+  }
+  if (eocd < 0) throw new Error('zip sin EOCD');
+  let off = buf.readUInt32LE(eocd + 16);
+  const total = buf.readUInt16LE(eocd + 10);
+  const nombres: string[] = [];
+  for (let n = 0; n < total; n++) {
+    const nameLen = buf.readUInt16LE(off + 28);
+    const extraLen = buf.readUInt16LE(off + 30);
+    const commentLen = buf.readUInt16LE(off + 32);
+    nombres.push(buf.toString('utf8', off + 46, off + 46 + nameLen));
+    off += 46 + nameLen + extraLen + commentLen;
+  }
+  return nombres;
+}
 
 // Respuesta conocida que NO debe aparecer en la variante alumno y SÍ en la pauta.
 const RESPUESTA_DESARROLLO = 'El agua se evapora por el calor del sol.';
@@ -272,5 +297,55 @@ describe('construirDocumentoPrueba (render .docx)', () => {
     const styles = parteXml(buf, 'word/styles.xml');
     expect(styles).toContain('Arial');
     expect(documentXml(buf)).not.toContain('Times New Roman');
+  });
+});
+
+describe('PruebaExportAdapter.aDocx — banco de imágenes (PNG line-art por imagen_clave)', () => {
+  it('embebe el PNG del banco en un ítem pictórico con imagen_clave (docx con word/media)', async () => {
+    const dirBanco = await mkdtemp(join(tmpdir(), 'faro-prueba-banco-'));
+    await writeFile(join(dirBanco, 'cafe1234.png'), Buffer.from([0x89, 0x50, 0x4e, 0x47]));
+    const dir = await mkdtemp(join(tmpdir(), 'faro-prueba-out-'));
+    const adapter = new PruebaExportAdapter(dir, log, dirBanco);
+
+    const pruebaConImagen: Prueba = {
+      ...prueba,
+      items: [
+        {
+          oa: 'MA01 OA 01',
+          habilidad: 'recordar',
+          tipo: 'pictorico',
+          enunciado: '¿Cuántas? Escribe el número.',
+          imagen: 'tres manzanas',
+          imagen_clave: 'cafe1234',
+        },
+      ],
+    };
+    const archivo = await adapter.aDocx(pruebaConImagen, encabezado, 'alumno');
+    const media = entradasDocx(await readFile(archivo.ruta)).filter((e) => /^word\/media\/.+/.test(e));
+    expect(media.length).toBeGreaterThan(0);
+  });
+
+  it('cae al placeholder de texto cuando el ítem pictórico no tiene PNG en disco', async () => {
+    const dirBanco = await mkdtemp(join(tmpdir(), 'faro-prueba-banco-')); // vacío
+    const dir = await mkdtemp(join(tmpdir(), 'faro-prueba-out-'));
+    const adapter = new PruebaExportAdapter(dir, log, dirBanco);
+
+    const pruebaSinPng: Prueba = {
+      ...prueba,
+      items: [
+        {
+          oa: 'MA01 OA 01',
+          habilidad: 'recordar',
+          tipo: 'pictorico',
+          enunciado: '¿Cuántas?',
+          imagen: 'tres manzanas',
+          imagen_clave: 'noexiste',
+        },
+      ],
+    };
+    const archivo = await adapter.aDocx(pruebaSinPng, encabezado, 'alumno');
+    const buf = await readFile(archivo.ruta);
+    expect(entradasDocx(buf).filter((e) => /^word\/media\/.+/.test(e))).toEqual([]); // sin imagen
+    expect(documentXml(buf)).toContain('IMAGEN: tres manzanas'); // placeholder de texto
   });
 });
