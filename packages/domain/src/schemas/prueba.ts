@@ -96,3 +96,22 @@ export function fugaDeTextoEnPrueba(
 ): { campo: string; itemIndex: number; largo: number } | null {
   return fugaDeTextoEnItems(prueba.items);
 }
+
+/**
+ * Detecta ítems con el MISMO enunciado (normalizado: trim, minúsculas, espacios colapsados). Un
+ * duplicado en una prueba/ficha es un defecto de generación (p. ej. dos ítems "¿quién va 2º?" que
+ * sólo cambian la imagen). El caller lanza GeneracionError → el worker reintenta (INV-2). Devuelve el
+ * índice del PRIMER ítem repetido, o null si todos los enunciados son distintos.
+ */
+export function itemsDuplicados(
+  items: readonly ItemPruebaType[],
+): { itemIndex: number } | null {
+  const vistos = new Set<string>();
+  for (const [itemIndex, it] of items.entries()) {
+    const norm = it.enunciado.trim().toLowerCase().replace(/\s+/g, ' ');
+    if (norm.length === 0) continue; // enunciado vacío lo cazan otros gates, no este
+    if (vistos.has(norm)) return { itemIndex };
+    vistos.add(norm);
+  }
+  return null;
+}

@@ -4,6 +4,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { SchemaPrueba } from './prueba.js';
+import { itemsDuplicados } from './prueba.js';
 
 const pruebaValida = {
   asignatura: 'Matemática',
@@ -135,5 +136,33 @@ describe('SchemaPrueba', () => {
     };
     const resultado = SchemaPrueba.safeParse(conHabilidadInvalida);
     expect(resultado.success).toBe(false);
+  });
+});
+
+describe('itemsDuplicados', () => {
+  const base = {
+    oa: 'MA01 OA 01',
+    habilidad: 'recordar' as const,
+    tipo: 'seleccion_multiple' as const,
+    alternativas: [
+      { texto: 'a', correcta: true },
+      { texto: 'b', correcta: false },
+    ],
+  };
+
+  it('detecta enunciados repetidos (normaliza espacios y mayúsculas)', () => {
+    const items = [
+      { ...base, enunciado: '¿Qué artista está en el 2º lugar?' },
+      { ...base, enunciado: '  ¿Qué Artista está en el  2º lugar?  ' },
+    ];
+    expect(itemsDuplicados(items)).toEqual({ itemIndex: 1 });
+  });
+
+  it('devuelve null cuando todos los enunciados son distintos', () => {
+    const items = [
+      { ...base, enunciado: '¿Cuántas estrellas hay?' },
+      { ...base, enunciado: '¿Qué número viene después del 8?' },
+    ];
+    expect(itemsDuplicados(items)).toBeNull();
   });
 });

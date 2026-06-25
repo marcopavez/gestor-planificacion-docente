@@ -104,7 +104,7 @@ export { SchemaClase } from './schemas/clase.js';
 export type { Clase } from './schemas/clase.js';
 export { SchemaPmeAccion } from './schemas/pmeAccion.js';
 export type { PmeAccion } from './schemas/pmeAccion.js';
-export { SchemaPrueba, ItemPrueba, LIMITE_TEXTO_ITEM, fugaDeTextoEnPrueba, fugaDeTextoEnItems } from './schemas/prueba.js';
+export { SchemaPrueba, ItemPrueba, LIMITE_TEXTO_ITEM, fugaDeTextoEnPrueba, fugaDeTextoEnItems, itemsDuplicados } from './schemas/prueba.js';
 export { validarItemPrueba } from './gates/itemPrueba.js';
 export type { ItemPruebaType, Prueba } from './schemas/prueba.js';
 export { SchemaEncabezadoPrueba, OaEncabezado } from './schemas/encabezadoPrueba.js';
