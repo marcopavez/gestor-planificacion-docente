@@ -15,11 +15,12 @@ export const SlideDeck = z.object({
   titulo: z.string(),
   contenido: z.array(z.string()), // viñetas
   notas_docente: z.string(),
-  sugerencia_imagen: z.string().optional(),
-  // Tópico del catálogo de imágenes (banco): la IA lo elige de la lista fija que se le inyecta. El
-  // export lo resuelve a una imagen real (color); si no resuelve, cae al placeholder. Opcional →
-  // backward-compat con decks ya generados. `sugerencia_imagen` se conserva para las notas del orador.
-  topico_imagen: z.string().optional(),
+  // Descripción visual breve y CONCRETA, anclada al contenido del slide: la IA la propone para generar
+  // una ilustración line-art (Plan 2). Reemplaza topico_imagen/sugerencia_imagen (catálogo de íconos).
+  imagen: z.string().optional(),
+  // Clave del PNG line-art resuelto desde `imagen` (la pone el ProcesarTrabajo*, no la IA). El export
+  // resuelve <dirBanco>/<imagen_clave>.png; si falta, cae al placeholder visible. Opcional → back-compat.
+  imagen_clave: z.string().optional(),
   // Tipo de slide (Fase 3): por defecto 'contenido' → backward-compatible con los decks ya generados.
   // 'pregunta'/'elige' llevan `opciones`; la correcta NO se revela en la slide (va en notas_docente).
   tipo: z.enum(['contenido', 'pregunta', 'que_sigue', 'elige']).default('contenido'),

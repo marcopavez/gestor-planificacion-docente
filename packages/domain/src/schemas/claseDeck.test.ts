@@ -184,15 +184,25 @@ describe('temaDeckInfantil (acento por asignatura en 5-6 — refs MINEDUC)', () 
   });
 });
 
-describe('SlideDeck.topico_imagen (banco de imágenes — aditivo)', () => {
-  it('acepta un slide con topico_imagen', () => {
-    const s = SlideDeck.parse({
-      momento: 'inicio', titulo: 'T', contenido: ['a'], notas_docente: 'n', topico_imagen: 'conteo',
-    });
-    expect(s.topico_imagen).toBe('conteo');
+describe('SlideDeck imagen anclada (Plan 2)', () => {
+  const base = {
+    momento: 'inicio' as const,
+    titulo: 'Contemos estrellas',
+    contenido: ['¿Cuántas ves?'],
+    notas_docente: 'La respuesta se lee de la imagen.',
+  };
+
+  it('parsea un slide con imagen (descripción) + imagen_clave (PNG resuelto)', () => {
+    const r = SlideDeck.parse({ ...base, imagen: 'siete estrellas grandes', imagen_clave: 'a1b2c3d4' });
+    expect(r.imagen).toBe('siete estrellas grandes');
+    expect(r.imagen_clave).toBe('a1b2c3d4');
   });
-  it('sigue siendo opcional (slides previos sin el campo validan)', () => {
-    const s = SlideDeck.parse({ momento: 'inicio', titulo: 'T', contenido: [], notas_docente: 'n' });
-    expect(s.topico_imagen).toBeUndefined();
+
+  it('un slide viejo con topico_imagen/sugerencia_imagen sigue parseando (las claves extra se ignoran)', () => {
+    const r = SlideDeck.parse({ ...base, topico_imagen: 'estrella', sugerencia_imagen: 'una recta numérica' });
+    expect(r.titulo).toBe('Contemos estrellas');
+    // Las claves viejas YA NO están en el tipo (Zod las descarta).
+    expect((r as Record<string, unknown>)['sugerencia_imagen']).toBeUndefined();
+    expect((r as Record<string, unknown>)['topico_imagen']).toBeUndefined();
   });
 });
