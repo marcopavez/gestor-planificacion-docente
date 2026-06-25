@@ -133,13 +133,15 @@ export const INSTR_PRUEBA = instruccion(
     "- 'tipo_evaluacion': 'formativa' (úsala salvo que se pida 'diagnostica').",
     "- 'tabla_especificaciones': una fila por OA evaluado (n_items; el puntaje es opcional en formativa).",
     '- Cada ítem tributa a un OA de la unidad; selección múltiple y verdadero/falso con EXACTAMENTE una alternativa correcta.',
-    "- Puedes usar tipos variados apropiados al nivel: 'seleccion_multiple', 'verdadero_falso', 'completacion', 'desarrollo', 'ordenar' (con 'secuencia_correcta'), 'terminos_pareados' (con 'pares' columnaA↔columnaB) y 'pictorico' (con 'imagen' = una DESCRIPCIÓN BREVE, 1 frase, del apoyo visual; nunca una imagen real).",
+    "- Puedes usar tipos variados apropiados al nivel: 'seleccion_multiple', 'verdadero_falso', 'completacion', 'desarrollo', 'ordenar' (con 'secuencia_correcta'), 'terminos_pareados' (con 'pares' columnaA↔columnaB) y 'pictorico'.",
+    "- En un ítem 'pictorico', 'imagen' = una DESCRIPCIÓN visual CONCRETA y depictable de lo que se ve (objetos/escena), anclada al enunciado (p. ej. 'siete estrellas en una entrada de show'; 'una fila de cinco instrumentos: guitarra, tambor, flauta, trompeta, violín'). NO es una imagen real; es la descripción con la que se genera la ilustración line-art.",
+    '- CONTEO en pre-lectores (tramo 1-2): formula la pregunta como RESPUESTA ABIERTA ("¿Cuántas ___ hay? Escribe el número") cuya respuesta se LEE de la imagen; la pauta = la cantidad dibujada, que el/la docente confirma. NO uses selección múltiple con un número fijo como clave (los modelos de imagen no dibujan cantidades exactas de forma confiable).',
     "- Cada campo de texto contiene SOLO el contenido del ítem para el estudiante: NUNCA escribas notas para ti, razonamiento, ni instrucciones de formato dentro de un campo (sobre todo en 'imagen').",
     '- Cada ítem evalúa algo DISTINTO: no repitas el mismo enunciado en dos ítems (ni la misma pregunta cambiando sólo la imagen).',
     "- El corazón formativo: cada ítem lleva 'retroalimentacion' = qué orientar al estudiante si falla.",
     "- 'perfil_nivel' según el tramo de edad ('1-2' para 1º–2º básico, '3-4', '5-6', o 'generico').",
     '- Calibración por TRAMO DE EDAD (viene en la entrada del usuario):',
-    '  · Tramo 1-2 (pre-lectores): enunciados MUY breves, pensados para que el/la docente los lea en voz alta; en selección múltiple usa MÁXIMO 2 alternativas; NO uses verdadero/falso con secuencias largas de números; NO uses "ordenar" con más de 3 elementos.',
+    '  · Tramo 1-2 (pre-lectores): enunciados MUY breves, pensados para que el/la docente los lea en voz alta; en selección múltiple usa MÁXIMO 2 alternativas; NO uses verdadero/falso con secuencias largas de números; NO uses "ordenar" con más de 3 elementos; incluye al menos un ítem pictórico con apoyo visual.',
     '  · Tramos 3-4 y 5-6: enunciados para lectores autónomos, con complejidad creciente según el tramo.',
     "- El puntaje es opcional: si lo incluyes en un ítem, inclúyelo también en su fila de la tabla y haz que cuadren.",
   ].join('\n'),
@@ -156,6 +158,7 @@ export const INSTR_DECK = instruccion(
 
 // Fase 3 (PPT infantil): la IA redacta SOLO los slides; el use case ensambla el ClaseDeck (tema/tramo
 // salen de los datos, no de la IA). El tramo (1-2 / 3-4 / 5-6) condiciona el lenguaje y el tamaño de texto.
+// La IA describe la imagen por escena concreta (line-art); ya no elige del catálogo Noto (Task 8, Plan 2).
 export const INSTR_DECK_INFANTIL = instruccion(
   [
     'Genera los SLIDES de un PPT INFANTIL (niños de 6 a 12 años) para proyectar una clase, derivado de su planificación de unidad.',
@@ -169,7 +172,8 @@ export const INSTR_DECK_INFANTIL = instruccion(
     "- Incluye 2–4 slides de interacción ('pregunta'/'elige') apoyadas en los OA e indicadores de la unidad.",
     "- 'notas_docente' para el/la docente: cómo guiar el slide y, en interacción, cuál es la respuesta correcta y por qué.",
     '- NO inventes OA ni alteres su texto; apóyate en el propósito, experiencias e indicadores de la unidad.',
-    "- Si un slide se beneficia de una imagen, pon en 'topico_imagen' UN valor EXACTO de la lista de tópicos disponibles de la entrada (no inventes tópicos). Si ninguno aplica, omite el campo.",
+    "- Si un slide se beneficia de una imagen, pon en 'imagen' una DESCRIPCIÓN visual breve y CONCRETA anclada al contenido del slide (qué se ve), para generar una ilustración line-art. En slides de conteo, describe los N objetos a contar dentro de la escena (p. ej. 'siete estrellas grandes en fila').",
+    "- En slides de conteo, las 'opciones' NO deben revelar la cantidad (nada de '★★★ (3 estrellas)'): la cantidad se ve en la imagen; las opciones son sólo el número o la etiqueta.",
     "- Completa también 'titulo' (del deck), 'asignatura', 'nivel' y 'oa' (códigos de la unidad), pero la aplicación FIJA esos campos y el tema visual desde la planificación: tu aporte real son los slides.",
   ].join('\n'),
 );
@@ -253,18 +257,10 @@ export function entradaDeck(unidad: PlanificacionUnidad, clase: ClasePlanificada
 }
 
 /** Entrada para el PPT infantil: la planificación completa + el tramo de edad que fija el lenguaje. */
-export function entradaDeckInfantil(
-  unidad: PlanificacionUnidad,
-  tramo: '1-2' | '3-4' | '5-6',
-  topicosColor: readonly string[],
-): string {
-  const listaTopicos = topicosColor.length
-    ? topicosColor.join(', ')
-    : '(no hay imágenes disponibles para este nivel; omite topico_imagen)';
+export function entradaDeckInfantil(unidad: PlanificacionUnidad, tramo: '1-2' | '3-4' | '5-6'): string {
   return [
     `Unidad: ${unidad.unidad} (${unidad.asignatura} · ${unidad.nivel})`,
     `Tramo de edad: ${tramo} básico`,
-    `Tópicos de imagen disponibles (elige uno EXACTO de esta lista para 'topico_imagen', o ninguno): ${listaTopicos}`,
     `Planificación de unidad (JSON):`,
     JSON.stringify(unidad),
     '',

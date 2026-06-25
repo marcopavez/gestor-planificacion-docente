@@ -11,7 +11,7 @@
 // DIFERIDO (NO en esta versión): triggers/animaciones, mini_juego, e integración web/worker async.
 
 import type { ClaseDeck, LlmPort, PlanificacionUnidad } from '@faro/domain';
-import { SchemaClaseDeck, temaDeckInfantil, topicosDisponiblesPara, tramoDeNivel } from '@faro/domain';
+import { SchemaClaseDeck, temaDeckInfantil, tramoDeNivel } from '@faro/domain';
 import { bloqueCorpusUnidad, entradaDeckInfantil, exigirParsedConMeta, INSTR_DECK_INFANTIL } from './generacion.js';
 import type { MetaGeneracion } from './generacion.js';
 
@@ -25,15 +25,14 @@ export class GenerarPptInfantilUseCase {
     // En 5-6 el tema se tiñe POR ASIGNATURA (acento + marco a sangre) según las refs MINEDUC reales.
     const tramo = tramoDeNivel(unidad.nivel);
     const tema = temaDeckInfantil(unidad.nivel, unidad.asignatura);
-    // Tópicos de imagen (color) que la IA puede elegir para este (asignatura, tramo) — patrón híbrido.
-    const topicosColor = topicosDisponiblesPara(unidad.asignatura, tramo, 'color');
 
     // La IA redacta el deck (schema validado); su aporte real son los slides. El use case fija el resto.
+    // El catálogo Noto (topicosDisponiblesPara) ya no se pasa: la IA describe la imagen por escena concreta.
     const salida = await this.llm.generar({
       tarea: 'redaccion',
       schema: SchemaClaseDeck,
       system: [bloqueCorpusUnidad(unidad), INSTR_DECK_INFANTIL],
-      entradaUsuario: entradaDeckInfantil(unidad, tramo, topicosColor),
+      entradaUsuario: entradaDeckInfantil(unidad, tramo),
     });
     const { valor: borrador, meta } = exigirParsedConMeta(salida);
 

@@ -152,7 +152,9 @@ describe('GenerarPptInfantilUseCase (Fase 3, PPT infantil sin API key)', () => {
     expect(meta.usage).toEqual({ input: 0, output: 0, cacheRead: 0, cacheCreation: 0 });
   });
 
-  it('inyecta los tópicos de imagen disponibles en la entrada del LLM (banco)', async () => {
+  it('ya NO inyecta el catálogo de tópicos en la entrada del LLM (Task 8, Plan 2)', async () => {
+    // Antes (Plan 1): se pasaba topicosDisponiblesPara(asignatura, tramo, 'color') a entradaDeckInfantil.
+    // Ahora: la IA describe la imagen por escena concreta; el catálogo Noto queda inerte.
     let entradaCapturada = '';
     const llm: LlmPort = {
       async generar(args) {
@@ -165,12 +167,12 @@ describe('GenerarPptInfantilUseCase (Fase 3, PPT infantil sin API key)', () => {
         };
       },
     };
-    // Unidad de Matemática 1º: el catálogo semilla trae 'conteo' (Matemática, 1-2, color).
     const unidadMate: PlanificacionUnidad = { ...unidadMuestra('1º básico'), asignatura: 'Matemática' };
 
     await new GenerarPptInfantilUseCase(llm).ejecutar(unidadMate);
 
-    expect(entradaCapturada).toContain('conteo'); // el tópico disponible se ofrece a la IA
-    expect(entradaCapturada.toLowerCase()).toContain('topico_imagen');
+    // El catálogo de tópicos ya no se inyecta en la entrada del LLM.
+    expect(entradaCapturada).not.toContain('Tópicos de imagen');
+    expect(entradaCapturada.toLowerCase()).not.toContain('topico_imagen');
   });
 });
