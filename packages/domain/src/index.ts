@@ -248,6 +248,7 @@ export { EntradaImagen, TRAMOS_IMAGEN, TIPOS_IMAGEN, IMAGENES_VERSION, CATALOGO_
 export type { EntradaImagenT, TramoImagen, TipoImagen } from './imagenes/catalogo.js';
 export { topicosDisponiblesPara, resolverImagen } from './imagenes/resolver.js';
 export { claveDibujo } from './imagenes/claveDibujo.js';
+export { claveIlustracion } from './imagenes/claveIlustracion.js';
 export type { ImageGenPort, OpcionesLineArt } from './ports/index.js';
 export { SchemaPayloadMaterialColorear } from './schemas/payloadMaterialColorear.js';
 export type { PayloadMaterialColorear } from './schemas/payloadMaterialColorear.js';
