@@ -79,6 +79,10 @@ async function main(): Promise<void> {
   const samplesDir =
     process.env['WORKER_SAMPLES_DIR'] ?? join(raizRepo(), 'samples', 'aula-matematica-1b');
 
+  // Banco de PNG line-art generados: compartido por la cascada (PPT), ficha/lámina y las ilustraciones
+  // de prueba/guía/PPT. Se hoista aquí para estar en scope del PptxExportAdapter de la cascada (abajo).
+  const dirBanco = join(raizRepo(), 'generated', 'imagenes-ia');
+
   const { llm, modo } = crearLlm(
     {
       CLAUDE_CODE_OAUTH_TOKEN: process.env['CLAUDE_CODE_OAUTH_TOKEN'],
@@ -96,11 +100,7 @@ async function main(): Promise<void> {
     oas,
     // uow: persiste los 4 documentos + 4 trazas + marcarHecho en UNA transacción (atomicidad).
     uow: new UnidadDeTrabajoDrizzle(db),
-    export: new PptxExportAdapter(
-      join(raizRepo(), 'generated'),
-      crearLoggerHijo('infra-export'),
-      join(raizRepo(), 'packages/infra-export/assets/imagenes'),
-    ),
+    export: new PptxExportAdapter(join(raizRepo(), 'generated'), crearLoggerHijo('infra-export'), dirBanco),
     cascada: new CascadaAulaUseCase(llm),
     clock: relojSistema,
   });
@@ -133,7 +133,7 @@ async function main(): Promise<void> {
     },
     crearLoggerHijo('infra-ai'),
   );
-  const dirBanco = join(raizRepo(), 'generated', 'imagenes-ia');
+  // dirBanco se hoistó al inicio de main() (lo usa también el PptxExportAdapter de la cascada).
   const banco = new BancoImagenesFsAdapter(dirBanco);
   // Un solo resolver de ilustraciones ancladas para los tres jobs derivados (prueba/guía/PPT).
   const ilustrador = new ResolverIlustracionUseCase({ imageGen, banco });

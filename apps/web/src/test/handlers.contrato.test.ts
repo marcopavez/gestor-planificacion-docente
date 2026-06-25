@@ -135,7 +135,7 @@ describe('Contrato de los route handlers de Aula (pglite real, sin Next)', () =>
       planes: planRepo,
       oas: oaRepo,
       uow: new UnidadDeTrabajoDrizzle(db as unknown as DrizzleDb),
-      export: new PptxExportAdapter(dirSalida, crearLoggerHijo('infra-export-web-test')),
+      export: new PptxExportAdapter(dirSalida, crearLoggerHijo('infra-export-web-test'), join(dirSalida, 'imagenes-ia')),
       cascada: new CascadaAulaUseCase(crearSamplesLlm(SAMPLES_DIR)),
       clock: reloj,
       maxIntentos: 3,

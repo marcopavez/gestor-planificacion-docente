@@ -4,7 +4,7 @@
 // mismos helpers soffice, mismo manejo de perfil temporal para conversiones concurrentes.
 
 import { existsSync } from 'node:fs';
-import { mkdir, mkdtemp, rm, stat, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { promisify } from 'node:util';
@@ -44,10 +44,27 @@ export class GuiaExportAdapter implements ExportGuiaPort {
   constructor(
     private readonly dirSalida: string,
     private readonly log: Logger,
+    // Banco de PNG generados: cada ejercicio pictórico con `imagen_clave` → <dirBanco>/<clave>.png; si
+    // falta, cae al placeholder de texto. Mismo patrón que PruebaExportAdapter/FichaExportAdapter.
+    private readonly dirBanco: string,
   ) {}
 
+  /** Resuelve el PNG del banco para cada ejercicio pictórico con `imagenClave` y lo inyecta en el IR. */
+  private async inyectarImagenes(plano: GuiaPlano): Promise<GuiaPlano> {
+    const ejercicios = await Promise.all(
+      plano.ejercicios.map(async (it) => {
+        if (it.tipo !== 'pictorico' || it.imagenClave === undefined) return it;
+        const ruta = join(this.dirBanco, `${it.imagenClave}.png`);
+        if (!existsSync(ruta)) return it;
+        return { ...it, imagenPng: await readFile(ruta) };
+      }),
+    );
+    return { ...plano, ejercicios };
+  }
+
   async aDocx(guia: Guia, inst: DatosInstitucionalesGuia, idDocumento?: string): Promise<ArchivoExportado> {
-    const plano: GuiaPlano = planoGuia(guia, inst);
+    const planoBase: GuiaPlano = planoGuia(guia, inst);
+    const plano = await this.inyectarImagenes(planoBase);
     const doc: Document = construirDocumentoGuia(plano);
     const data = await Packer.toBuffer(doc);
 

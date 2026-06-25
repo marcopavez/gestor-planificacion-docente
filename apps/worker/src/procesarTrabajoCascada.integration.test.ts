@@ -122,7 +122,7 @@ function construirUseCase(db: TestDb, llm: LlmPort, dirSalida: string, maxIntent
     oas: new OaRepositoryDrizzle(db as unknown as DrizzleDb),
     // UnidadDeTrabajoDrizzle real: la persistencia de la cascada corre en una transacción atómica.
     uow: new UnidadDeTrabajoDrizzle(db as unknown as DrizzleDb),
-    export: new PptxExportAdapter(dirSalida, crearLoggerHijo('infra-export-test')),
+    export: new PptxExportAdapter(dirSalida, crearLoggerHijo('infra-export-test'), join(dirSalida, 'imagenes-ia')),
     cascada: new CascadaAulaUseCase(llm),
     clock: reloj,
     maxIntentos,

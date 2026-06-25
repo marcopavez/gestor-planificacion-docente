@@ -92,7 +92,7 @@ export async function ejecutarCascadaDemo(input: EntradaCascadaDemo): Promise<Sa
   const exporter = new PptxExportAdapter(
     join(raizRepo(), 'generated'),
     crearLoggerHijo('infra-export'),
-    join(raizRepo(), 'packages/infra-export/assets/imagenes'),
+    join(raizRepo(), 'generated', 'imagenes-ia'),
   );
   const archivo = await exporter.exportarPptx(resultado.deck);
   const contenido = await readFile(archivo.ruta);

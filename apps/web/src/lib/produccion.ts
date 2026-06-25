@@ -102,15 +102,17 @@ export function produccion() {
     docxExport: new DocxExportAdapter(dirExport, logExport),
     pdfExport: new PdfExportAdapter(dirExport, logExport),
     // Export bajo demanda de la prueba formativa (.docx alumno/pauta; .pdf vía LibreOffice) — Fase 4.
-    pruebaExport: new PruebaExportAdapter(dirExport, logExport),
-    // Export bajo demanda de la guía del alumno (.docx/.pdf vía LibreOffice) — Tanda 1.
-    guiaExport: new GuiaExportAdapter(dirExport, logExport),
+    // Resuelve el PNG line-art del banco generado por imagen_clave (degrada a placeholder si falta).
+    pruebaExport: new PruebaExportAdapter(dirExport, logExport, dirBanco),
+    // Export bajo demanda de la guía del alumno (.docx/.pdf vía LibreOffice) — Tanda 1. Mismo banco de PNG.
+    guiaExport: new GuiaExportAdapter(dirExport, logExport, dirBanco),
     // Export bajo demanda de la lámina para colorear (.docx/.pdf). Resuelve el PNG del banco generado.
     laminaExport: new LaminaExportAdapter(dirExport, logExport, dirBanco),
     // Export bajo demanda de la ficha para colorear (.docx/.pdf). Comparte el banco de PNG con la lámina — Plan 2.
     fichaExport: new FichaExportAdapter(dirExport, logExport, dirBanco),
-    // Export bajo demanda del PPT infantil (.pptx; el deck es autocontenido) — Fase 3.
-    pptxExport: new PptxExportAdapter(dirExport, logExport, join(raizRepo(), 'packages/infra-export/assets/imagenes')),
+    // Export bajo demanda del PPT infantil (.pptx; el deck es autocontenido) — Fase 3. Resuelve el PNG
+    // line-art del banco generado por imagen_clave del slide (degrada a placeholder si falta).
+    pptxExport: new PptxExportAdapter(dirExport, logExport, dirBanco),
     // Use cases (escritura con gate) — encapsulan la lógica de dominio.
     crearPlan: new CrearPlanificacionAnualUseCase(planes, oas, corpus, relojSistema),
     listarPlanes: new ListarPlanificacionAnualUseCase(planes),
