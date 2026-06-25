@@ -89,6 +89,54 @@ describe('AnthropicLlmAdapter', () => {
     expect(salida.stopReason).toBe('max_tokens');
   });
 
+  it('truncación: finalMessage() LANZA (auto-parse del SDK) pero recupera currentMessage → parsed=null SIN lanzar (regresión guía 2026-06-25)', async () => {
+    // Reproduce el bug real: con output_config.format el SDK auto-parsea el structured output al
+    // finalizar el stream y LANZA "Failed to parse structured output as JSON: Unterminated string"
+    // sobre el JSON truncado, ANTES de que corra el gate de stop_reason del adapter. El mensaje crudo
+    // acumulado sigue accesible en stream.currentMessage (el SDK no lo limpia si el throw fue en
+    // message_stop). El adapter debe capturar el throw, leer currentMessage y devolver parsed=null.
+    const truncado = JSON.stringify(pruebaValida).slice(0, 120);
+    const mensajeCrudo = {
+      content: [{ type: 'text', text: truncado }],
+      stop_reason: 'max_tokens',
+      usage: usageFake,
+    };
+    const cliente = {
+      messages: {
+        stream: vi.fn(() => ({
+          finalMessage: async () => {
+            throw new Error(
+              'Failed to parse structured output: Error: Failed to parse structured output as JSON: Unterminated string in JSON at position 99587',
+            );
+          },
+          currentMessage: mensajeCrudo,
+        })),
+      },
+    } as unknown as Anthropic;
+    const adapter = new AnthropicLlmAdapter(cliente, logFake);
+
+    const salida = await adapter.generar(argsGenerar);
+    expect(salida.parsed).toBeNull();
+    expect(salida.stopReason).toBe('max_tokens');
+    // Recuperó el usage del mensaje crudo (no perdió la telemetría pese al throw).
+    expect(salida.usage).toEqual({ input: 1200, output: 9000, cacheRead: 800, cacheCreation: 0 });
+  });
+
+  it('si finalMessage() lanza y NO hay currentMessage (error real), re-lanza el error', async () => {
+    const cliente = {
+      messages: {
+        stream: vi.fn(() => ({
+          finalMessage: async () => {
+            throw new Error('boom de red');
+          },
+          currentMessage: undefined,
+        })),
+      },
+    } as unknown as Anthropic;
+    const adapter = new AnthropicLlmAdapter(cliente, logFake);
+    await expect(adapter.generar(argsGenerar)).rejects.toThrow('boom de red');
+  });
+
   it('pide max_tokens=32000 y usa streaming (no .parse) al llamar al cliente', async () => {
     // Capturamos los params en una var (en vez de mock.calls[0][0]) para que el assert tipe limpio
     // bajo strict + noUncheckedIndexedAccess: el doble del cliente no tipa la tupla de argumentos.

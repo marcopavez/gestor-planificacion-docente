@@ -56,7 +56,18 @@ export class AnthropicLlmAdapter implements LlmPort {
       system,
       messages: [{ role: 'user', content: args.entradaUsuario }],
     });
-    const respuesta = await stream.finalMessage();
+    // finalMessage() auto-parsea el structured output (output_config.format) y LANZA si el JSON
+    // viene truncado (stop_reason=max_tokens en salidas largas) o inválido — y eso ocurre ANTES del
+    // gate de stop_reason de abajo, así que el worker reencolaba a ciegas con un error opaco (bug
+    // guía 2026-06-25). Capturamos ese throw y recuperamos el mensaje CRUDO (stream.currentMessage,
+    // que el SDK no limpia tras el throw en message_stop) para que el gate + safeJsonSchema devuelvan
+    // parsed=null limpio (→ GeneracionError → reintento acotado). Sin currentMessage = error real
+    // (red/abort): se re-lanza.
+    const respuesta = await stream.finalMessage().catch((err: unknown) => {
+      const crudo = stream.currentMessage;
+      if (crudo === undefined) throw err;
+      return crudo;
+    });
 
     const usage: UsoTokens = {
       input: respuesta.usage.input_tokens,
