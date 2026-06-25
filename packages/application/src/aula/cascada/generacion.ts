@@ -184,6 +184,7 @@ export const INSTR_GUIA = instruccion(
     "- 'desafio' (opcional): un ítem final de mayor exigencia.",
     "- Cada ítem lleva 'retroalimentacion' = qué orientar al alumno si falla.",
     '- Cada campo de texto contiene SOLO el contenido del ítem/sección para el alumno: NUNCA escribas notas para ti, razonamiento ni instrucciones de formato dentro de un campo.',
+    '- Si un ítem tiene varias partes, numéralas con letras (a, b, c) dentro del ítem; NO reinicies la numeración de los ítems.',
   ].join('\n'),
 );
 
