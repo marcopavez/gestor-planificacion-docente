@@ -165,6 +165,14 @@ describe('itemsDuplicados', () => {
     ];
     expect(itemsDuplicados(items)).toBeNull();
   });
+
+  it('NO marca como duplicados dos enunciados vacíos / sólo espacios (los cazan otros gates)', () => {
+    const items = [
+      { ...base, enunciado: '' },
+      { ...base, enunciado: '   ' },
+    ];
+    expect(itemsDuplicados(items)).toBeNull();
+  });
 });
 
 describe('ItemPrueba.imagen_clave', () => {

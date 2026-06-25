@@ -8,7 +8,7 @@
 import type { ItemPruebaType, SlideDeckType } from '@faro/domain';
 import type { ResolverIlustracionUseCase } from './ResolverIlustracionUseCase.js';
 
-/** Resuelve la ilustración de cada ítem con `imagen` no vacía → le añade `imagen_clave`. Resto: sin cambios. */
+/** Resuelve la ilustración de cada ítem PICTÓRICO con `imagen` no vacía → le añade `imagen_clave`. Resto: sin cambios. */
 export async function resolverIlustracionesItems(
   items: readonly ItemPruebaType[],
   oaCodigo: string,
@@ -16,7 +16,9 @@ export async function resolverIlustracionesItems(
 ): Promise<ItemPruebaType[]> {
   return Promise.all(
     items.map(async (it) => {
-      if (it.imagen === undefined || it.imagen.trim() === '') return it;
+      // Sólo ítems pictóricos: el export (Prueba/Guia)ExportAdapter.inyectarImagenes incrusta sólo
+      // tipo==='pictorico', así que resolver otro tipo gastaría una generación cuyo PNG nunca se usa.
+      if (it.tipo !== 'pictorico' || it.imagen === undefined || it.imagen.trim() === '') return it;
       const clave = await ilustrador.resolver(it.imagen, oaCodigo);
       return clave !== null ? { ...it, imagen_clave: clave } : it;
     }),

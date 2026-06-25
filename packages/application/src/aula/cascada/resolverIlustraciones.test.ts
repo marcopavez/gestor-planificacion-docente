@@ -41,6 +41,24 @@ describe('resolverIlustracionesItems', () => {
     await resolverIlustracionesItems([{ ...itemConImagen, imagen: '   ' }], 'MA01 OA 01', ilustrador);
     expect(ilustrador.resolver).not.toHaveBeenCalled();
   });
+
+  it('un ítem NO pictórico con imagen no se resuelve (el export sólo incrusta pictóricos)', async () => {
+    // Paridad con PruebaExportAdapter/GuiaExportAdapter.inyectarImagenes (tipo === 'pictorico'): resolver
+    // un ítem no-pictórico gastaría una generación de imagen cuyo PNG el export nunca usa.
+    const itemNoPictoricoConImagen: ItemPruebaType = {
+      oa: 'MA01 OA 01',
+      habilidad: 'recordar',
+      tipo: 'seleccion_multiple',
+      enunciado: '¿Cuál es mayor?',
+      alternativas: [{ texto: '3', correcta: false }, { texto: '5', correcta: true }],
+      imagen: 'cinco manzanas',
+    };
+    const ilustrador = ilustradorFijo('nope');
+    const out = await resolverIlustracionesItems([itemNoPictoricoConImagen], 'MA01 OA 01', ilustrador);
+    expect(ilustrador.resolver).not.toHaveBeenCalled();
+    expect(out[0]?.imagen_clave).toBeUndefined();
+    expect(out[0]).toEqual(itemNoPictoricoConImagen);
+  });
 });
 
 describe('resolverIlustracionesSlides', () => {
