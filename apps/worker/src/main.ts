@@ -25,6 +25,7 @@ import {
   ProcesarTrabajoPptInfantilUseCase,
   ProcesarTrabajoPruebaUseCase,
   ProcesarTrabajoMaterialColorearUseCase,
+  ResolverIlustracionUseCase,
 } from '@faro/application';
 import type { ClockPort } from '@faro/domain';
 import { crearImageGen, crearLlm } from '@faro/infra-ai';
@@ -121,39 +122,9 @@ async function main(): Promise<void> {
     uow: new UnidadDeTrabajoDrizzle(db),
   });
 
-  // --- Cola de prueba formativa (Fase 4), en paralelo a las otras dos (no las toca) ---
-  // Genera la prueba desde la unidad ya planificada (su documento); el gate pedagógico corre dentro.
-  const pruebaUseCase = new ProcesarTrabajoPruebaUseCase({
-    jobs: new JobRepositoryDrizzle(db),
-    documentos: new DocumentoRepositoryDrizzle(db),
-    generar: new GenerarPruebaFormativaUseCase(llm),
-    uow: new UnidadDeTrabajoDrizzle(db),
-  });
-
-  // --- Cola de PPT infantil (Fase 3), en paralelo a las otras tres (no las toca) ---
-  // Genera el deck infantil desde la unidad ya planificada (su documento); el deck lo valida su schema
-  // (sin gate determinista). El export .pptx es bajo demanda en la web, no aquí.
-  const pptInfantilUseCase = new ProcesarTrabajoPptInfantilUseCase({
-    jobs: new JobRepositoryDrizzle(db),
-    documentos: new DocumentoRepositoryDrizzle(db),
-    generar: new GenerarPptInfantilUseCase(llm),
-    uow: new UnidadDeTrabajoDrizzle(db),
-  });
-
-  // --- Cola de guías del alumno (Tanda 1), en paralelo a las otras (no las toca) ---
-  // La guía es standalone desde un OA: carga el OA del corpus publicado (vía oas), no de una unidad.
-  // El export .docx es bajo demanda en la web, no aquí.
-  const guiaUseCase = new ProcesarTrabajoGuiaUseCase({
-    jobs: new JobRepositoryDrizzle(db),
-    oas,
-    generar: new GenerarGuiaUseCase(llm),
-    uow: new UnidadDeTrabajoDrizzle(db),
-  });
-
-  // --- Cola de material para colorear (Plan 1), en paralelo a las otras (no las toca) ---
-  // La lámina es standalone desde un OA (como la guía). El dibujo (Imagen 4 Fast por defecto, o Gemini
-  // Flash Image si FARO_IMAGE_PROVIDER=flash) se cachea en el banco generado; sin API key el adapter
-  // degrada a placeholder (la lámina sale igual, en borrador).
+  // Imagen line-art (Imagen 4 Fast por defecto, o Gemini Flash Image si FARO_IMAGE_PROVIDER=flash) +
+  // banco file-backed: compartidos por ficha/lámina y por las ilustraciones de prueba/guía/PPT. Sin API
+  // key el adapter degrada (generarLineArt → null): los artefactos salen igual con placeholder.
   const { imageGen, modo: modoImg } = crearImageGen(
     {
       GEMINI_API_KEY: process.env['GEMINI_API_KEY'],
@@ -164,6 +135,45 @@ async function main(): Promise<void> {
   );
   const dirBanco = join(raizRepo(), 'generated', 'imagenes-ia');
   const banco = new BancoImagenesFsAdapter(dirBanco);
+  // Un solo resolver de ilustraciones ancladas para los tres jobs derivados (prueba/guía/PPT).
+  const ilustrador = new ResolverIlustracionUseCase({ imageGen, banco });
+
+  // --- Cola de prueba formativa (Fase 4), en paralelo a las otras dos (no las toca) ---
+  // Genera la prueba desde la unidad ya planificada (su documento); el gate pedagógico corre dentro.
+  const pruebaUseCase = new ProcesarTrabajoPruebaUseCase({
+    jobs: new JobRepositoryDrizzle(db),
+    documentos: new DocumentoRepositoryDrizzle(db),
+    generar: new GenerarPruebaFormativaUseCase(llm),
+    ilustrador,
+    uow: new UnidadDeTrabajoDrizzle(db),
+  });
+
+  // --- Cola de PPT infantil (Fase 3), en paralelo a las otras tres (no las toca) ---
+  // Genera el deck infantil desde la unidad ya planificada (su documento); el deck lo valida su schema
+  // (sin gate determinista). El export .pptx es bajo demanda en la web, no aquí.
+  const pptInfantilUseCase = new ProcesarTrabajoPptInfantilUseCase({
+    jobs: new JobRepositoryDrizzle(db),
+    documentos: new DocumentoRepositoryDrizzle(db),
+    generar: new GenerarPptInfantilUseCase(llm),
+    ilustrador,
+    uow: new UnidadDeTrabajoDrizzle(db),
+  });
+
+  // --- Cola de guías del alumno (Tanda 1), en paralelo a las otras (no las toca) ---
+  // La guía es standalone desde un OA: carga el OA del corpus publicado (vía oas), no de una unidad.
+  // El export .docx es bajo demanda en la web, no aquí.
+  const guiaUseCase = new ProcesarTrabajoGuiaUseCase({
+    jobs: new JobRepositoryDrizzle(db),
+    oas,
+    generar: new GenerarGuiaUseCase(llm),
+    ilustrador,
+    uow: new UnidadDeTrabajoDrizzle(db),
+  });
+
+  // --- Cola de material para colorear (Plan 1), en paralelo a las otras (no las toca) ---
+  // La lámina es standalone desde un OA (como la guía). El dibujo (Imagen 4 Fast por defecto, o Gemini
+  // Flash Image si FARO_IMAGE_PROVIDER=flash) se cachea en el banco generado; sin API key el adapter
+  // degrada a placeholder (la lámina sale igual, en borrador). Reutiliza el imageGen/banco hoisted arriba.
   const materialColorearUseCase = new ProcesarTrabajoMaterialColorearUseCase({
     jobs: new JobRepositoryDrizzle(db),
     oas,
