@@ -135,9 +135,12 @@ export const INSTR_PRUEBA = instruccion(
     '- Cada ítem tributa a un OA de la unidad; selección múltiple y verdadero/falso con EXACTAMENTE una alternativa correcta.',
     "- Puedes usar tipos variados apropiados al nivel: 'seleccion_multiple', 'verdadero_falso', 'completacion', 'desarrollo', 'ordenar' (con 'secuencia_correcta'), 'terminos_pareados' (con 'pares' columnaA↔columnaB) y 'pictorico' (con 'imagen' = una DESCRIPCIÓN BREVE, 1 frase, del apoyo visual; nunca una imagen real).",
     "- Cada campo de texto contiene SOLO el contenido del ítem para el estudiante: NUNCA escribas notas para ti, razonamiento, ni instrucciones de formato dentro de un campo (sobre todo en 'imagen').",
+    '- Cada ítem evalúa algo DISTINTO: no repitas el mismo enunciado en dos ítems (ni la misma pregunta cambiando sólo la imagen).',
     "- El corazón formativo: cada ítem lleva 'retroalimentacion' = qué orientar al estudiante si falla.",
     "- 'perfil_nivel' según el tramo de edad ('1-2' para 1º–2º básico, '3-4', '5-6', o 'generico').",
-    '- En el tramo 1-2, ítems apropiados para pre-lectores (enunciado leído por el/la docente, apoyo visual).',
+    '- Calibración por TRAMO DE EDAD (viene en la entrada del usuario):',
+    '  · Tramo 1-2 (pre-lectores): enunciados MUY breves, pensados para que el/la docente los lea en voz alta; en selección múltiple usa MÁXIMO 2 alternativas; NO uses verdadero/falso con secuencias largas de números; NO uses "ordenar" con más de 3 elementos.',
+    '  · Tramos 3-4 y 5-6: enunciados para lectores autónomos, con complejidad creciente según el tramo.',
     "- El puntaje es opcional: si lo incluyes en un ítem, inclúyelo también en su fila de la tabla y haz que cuadren.",
   ].join('\n'),
 );
