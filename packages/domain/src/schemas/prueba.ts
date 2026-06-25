@@ -31,8 +31,11 @@ export const ItemPrueba = z.object({
   // Para 'terminos_pareados': los pares correctos columna A ↔ columna B.
   pares: z.array(z.object({ columnaA: z.string(), columnaB: z.string() })).optional(),
   // Para 'pictorico': DESCRIPCIÓN placeholder de la imagen (misma filosofía que sugerencia_imagen del
-  // deck) — nunca una imagen real.
+  // deck) — nunca una imagen real. Es además el texto base para GENERAR la ilustración (alt-text).
   imagen: z.string().optional(),
+  // Clave del PNG line-art resuelto desde `imagen` (la pone el ProcesarTrabajo*, no la IA). El export
+  // resuelve <dirBanco>/<imagen_clave>.png; si falta, cae al placeholder de `imagen`. Opcional → back-compat.
+  imagen_clave: z.string().optional(),
 });
 
 export const SchemaPrueba = z.object({

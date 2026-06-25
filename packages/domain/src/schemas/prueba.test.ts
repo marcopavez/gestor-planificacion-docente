@@ -3,7 +3,7 @@
 // Sin red, sin DB, sin LLM (INV-1).
 
 import { describe, expect, it } from 'vitest';
-import { SchemaPrueba } from './prueba.js';
+import { ItemPrueba, SchemaPrueba } from './prueba.js';
 import { itemsDuplicados } from './prueba.js';
 
 const pruebaValida = {
@@ -164,5 +164,25 @@ describe('itemsDuplicados', () => {
       { ...base, enunciado: '¿Qué número viene después del 8?' },
     ];
     expect(itemsDuplicados(items)).toBeNull();
+  });
+});
+
+describe('ItemPrueba.imagen_clave', () => {
+  const base = {
+    oa: 'MA01 OA 01',
+    habilidad: 'recordar' as const,
+    tipo: 'pictorico' as const,
+    enunciado: '¿Cuántas estrellas hay? Escribe el número.',
+    imagen: 'siete estrellas en una entrada de show',
+  };
+
+  it('parsea un ítem con imagen_clave (clave del PNG resuelto)', () => {
+    const r = ItemPrueba.parse({ ...base, imagen_clave: 'a1b2c3d4' });
+    expect(r.imagen_clave).toBe('a1b2c3d4');
+  });
+
+  it('parsea un ítem SIN imagen_clave (backward-compatible)', () => {
+    const r = ItemPrueba.parse(base);
+    expect(r.imagen_clave).toBeUndefined();
   });
 });
