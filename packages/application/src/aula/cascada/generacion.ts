@@ -192,6 +192,7 @@ export const INSTR_DIBUJO = instruccion(
     'El dibujo es pedagógico, NO decorativo: refleja lo que se aprende (p. ej. conteo → objetos para contar; "seres vivos" → un animal concreto).',
     "- 'concepto': etiqueta CORTA en español de lo que se dibuja (p. ej. 'conteo de frutas').",
     "- 'descripcion_en': descripción visual EN INGLÉS, concreta y breve (1–2 frases), de UNA escena simple apta para line-art de contornos gruesos.",
+    "- 'descripcion_en' DEBE representar exactamente el 'concepto' (el MISMO motivo): si concepto='conteo de manzanas', el dibujo son manzanas — nunca otro objeto. No cambies de tema entre ambos campos.",
     'Reglas del dibujo (obligatorias):',
     '  · Sin texto, letras ni números dentro del dibujo.',
     '  · Formas simples y grandes, fáciles de pintar para un niño pequeño.',
