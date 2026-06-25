@@ -231,8 +231,13 @@ export function entradaClase(unidad: PlanificacionUnidad): string {
   return `Planificación de unidad (JSON):\n${JSON.stringify(unidad)}\n\nGenera la planificación clase a clase que la desarrolla.`;
 }
 
-export function entradaPrueba(unidad: PlanificacionUnidad): string {
-  return `Planificación de unidad (JSON):\n${JSON.stringify(unidad)}\n\nGenera una evaluación formativa que evalúe los OA basales de la unidad.`;
+export function entradaPrueba(unidad: PlanificacionUnidad, tramo: '1-2' | '3-4' | '5-6'): string {
+  return [
+    `Tramo de edad: ${tramo} básico`,
+    `Planificación de unidad (JSON):\n${JSON.stringify(unidad)}`,
+    '',
+    'Genera una evaluación formativa que evalúe los OA basales de la unidad, calibrada a ese tramo de edad.',
+  ].join('\n');
 }
 
 export function entradaDeck(unidad: PlanificacionUnidad, clase: ClasePlanificadaType): string {

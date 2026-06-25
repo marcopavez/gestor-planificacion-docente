@@ -22,7 +22,7 @@ export class GenerarPruebaFormativaUseCase {
       tarea: 'redaccion',
       schema: SchemaPrueba,
       system: [bloqueCorpusUnidad(unidad), INSTR_PRUEBA],
-      entradaUsuario: entradaPrueba(unidad),
+      entradaUsuario: entradaPrueba(unidad, tramoDeNivel(unidad.nivel)),
     });
     const { valor: borrador, meta } = exigirParsedConMeta(salida);
 
