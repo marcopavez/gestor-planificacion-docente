@@ -137,7 +137,7 @@ describe('AnthropicLlmAdapter', () => {
     await expect(adapter.generar(argsGenerar)).rejects.toThrow('boom de red');
   });
 
-  it('pide max_tokens=32000 y usa streaming (no .parse) al llamar al cliente', async () => {
+  it('pide max_tokens=64000 y usa streaming (no .parse) al llamar al cliente', async () => {
     // Capturamos los params en una var (en vez de mock.calls[0][0]) para que el assert tipe limpio
     // bajo strict + noUncheckedIndexedAccess: el doble del cliente no tipa la tupla de argumentos.
     let paramsStream: unknown = undefined;
@@ -156,6 +156,6 @@ describe('AnthropicLlmAdapter', () => {
     await adapter.generar(argsGenerar);
 
     expect(streamSpy).toHaveBeenCalledTimes(1);
-    expect(paramsStream).toMatchObject({ max_tokens: 32000, model: 'claude-sonnet-4-6' });
+    expect(paramsStream).toMatchObject({ max_tokens: 64000, model: 'claude-sonnet-4-6' });
   });
 });

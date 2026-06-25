@@ -11,10 +11,12 @@ import type { Logger } from '@faro/observability';
 import type { ZodType } from 'zod';
 import { effortCapado, rutaPara } from './router.js';
 
-// Con streaming no hay límite de timeout HTTP (skill claude-api). Sonnet 4.6 admite hasta 64K de
-// salida; 32K da holgura cómoda para pruebas/PPT grandes sin desperdiciar tokens. 'max' solo aplica
-// a Opus (lo capa el router); 32K es válido en los 3 modelos del router.
-const MAX_TOKENS = 32000;
+// Con streaming no hay límite de timeout HTTP (skill claude-api). 64K es el techo de salida de Sonnet
+// 4.6 y Haiku 4.5 (Opus 4.8 = 128K), así que es válido en los 3 modelos del router (verificado en
+// claude-api/shared/models.md). Subido de 32K → 64K (2026-06-25, dueño aprobó el costo): guías
+// verbosas truncaban a 32K. max_tokens es un TECHO, no un objetivo → solo sube el costo si la salida
+// realmente crece. 'max' effort solo aplica a Opus (lo capa el router).
+const MAX_TOKENS = 64000;
 
 export class AnthropicLlmAdapter implements LlmPort {
   constructor(
