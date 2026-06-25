@@ -4,7 +4,7 @@
 
 import { existsSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type {
   ArchivoExportado,
@@ -51,7 +51,9 @@ export class PptxExportAdapter implements ExportPort {
     private readonly log: Logger,
     // Dir raíz de los PNG del banco de imágenes. Default: assets del propio paquete infra-export.
     // En producción (código compilado en dist/) los roots pasan la ruta explícita (ver spec/plan).
-    private readonly dirAssets: string = fileURLToPath(new URL('../../assets/imagenes', import.meta.url)),
+    // NO usar `new URL('…', import.meta.url)`: el webpack de Next lo analiza estáticamente como asset
+    // y rompe el bundle de la web (no resuelve un directorio). dirname+join resuelve igual sin eso.
+    private readonly dirAssets: string = join(dirname(fileURLToPath(import.meta.url)), '../../assets/imagenes'),
   ) {}
 
   async exportarPptx(deck: ClaseDeck): Promise<ArchivoExportado> {
