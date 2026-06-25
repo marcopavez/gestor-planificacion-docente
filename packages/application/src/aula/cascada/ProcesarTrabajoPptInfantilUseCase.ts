@@ -16,6 +16,8 @@ import type {
 } from '@faro/domain';
 import { SchemaPlanificacionUnidad } from '@faro/domain';
 import type { GenerarPptInfantilUseCase } from './GenerarPptInfantilUseCase.js';
+import type { ResolverIlustracionUseCase } from './ResolverIlustracionUseCase.js';
+import { resolverIlustracionesSlides } from './resolverIlustraciones.js';
 
 /** Resultado discriminado de procesar un job de PPT infantil (espejo de ProcesarTrabajoPruebaUseCase). */
 export type ResultadoProcesarPptInfantil =
@@ -29,6 +31,8 @@ export interface DependenciasProcesarPptInfantil {
   /** Para cargar el documento de planificación de origen (la unidad de la que deriva el deck). */
   readonly documentos: DocumentoRepository;
   readonly generar: GenerarPptInfantilUseCase;
+  /** Resuelve las ilustraciones line-art ancladas de los slides (cache compartida). */
+  readonly ilustrador: ResolverIlustracionUseCase;
   readonly uow: UnidadDeTrabajo;
   /** Reintentos máximos antes de 'fallido' (incluye el intento en curso). Default 3. */
   readonly maxIntentos?: number;
@@ -38,6 +42,7 @@ export class ProcesarTrabajoPptInfantilUseCase {
   private readonly jobs: JobRepository;
   private readonly documentos: DocumentoRepository;
   private readonly generar: GenerarPptInfantilUseCase;
+  private readonly ilustrador: ResolverIlustracionUseCase;
   private readonly uow: UnidadDeTrabajo;
   private readonly maxIntentos: number;
 
@@ -45,6 +50,7 @@ export class ProcesarTrabajoPptInfantilUseCase {
     this.jobs = deps.jobs;
     this.documentos = deps.documentos;
     this.generar = deps.generar;
+    this.ilustrador = deps.ilustrador;
     this.uow = deps.uow;
     this.maxIntentos = deps.maxIntentos ?? 3;
   }
@@ -72,7 +78,13 @@ export class ProcesarTrabajoPptInfantilUseCase {
     try {
       // Genera el deck infantil (slides anclados a la unidad por la IA; tema/oa fijos de la unidad).
       // El use case revalida el deck contra SchemaClaseDeck al ensamblarlo (su gate es el schema).
-      const { valor: deck, meta } = await this.generar.ejecutarConMeta(unidad);
+      const { valor: deckBase, meta } = await this.generar.ejecutarConMeta(unidad);
+
+      // Resuelve las ilustraciones line-art ancladas de los slides (FUERA de la tx: hace red/IO). El OA =
+      // primero de la unidad (solo alimenta la metadata del banco). Degrada sin API key (no añade clave).
+      const oaCodigo = unidad.oa[0]?.codigo ?? '';
+      const slides = await resolverIlustracionesSlides(deckBase.slides, oaCodigo, this.ilustrador);
+      const deck = { ...deckBase, slides };
 
       // Persistencia ATÓMICA: el borrador (origen_id = la planificación) + su traza + marcarHecho.
       const documentoId = await this.uow.enTransaccion(async (repos: ReposTransaccion) => {

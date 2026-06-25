@@ -14,6 +14,8 @@ import type {
 import { GeneracionError, guiaGate } from '@faro/domain';
 import type { ContextoCascada } from './tipos.js';
 import type { GenerarGuiaUseCase } from './GenerarGuiaUseCase.js';
+import type { ResolverIlustracionUseCase } from './ResolverIlustracionUseCase.js';
+import { resolverIlustracionesItems } from './resolverIlustraciones.js';
 
 /** Resultado discriminado de procesar un job de guía (espejo de ProcesarTrabajoPruebaUseCase). */
 export type ResultadoProcesarGuia =
@@ -27,6 +29,8 @@ export interface DependenciasProcesarGuia {
   /** Para cargar el OA del corpus publicado (resuelve la corpus_version vigente). */
   readonly oas: OaRepository;
   readonly generar: GenerarGuiaUseCase;
+  /** Resuelve las ilustraciones line-art ancladas de los ejercicios pictóricos (cache compartida). */
+  readonly ilustrador: ResolverIlustracionUseCase;
   readonly uow: UnidadDeTrabajo;
   /** Reintentos máximos antes de 'fallido' (incluye el intento en curso). Default 3. */
   readonly maxIntentos?: number;
@@ -36,6 +40,7 @@ export class ProcesarTrabajoGuiaUseCase {
   private readonly jobs: JobRepository;
   private readonly oas: OaRepository;
   private readonly generar: GenerarGuiaUseCase;
+  private readonly ilustrador: ResolverIlustracionUseCase;
   private readonly uow: UnidadDeTrabajo;
   private readonly maxIntentos: number;
 
@@ -43,6 +48,7 @@ export class ProcesarTrabajoGuiaUseCase {
     this.jobs = deps.jobs;
     this.oas = deps.oas;
     this.generar = deps.generar;
+    this.ilustrador = deps.ilustrador;
     this.uow = deps.uow;
     this.maxIntentos = deps.maxIntentos ?? 3;
   }
@@ -82,7 +88,20 @@ export class ProcesarTrabajoGuiaUseCase {
 
     try {
       // Genera la guía híbrida (explicacion/ejemplo/ejercicios → IA; resto fijo en GenerarGuiaUseCase).
-      const { valor: guia, meta } = await this.generar.ejecutarConMeta(ctx, conocimiento);
+      const { valor: guiaBase, meta } = await this.generar.ejecutarConMeta(ctx, conocimiento);
+
+      // Resuelve las ilustraciones line-art de los ejercicios pictóricos (FUERA de la tx: hace red/IO).
+      // El OA = el del payload. Degrada sin API key. El `desafio` (si hay) también se resuelve, junto a
+      // los ejercicios, para no perder su ilustración.
+      const ejerciciosResueltos = await resolverIlustracionesItems(guiaBase.ejercicios, oaCodigo, this.ilustrador);
+      const desafioResuelto = guiaBase.desafio !== undefined
+        ? (await resolverIlustracionesItems([guiaBase.desafio], oaCodigo, this.ilustrador))[0]
+        : undefined;
+      const guia = {
+        ...guiaBase,
+        ejercicios: ejerciciosResueltos,
+        ...(desafioResuelto !== undefined ? { desafio: desafioResuelto } : {}),
+      };
 
       // Gate determinista sin red: coherencia de ejercicios (ítem→OA, una correcta, etc.).
       const reporte = guiaGate(guia);

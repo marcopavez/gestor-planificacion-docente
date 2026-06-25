@@ -50,6 +50,14 @@ const guiaIa = {
       ],
       retroalimentacion: 'Los árboles crecen.',
     },
+    {
+      oa: 'CN03 OA 01',
+      habilidad: 'recordar' as const,
+      tipo: 'pictorico' as const,
+      enunciado: '¿Cuántas hojas hay? Escribe el número.',
+      imagen: 'cuatro hojas de árbol',
+      retroalimentacion: 'Cuenta una por una.',
+    },
   ],
 };
 
@@ -98,12 +106,13 @@ function dobles() {
       } as unknown as ReposTransaccion),
     ),
   };
-  return { jobs, oas, uow, crearBorrador, registrar, borradores };
+  const ilustrador = { resolver: vi.fn(async () => null) } as unknown as import('./ResolverIlustracionUseCase.js').ResolverIlustracionUseCase;
+  return { jobs, oas, uow, crearBorrador, registrar, borradores, ilustrador };
 }
 
 describe('ProcesarTrabajoGuiaUseCase', () => {
   it('toma un job, carga el OA, genera y persiste un borrador de guía + traza', async () => {
-    const { jobs, oas, uow, crearBorrador, registrar, borradores } = dobles();
+    const { jobs, oas, uow, crearBorrador, registrar, borradores, ilustrador } = dobles();
     const uc = new ProcesarTrabajoGuiaUseCase({
       jobs: jobs as JobRepository,
       oas,
@@ -119,6 +128,7 @@ describe('ProcesarTrabajoGuiaUseCase', () => {
         },
       }),
       uow,
+      ilustrador,
     });
 
     const r = await uc.ejecutarSiguiente('w-1');
@@ -131,13 +141,14 @@ describe('ProcesarTrabajoGuiaUseCase', () => {
   });
 
   it('sin trabajo devuelve sin_trabajo', async () => {
-    const { jobs, oas, uow } = dobles();
+    const { jobs, oas, uow, ilustrador } = dobles();
     (jobs.tomarSiguienteGuia as ReturnType<typeof vi.fn>).mockResolvedValue(null);
     const uc = new ProcesarTrabajoGuiaUseCase({
       jobs: jobs as JobRepository,
       oas,
       generar: new GenerarGuiaUseCase({ async generar() { throw new Error('no'); } }),
       uow,
+      ilustrador,
     });
     expect((await uc.ejecutarSiguiente('w-1')).tipo).toBe('sin_trabajo');
   });
@@ -147,7 +158,7 @@ describe('ProcesarTrabajoGuiaUseCase', () => {
     // lanza GeneracionError('guia_tramo_no_soportado') ANTES de llamar al LLM: es input permanente, no se
     // reintenta. Con intentos=1 (< maxIntentos) el camino transitorio daría 'reintenta'; este caso debe
     // dar 'fallido' directo y NO llamar a reintentar.
-    const { jobs, oas, uow } = dobles();
+    const { jobs, oas, uow, ilustrador } = dobles();
     (jobs.tomarSiguienteGuia as ReturnType<typeof vi.fn>).mockResolvedValue({
       id: 'job-12',
       intentos: 1,
@@ -168,6 +179,7 @@ describe('ProcesarTrabajoGuiaUseCase', () => {
         },
       }),
       uow,
+      ilustrador,
     });
     const r = await uc.ejecutarSiguiente('w-1');
     expect(r.tipo).toBe('fallido');
@@ -175,8 +187,31 @@ describe('ProcesarTrabajoGuiaUseCase', () => {
     expect(jobs.marcarFallido).toHaveBeenCalledOnce();
   });
 
+  it('resuelve la imagen de un ejercicio pictórico y persiste imagen_clave', async () => {
+    const { jobs, oas, uow, borradores } = dobles();
+    const ilustrador = { resolver: vi.fn(async () => 'beef5678') } as unknown as import('./ResolverIlustracionUseCase.js').ResolverIlustracionUseCase;
+    const uc = new ProcesarTrabajoGuiaUseCase({
+      jobs: jobs as JobRepository,
+      oas,
+      generar: new GenerarGuiaUseCase({
+        async generar(args) {
+          return { parsed: args.schema.parse(guiaIa), stopReason: 'end_turn', usage: { input: 0, output: 0, cacheRead: 0, cacheCreation: 0 }, modelo: 'muestras' };
+        },
+      }),
+      uow,
+      ilustrador,
+    });
+
+    const r = await uc.ejecutarSiguiente('w-1');
+    expect(r.tipo).toBe('hecho');
+    expect(ilustrador.resolver).toHaveBeenCalledWith('cuatro hojas de árbol', 'CN03 OA 01');
+    const payload = borradores[0]?.payload as { ejercicios: Array<{ tipo: string; imagen_clave?: string }> };
+    const pictorico = payload.ejercicios.find((e) => e.tipo === 'pictorico');
+    expect(pictorico?.imagen_clave).toBe('beef5678');
+  });
+
   it('falla permanente si el OA no existe en el corpus publicado', async () => {
-    const { jobs, uow } = dobles();
+    const { jobs, uow, ilustrador } = dobles();
     const oasVacio: OaRepository = {
       porAsignaturaCurso: vi.fn(async () => []),
       porAsignaturaNivel: vi.fn(async () => []),
@@ -187,6 +222,7 @@ describe('ProcesarTrabajoGuiaUseCase', () => {
       oas: oasVacio,
       generar: new GenerarGuiaUseCase({ async generar() { throw new Error('no'); } }),
       uow,
+      ilustrador,
     });
     const r = await uc.ejecutarSiguiente('w-1');
     expect(r.tipo).toBe('fallido');

@@ -15,9 +15,10 @@ import type {
   TrabajoPptInfantil,
   UnidadDeTrabajo,
 } from '@faro/domain';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { GenerarPptInfantilUseCase } from './GenerarPptInfantilUseCase.js';
 import { ProcesarTrabajoPptInfantilUseCase } from './ProcesarTrabajoPptInfantilUseCase.js';
+import type { ResolverIlustracionUseCase } from './ResolverIlustracionUseCase.js';
 
 const PLAN_DOC_ID = '11111111-1111-1111-1111-111111111111';
 
@@ -55,6 +56,7 @@ const deckGenerado: ClaseDeck = {
       notas_docente: 'Activa conocimientos previos con ejemplos del patio.',
       tipo: 'contenido',
       opciones: [],
+      imagen: 'tres semillas germinando',
     },
   ],
 };
@@ -85,7 +87,7 @@ interface Llamadas {
   crearBorrador: NuevoDocumento[];
 }
 
-function montar(opts: { doc: DocumentoGenerado | null; trabajos: (TrabajoPptInfantil | null)[] }) {
+function montar(opts: { doc: DocumentoGenerado | null; trabajos: (TrabajoPptInfantil | null)[]; claveIlustracion?: string | null }) {
   const llamadas: Llamadas = { generar: 0, hecho: [], fallido: [], crearBorrador: [] };
   let i = 0;
 
@@ -135,8 +137,11 @@ function montar(opts: { doc: DocumentoGenerado | null; trabajos: (TrabajoPptInfa
     },
   };
 
-  const uc = new ProcesarTrabajoPptInfantilUseCase({ jobs, documentos, generar, uow });
-  return { uc, llamadas };
+  const ilustrador = {
+    resolver: vi.fn(async () => opts.claveIlustracion ?? null),
+  } as unknown as ResolverIlustracionUseCase;
+  const uc = new ProcesarTrabajoPptInfantilUseCase({ jobs, documentos, generar, uow, ilustrador });
+  return { uc, llamadas, ilustrador };
 }
 
 describe('ProcesarTrabajoPptInfantilUseCase (Fase 3, worker sin red)', () => {
@@ -155,10 +160,22 @@ describe('ProcesarTrabajoPptInfantilUseCase (Fase 3, worker sin red)', () => {
     expect(creado?.origenId).toBe(PLAN_DOC_ID);
     expect(creado?.corpusVersionId).toBe('cv-2026.1');
     expect(creado?.establecimientoId).toBe('Colegio Demo');
-    expect(creado?.payload).toBe(deckGenerado);
+    expect(creado?.payload).toEqual(deckGenerado);
     // Sin gate del deck: nace 'validado' y sin resultadoGates.
     expect(creado?.estadoGeneracion).toBe('validado');
     expect(creado?.resultadoGates).toBeUndefined();
+  });
+
+  it('resuelve las imágenes de los slides y persiste imagen_clave', async () => {
+    const job: TrabajoPptInfantil = { id: 'job-img', payload: { planificacionDocumentoId: PLAN_DOC_ID }, intentos: 1 };
+    const { uc, llamadas, ilustrador } = montar({ doc: planDoc(), trabajos: [job], claveIlustracion: 'd00d1234' });
+
+    const r = await uc.ejecutarSiguiente('worker-1');
+
+    expect(r.tipo).toBe('hecho');
+    expect(ilustrador.resolver).toHaveBeenCalledWith('tres semillas germinando', 'CN05 OA 01');
+    const payload = llamadas.crearBorrador[0]?.payload as { slides: Array<{ imagen_clave?: string }> };
+    expect(payload.slides[0]?.imagen_clave).toBe('d00d1234');
   });
 
   it('planificación de origen no encontrada → fallido (permanente), sin generar', async () => {
