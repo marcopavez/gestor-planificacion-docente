@@ -3,7 +3,7 @@
 // El adapter es reemplazable tras el puerto; la cascada no conoce pptxgenjs.
 
 import { existsSync } from 'node:fs';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type {
@@ -13,8 +13,6 @@ import type {
   SlideDeckType,
   TemaDeckInfantilType,
 } from '@faro/domain';
-// Valores (no tipos): resuelven el tópico de imagen del banco a una entrada del catálogo (INV-6).
-import { resolverImagen, tramoDeNivel } from '@faro/domain';
 import type { Logger } from '@faro/observability';
 // pptxgenjs es CJS (`module.exports = PptxGenJS`) con tipos `export default`: bajo NodeNext el
 // default import liga al namespace, así que tomamos la clase desde `.default` (válido en types y runtime).
@@ -49,11 +47,10 @@ export class PptxExportAdapter implements ExportPort {
   constructor(
     private readonly dirSalida: string,
     private readonly log: Logger,
-    // Dir raíz de los PNG del banco de imágenes. Default: assets del propio paquete infra-export.
-    // En producción (código compilado en dist/) los roots pasan la ruta explícita (ver spec/plan).
-    // NO usar `new URL('…', import.meta.url)`: el webpack de Next lo analiza estáticamente como asset
-    // y rompe el bundle de la web (no resuelve un directorio). dirname+join resuelve igual sin eso.
-    private readonly dirAssets: string = join(dirname(fileURLToPath(import.meta.url)), '../../assets/imagenes'),
+    // Dir raíz de los PNG del banco de imágenes GENERADAS (line-art ancladas). El export resuelve
+    // <dirBanco>/<slide.imagen_clave>.png; si falta, cae al placeholder visible. Default: la carpeta
+    // de salida del banco del repo (los roots pasan la ruta explícita; ver produccion.ts/worker).
+    private readonly dirBanco: string = join(dirname(fileURLToPath(import.meta.url)), '../../../../generated/imagenes-ia'),
   ) {}
 
   async exportarPptx(deck: ClaseDeck): Promise<ArchivoExportado> {
@@ -68,7 +65,7 @@ export class PptxExportAdapter implements ExportPort {
     if (deck.tema) {
       this.portadaInfantil(pptx, deck, deck.tema);
       for (const slide of deck.slides) {
-        this.slideInfantil(pptx, slide, deck.tema, deck);
+        await this.slideInfantil(pptx, slide, deck.tema);
       }
     } else {
       this.portada(pptx, deck);
@@ -126,43 +123,43 @@ export class PptxExportAdapter implements ExportPort {
     slide.addNotes(this.notas(s));
   }
 
-  /** Notas del orador: notas docente + sugerencia de imagen si la hay. */
+  /** Notas del orador: solo las notas docentes (la sugerencia de imagen ya no existe — #7 resuelto). */
   private notas(s: SlideDeckType): string {
-    return s.sugerencia_imagen
-      ? `${s.notas_docente}\n\nSugerencia de imagen: ${s.sugerencia_imagen}`
-      : s.notas_docente;
+    return s.notas_docente;
   }
 
   /**
-   * Placeholder de imagen VISIBLE (Fase 3, solo render infantil): cuando el slide trae
-   * `sugerencia_imagen`, se dibuja una caja con borde punteado (color acento del tema) rotulada
-   * "IMAGEN: <sugerencia>". No se inserta una imagen real; es una guía para el docente en la lámina.
-   * La sugerencia sigue además en las notas del orador (this.notas).
+   * Imagen del slide infantil: si `imagen_clave` resuelve a un PNG existente en el banco, lo inserta;
+   * si no (sin clave, o el PNG no está en disco), dibuja la caja punteada "IMAGEN: <imagen>" como guía
+   * visible para el/la docente. El PNG line-art lo generó el job (ResolverIlustracionUseCase); aquí solo
+   * se lee del disco — degradación coherente con FichaExportAdapter.
    */
-  private placeholderImagen(
+  private async placeholderImagen(
     slide: ReturnType<Pptx['addSlide']>,
     s: SlideDeckType,
     tema: TemaDeckInfantilType,
-    deck: ClaseDeck,
-  ): void {
-    // 1) Imagen real del banco: la IA eligió un topico_imagen del catálogo → lo resolvemos (color).
-    // Seed = título del deck → selección determinista y reproducible para ese documento.
-    if (s.topico_imagen) {
-      const entrada = resolverImagen(s.topico_imagen, deck.asignatura, tramoDeNivel(deck.nivel), 'color', deck.titulo);
-      const ruta = entrada ? join(this.dirAssets, entrada.archivo) : null;
-      // existsSync: el catálogo puede anunciar un tópico cuyo PNG aún no está en disco (set sin curar);
-      // degradamos al placeholder en vez de romper el export (pptxgenjs falla si el path no existe).
-      if (ruta && existsSync(ruta)) {
-        // pptxgenjs lee el archivo al escribir; le pasamos la ruta absoluta (dirAssets + relativo).
-        slide.addImage({ path: ruta, x: 3.0, y: 2.0, w: 4.0, h: 2.6, sizing: { type: 'contain', w: 4.0, h: 2.6 } });
+  ): Promise<void> {
+    if (s.imagen_clave) {
+      const ruta = join(this.dirBanco, `${s.imagen_clave}.png`);
+      if (existsSync(ruta)) {
+        // pptxgenjs admite `data` como Buffer base64; lo leemos nosotros para controlar el degradado.
+        const png = await readFile(ruta);
+        slide.addImage({
+          data: `image/png;base64,${png.toString('base64')}`,
+          x: 3.0,
+          y: 2.0,
+          w: 4.0,
+          h: 2.6,
+          sizing: { type: 'contain', w: 4.0, h: 2.6 },
+        });
         return;
       }
     }
-    // 2) Fallback: el placeholder punteado de siempre (sin tópico, o el tópico no resuelve a imagen).
-    const sugerencia = s.sugerencia_imagen?.trim();
-    if (!sugerencia) return;
+    // Fallback: el placeholder punteado de siempre, rotulado con la DESCRIPCIÓN de la imagen.
+    const descripcion = s.imagen?.trim();
+    if (!descripcion) return;
     // y+h debe caber en el layout 16:9 (10" x 5.625"): y:4.3 + h:1.0 = 5.3" (antes 5.0+1.2=6.2 se salía).
-    slide.addText(`IMAGEN: ${sugerencia}`, {
+    slide.addText(`IMAGEN: ${descripcion}`, {
       x: 1.0,
       y: 4.3,
       w: 8,
@@ -254,17 +251,17 @@ export class PptxExportAdapter implements ExportPort {
   }
 
   /** Despacha por tipo de slide (Fase 3); la respuesta correcta nunca se revela en la lámina del alumno. */
-  private slideInfantil(pptx: Pptx, s: SlideDeckType, tema: TemaDeckInfantilType, deck: ClaseDeck): void {
+  private async slideInfantil(pptx: Pptx, s: SlideDeckType, tema: TemaDeckInfantilType): Promise<void> {
     switch (s.tipo) {
       case 'pregunta':
       case 'elige':
-        this.slideInteraccion(pptx, s, tema, deck);
+        await this.slideInteraccion(pptx, s, tema);
         break;
       case 'que_sigue':
-        this.slideQueSigue(pptx, s, tema, deck);
+        await this.slideQueSigue(pptx, s, tema);
         break;
       default:
-        this.slideContenidoInfantil(pptx, s, tema, deck);
+        await this.slideContenidoInfantil(pptx, s, tema);
     }
   }
 
@@ -288,7 +285,7 @@ export class PptxExportAdapter implements ExportPort {
   }
 
   /** 'contenido': título grande + viñetas grandes con la paleta/fuente/tamaño del tema. */
-  private slideContenidoInfantil(pptx: Pptx, s: SlideDeckType, tema: TemaDeckInfantilType, deck: ClaseDeck): void {
+  private async slideContenidoInfantil(pptx: Pptx, s: SlideDeckType, tema: TemaDeckInfantilType): Promise<void> {
     const slide = this.slideBaseInfantil(pptx, s, tema);
     slide.addText(s.titulo, {
       x: 0.5,
@@ -316,12 +313,12 @@ export class PptxExportAdapter implements ExportPort {
         },
       );
     }
-    this.placeholderImagen(slide, s, tema, deck);
+    await this.placeholderImagen(slide, s, tema);
     slide.addNotes(this.notas(s));
   }
 
   /** '¿Qué sigue?': título grande centrado + el contenido como pistas grandes y centradas. */
-  private slideQueSigue(pptx: Pptx, s: SlideDeckType, tema: TemaDeckInfantilType, deck: ClaseDeck): void {
+  private async slideQueSigue(pptx: Pptx, s: SlideDeckType, tema: TemaDeckInfantilType): Promise<void> {
     const slide = this.slideBaseInfantil(pptx, s, tema);
     slide.addText(s.titulo, {
       x: 0.5,
@@ -348,12 +345,12 @@ export class PptxExportAdapter implements ExportPort {
         lineSpacingMultiple: 1.3,
       });
     }
-    this.placeholderImagen(slide, s, tema, deck);
+    await this.placeholderImagen(slide, s, tema);
     slide.addNotes(this.notas(s));
   }
 
   /** 'pregunta'/'elige': la pregunta GRANDE centrada + opciones; la correcta SOLO en notas_docente. */
-  private slideInteraccion(pptx: Pptx, s: SlideDeckType, tema: TemaDeckInfantilType, deck: ClaseDeck): void {
+  private async slideInteraccion(pptx: Pptx, s: SlideDeckType, tema: TemaDeckInfantilType): Promise<void> {
     const slide = pptx.addSlide();
     this.fondoInfantil(pptx, slide, tema);
     // El ENUNCIADO de la pregunta va en color consigna (rojo) como en los PPT reales del colegio.
@@ -385,7 +382,7 @@ export class PptxExportAdapter implements ExportPort {
         },
       );
     }
-    this.placeholderImagen(slide, s, tema, deck);
+    await this.placeholderImagen(slide, s, tema);
     // La respuesta correcta y las notas docentes van en el orador (HIL); nunca en la slide del alumno.
     const correctas = s.opciones.filter((o) => o.correcta).map((o) => o.texto);
     const lineaCorrecta = correctas.length > 0 ? `Respuesta correcta: ${correctas.join(', ')}` : '';

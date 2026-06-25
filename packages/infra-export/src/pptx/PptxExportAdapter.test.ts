@@ -1,16 +1,9 @@
-import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { inflateRawSync } from 'node:zlib';
-import {
-  resolverImagen,
-  SchemaClaseDeck,
-  TEMAS_DECK_INFANTIL,
-  temaDeckInfantil,
-  topicosDisponiblesPara,
-  type ClaseDeck,
-} from '@faro/domain';
+import { SchemaClaseDeck, TEMAS_DECK_INFANTIL, temaDeckInfantil, type ClaseDeck } from '@faro/domain';
 import { logger } from '@faro/observability';
 import { describe, expect, it } from 'vitest';
 import { PptxExportAdapter } from './PptxExportAdapter.js';
@@ -157,7 +150,7 @@ describe('PptxExportAdapter (RF-2.8, CA-2.12)', () => {
             { texto: 'El 7', correcta: true },
           ],
           notas_docente: 'Levantar la mano y elegir.',
-          sugerencia_imagen: 'dos grupos de fichas, uno con 3 y otro con 7',
+          imagen: 'dos grupos de fichas, uno con 3 y otro con 7',
         },
         {
           momento: 'desarrollo',
@@ -205,10 +198,10 @@ describe('PptxExportAdapter (RF-2.8, CA-2.12)', () => {
     expect(notasXml).toContain('Respuesta correcta: El 7');
     expect(notasXml).toContain('Respuesta correcta: Cinco círculos');
 
-    // F3-3(b): cuando hay `sugerencia_imagen`, la slide muestra un placeholder VISIBLE "IMAGEN: …"
-    // (además de conservarlo en las notas del orador).
+    // F3-3(b): cuando el slide trae `imagen` (descripción) sin PNG resuelto, la slide muestra el
+    // placeholder VISIBLE "IMAGEN: …" como guía. Las notas del orador YA NO llevan la sugerencia (#7).
     expect(slidesXml).toContain('IMAGEN: dos grupos de fichas, uno con 3 y otro con 7');
-    expect(notasXml).toContain('Sugerencia de imagen: dos grupos de fichas, uno con 3 y otro con 7');
+    expect(notasXml).not.toContain('Sugerencia de imagen');
   });
 
   // Deck 5-6 (tema con `borde`): el render pinta el MARCO a sangre con el color de la asignatura
@@ -247,9 +240,9 @@ describe('PptxExportAdapter (RF-2.8, CA-2.12)', () => {
     expect(xml).not.toContain('06ABD8');
   });
 
-  // BACKWARD-COMPAT del placeholder: un deck SIN `tema` NO dibuja el recuadro "IMAGEN: …" en la slide
-  // (el camino institucional sigue mandando la sugerencia solo a las notas del orador).
-  it('sin tema: la sugerencia_imagen sigue solo en notas, sin caja "IMAGEN:" en la slide', async () => {
+  // BACKWARD-COMPAT del placeholder: el camino institucional (deck SIN `tema`) NO dibuja el recuadro
+  // "IMAGEN: …" en la slide y, tras #7, tampoco manda ninguna sugerencia a las notas del orador.
+  it('sin tema: ignora la imagen (sin caja "IMAGEN:") y no la lleva a las notas', async () => {
     const deck: ClaseDeck = SchemaClaseDeck.parse({
       titulo: 'Clase institucional',
       asignatura: 'Matemática',
@@ -262,7 +255,7 @@ describe('PptxExportAdapter (RF-2.8, CA-2.12)', () => {
           titulo: 'Conteo',
           contenido: ['Contemos del 0 al 10.'],
           notas_docente: 'Rutina de conteo.',
-          sugerencia_imagen: 'una recta numérica del 0 al 10',
+          imagen: 'una recta numérica del 0 al 10',
         },
       ],
     });
@@ -273,7 +266,7 @@ describe('PptxExportAdapter (RF-2.8, CA-2.12)', () => {
     const buf = await readFile(archivo.ruta);
 
     expect(todasLasSlides(buf)).not.toContain('IMAGEN:');
-    expect(todasLasNotas(buf)).toContain('Sugerencia de imagen: una recta numérica del 0 al 10');
+    expect(todasLasNotas(buf)).not.toContain('Sugerencia de imagen');
   });
 });
 
@@ -284,21 +277,12 @@ describe('PptxExportAdapter — imágenes reales del banco', () => {
     'base64',
   );
 
-  it('embebe la imagen real (ppt/media) cuando topico_imagen resuelve', async () => {
-    const topicos = topicosDisponiblesPara('Matemática', '1-2', 'color');
-    expect(topicos.length).toBeGreaterThan(0); // el catálogo semilla trae ≥1 tópico color de Mate 1-2
-    const topico = topicos[0]!;
-    const titulo = 'Clase 1 · Conteo';
-    // El adapter resuelve con `deck.titulo` como seed; usamos el mismo para crear el dummy donde toca.
-    const entrada = resolverImagen(topico, 'Matemática', '1-2', 'color', titulo);
-    expect(entrada).not.toBeNull();
-
-    const dirAssets = await mkdtemp(join(tmpdir(), 'faro-assets-'));
-    await mkdir(dirname(join(dirAssets, entrada!.archivo)), { recursive: true });
-    await writeFile(join(dirAssets, entrada!.archivo), PNG_DUMMY);
+  it('embebe el PNG real del banco cuando el slide trae imagen_clave y el PNG existe', async () => {
+    const dirBanco = await mkdtemp(join(tmpdir(), 'faro-pptx-banco-'));
+    await writeFile(join(dirBanco, 'cafe1234.png'), PNG_DUMMY);
 
     const deck: ClaseDeck = SchemaClaseDeck.parse({
-      titulo,
+      titulo: 'Clase con imagen',
       asignatura: 'Matemática',
       nivel: '1º básico',
       oa: ['MA01 OA 03'],
@@ -309,22 +293,22 @@ describe('PptxExportAdapter — imágenes reales del banco', () => {
           momento: 'inicio',
           tipo: 'contenido',
           titulo: 'Contemos',
-          contenido: ['Del 0 al 10'],
-          notas_docente: 'Rutina.',
-          topico_imagen: topico,
+          contenido: ['¿Cuántas ves?'],
+          notas_docente: 'La respuesta se lee de la imagen.',
+          imagen: 'siete estrellas',
+          imagen_clave: 'cafe1234',
         },
       ],
     });
     const dir = await mkdtemp(join(tmpdir(), 'faro-pptx-img-'));
-    const adapter = new PptxExportAdapter(dir, logger, dirAssets);
+    const adapter = new PptxExportAdapter(dir, logger, dirBanco);
     const archivo = await adapter.exportarPptx(deck);
 
-    // Solo ARCHIVOS dentro de ppt/media/ (el regex `.+` excluye la entrada de directorio que el zip trae).
     const media = entradasPptx(await readFile(archivo.ruta)).filter((e) => /^ppt\/media\/.+/.test(e));
-    expect(media.length).toBeGreaterThan(0); // la imagen real quedó embebida en el .pptx
+    expect(media.length).toBeGreaterThan(0); // el PNG real quedó embebido
   });
 
-  it('cae al placeholder (no embebe imagen) cuando topico_imagen no resuelve', async () => {
+  it('cae al placeholder visible cuando hay imagen pero no imagen_clave (degradación sin API key)', async () => {
     const deck: ClaseDeck = SchemaClaseDeck.parse({
       titulo: 'Clase fallback',
       asignatura: 'Matemática',
@@ -339,25 +323,21 @@ describe('PptxExportAdapter — imágenes reales del banco', () => {
           titulo: 'X',
           contenido: ['y'],
           notas_docente: 'n',
-          topico_imagen: 'inexistente-xyz',
-          sugerencia_imagen: 'una recta numérica',
+          imagen: 'una recta numérica',
         },
       ],
     });
-    const dirAssets = await mkdtemp(join(tmpdir(), 'faro-assets-'));
+    const dirBanco = await mkdtemp(join(tmpdir(), 'faro-pptx-banco-'));
     const dir = await mkdtemp(join(tmpdir(), 'faro-pptx-img-'));
-    const adapter = new PptxExportAdapter(dir, logger, dirAssets);
-    const archivo = await adapter.exportarPptx(deck);
-    const buf = await readFile(archivo.ruta);
+    const adapter = new PptxExportAdapter(dir, logger, dirBanco);
+    const buf = await readFile((await adapter.exportarPptx(deck)).ruta);
 
-    // Sin archivo en ppt/media/ (el regex `.+` ignora la entrada de directorio): no se embebió imagen.
-    expect(entradasPptx(buf).filter((e) => /^ppt\/media\/.+/.test(e))).toEqual([]);
+    expect(entradasPptx(buf).filter((e) => /^ppt\/media\/.+/.test(e))).toEqual([]); // no embebió
     expect(todasLasSlides(buf)).toContain('IMAGEN: una recta numérica'); // placeholder visible
   });
 
-  it('cae al placeholder si el tópico resuelve pero el PNG no está en disco (set sin curar)', async () => {
-    const topico = topicosDisponiblesPara('Matemática', '1-2', 'color')[0]!;
-    const dirAssets = await mkdtemp(join(tmpdir(), 'faro-assets-')); // vacío: el PNG anunciado no existe
+  it('cae al placeholder si imagen_clave apunta a un PNG que no está en disco', async () => {
+    const dirBanco = await mkdtemp(join(tmpdir(), 'faro-pptx-banco-')); // vacío
     const deck: ClaseDeck = SchemaClaseDeck.parse({
       titulo: 'Clase sin archivo',
       asignatura: 'Matemática',
@@ -372,17 +352,35 @@ describe('PptxExportAdapter — imágenes reales del banco', () => {
           titulo: 'X',
           contenido: ['y'],
           notas_docente: 'n',
-          topico_imagen: topico,
-          sugerencia_imagen: 'apoyo visual',
+          imagen: 'apoyo visual',
+          imagen_clave: 'noexiste',
         },
       ],
     });
     const dir = await mkdtemp(join(tmpdir(), 'faro-pptx-img-'));
-    const adapter = new PptxExportAdapter(dir, logger, dirAssets);
-    const archivo = await adapter.exportarPptx(deck);
-    const buf = await readFile(archivo.ruta);
+    const adapter = new PptxExportAdapter(dir, logger, dirBanco);
+    const buf = await readFile((await adapter.exportarPptx(deck)).ruta);
 
-    expect(entradasPptx(buf).filter((e) => /^ppt\/media\/.+/.test(e))).toEqual([]); // no embebió
+    expect(entradasPptx(buf).filter((e) => /^ppt\/media\/.+/.test(e))).toEqual([]);
     expect(todasLasSlides(buf)).toContain('IMAGEN: apoyo visual'); // degradó al placeholder
+  });
+
+  it('las notas del orador NO incluyen "Sugerencia de imagen" (#7)', async () => {
+    const dirBanco = await mkdtemp(join(tmpdir(), 'faro-pptx-banco-'));
+    const deck: ClaseDeck = SchemaClaseDeck.parse({
+      titulo: 'Clase notas',
+      asignatura: 'Matemática',
+      nivel: '1º básico',
+      oa: ['MA01 OA 03'],
+      tramo_edad: '1-2',
+      tema: TEMAS_DECK_INFANTIL['1-2'],
+      slides: [
+        { momento: 'inicio', tipo: 'contenido', titulo: 'X', contenido: ['y'], notas_docente: 'Guía esto.', imagen: 'una escena' },
+      ],
+    });
+    const dir = await mkdtemp(join(tmpdir(), 'faro-pptx-img-'));
+    const adapter = new PptxExportAdapter(dir, logger, dirBanco);
+    const buf = await readFile((await adapter.exportarPptx(deck)).ruta);
+    expect(todasLasNotas(buf)).not.toContain('Sugerencia de imagen');
   });
 });
