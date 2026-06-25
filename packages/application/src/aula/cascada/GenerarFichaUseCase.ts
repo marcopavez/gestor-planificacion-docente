@@ -40,7 +40,9 @@ export class GenerarFichaUseCase {
     if (!(grado >= 1 && grado <= 3)) throw new GeneracionError('ficha_tramo_no_soportado');
 
     const dibujo = await this.resolver.resolver(ctx, oa.codigo, opts);
-    const { valor: ejercicios, meta: metaEj } = await this.ejercicios.ejecutarConMeta(ctx, opts?.concepto);
+    // El concepto YA resuelto por el dibujo alimenta los ejercicios → título, dibujo y ejercicios
+    // comparten un solo concepto (anclaje #1; antes se pasaba opts?.concepto, que podía ser undefined).
+    const { valor: ejercicios, meta: metaEj } = await this.ejercicios.ejecutarConMeta(ctx, dibujo.concepto);
 
     // perfil_nivel data-driven por tramo; el gate garantiza grado ≤ 3 → tramo ∈ {'1-2','3-4'} (sin cast).
     const tramo = tramoDeNivel(ctx.nivel);

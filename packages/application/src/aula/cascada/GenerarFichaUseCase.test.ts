@@ -58,4 +58,12 @@ describe('GenerarFichaUseCase', () => {
     const ctx = { ...ctxGrado('1º básico'), oaSeleccionados: [] };
     await expect(uc.ejecutarConMeta(ctx)).rejects.toThrow('ficha_sin_oa');
   });
+
+  it('los ejercicios usan el CONCEPTO del dibujo, no opts.concepto (anclaje #1)', async () => {
+    const d = deps();
+    const uc = new GenerarFichaUseCase(d);
+    // SIN opts.concepto: el concepto debe salir del dibujo resuelto ('frutas'), no de opts (undefined).
+    await uc.ejecutarConMeta(ctxGrado('1º básico'));
+    expect(d.ejercicios.ejecutarConMeta).toHaveBeenCalledWith(ctxGrado('1º básico'), 'frutas');
+  });
 });
