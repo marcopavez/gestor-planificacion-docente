@@ -14,9 +14,10 @@ import type {
   TrabajoPrueba,
   UnidadDeTrabajo,
 } from '@faro/domain';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { GenerarPruebaFormativaUseCase } from './GenerarPruebaFormativaUseCase.js';
 import { ProcesarTrabajoPruebaUseCase } from './ProcesarTrabajoPruebaUseCase.js';
+import type { ResolverIlustracionUseCase } from './ResolverIlustracionUseCase.js';
 
 const PLAN_DOC_ID = '11111111-1111-1111-1111-111111111111';
 
@@ -56,6 +57,14 @@ const pruebaGenerada: Prueba = {
       ],
       retroalimentacion: 'Observa cuál crece y se alimenta.',
     },
+    {
+      oa: 'CN05 OA 01',
+      habilidad: 'comprender',
+      tipo: 'pictorico',
+      enunciado: '¿Cuántos árboles ves? Escribe el número.',
+      imagen: 'tres árboles en un patio',
+      retroalimentacion: 'Cuenta uno por uno.',
+    },
   ],
   pauta_correccion: 'Refuerza las características de los seres vivos.',
   tipo_evaluacion: 'formativa',
@@ -88,7 +97,7 @@ interface Llamadas {
   crearBorrador: NuevoDocumento[];
 }
 
-function montar(opts: { doc: DocumentoGenerado | null; trabajos: (TrabajoPrueba | null)[] }) {
+function montar(opts: { doc: DocumentoGenerado | null; trabajos: (TrabajoPrueba | null)[]; claveIlustracion?: string | null }) {
   const llamadas: Llamadas = { generar: 0, hecho: [], fallido: [], crearBorrador: [] };
   let i = 0;
 
@@ -138,8 +147,12 @@ function montar(opts: { doc: DocumentoGenerado | null; trabajos: (TrabajoPrueba 
     },
   };
 
-  const uc = new ProcesarTrabajoPruebaUseCase({ jobs, documentos, generar, uow });
-  return { uc, llamadas };
+  const ilustrador = {
+    resolver: vi.fn(async () => opts.claveIlustracion ?? null),
+  } as unknown as ResolverIlustracionUseCase;
+
+  const uc = new ProcesarTrabajoPruebaUseCase({ jobs, documentos, generar, uow, ilustrador });
+  return { uc, llamadas, ilustrador };
 }
 
 describe('ProcesarTrabajoPruebaUseCase (Fase 4, worker sin red)', () => {
@@ -158,7 +171,7 @@ describe('ProcesarTrabajoPruebaUseCase (Fase 4, worker sin red)', () => {
     expect(creado?.origenId).toBe(PLAN_DOC_ID);
     expect(creado?.corpusVersionId).toBe('cv-2026.1');
     expect(creado?.establecimientoId).toBe('Colegio Demo');
-    expect(creado?.payload).toBe(pruebaGenerada);
+    expect(creado?.payload).toEqual(pruebaGenerada);
   });
 
   it('planificación de origen no encontrada → fallido (permanente), sin generar', async () => {
@@ -175,5 +188,20 @@ describe('ProcesarTrabajoPruebaUseCase (Fase 4, worker sin red)', () => {
   it('cola vacía → sin_trabajo', async () => {
     const { uc } = montar({ doc: planDoc(), trabajos: [null] });
     expect(await uc.ejecutarSiguiente('worker-1')).toEqual({ tipo: 'sin_trabajo' });
+  });
+
+  it('resuelve las imágenes de los ítems pictóricos y persiste imagen_clave (#3 imágenes)', async () => {
+    const job: TrabajoPrueba = { id: 'job-img', payload: { planificacionDocumentoId: PLAN_DOC_ID }, intentos: 1 };
+    const { uc, llamadas, ilustrador } = montar({ doc: planDoc(), trabajos: [job], claveIlustracion: 'cafe1234' });
+
+    const r = await uc.ejecutarSiguiente('worker-1');
+
+    expect(r.tipo).toBe('hecho');
+    // El ilustrador se llamó con la descripción del ítem pictórico y el primer OA de la unidad.
+    expect(ilustrador.resolver).toHaveBeenCalledWith('tres árboles en un patio', 'CN05 OA 01');
+    // El payload persistido lleva la clave resuelta en el ítem pictórico.
+    const payload = llamadas.crearBorrador[0]?.payload as { items: Array<{ tipo: string; imagen_clave?: string }> };
+    const pictorico = payload.items.find((i) => i.tipo === 'pictorico');
+    expect(pictorico?.imagen_clave).toBe('cafe1234');
   });
 });

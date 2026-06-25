@@ -13,6 +13,8 @@ import type {
 } from '@faro/domain';
 import { pedagogicalGate, SchemaPlanificacionUnidad } from '@faro/domain';
 import type { GenerarPruebaFormativaUseCase } from './GenerarPruebaFormativaUseCase.js';
+import type { ResolverIlustracionUseCase } from './ResolverIlustracionUseCase.js';
+import { resolverIlustracionesItems } from './resolverIlustraciones.js';
 
 /** Resultado discriminado de procesar un job de prueba (espejo de ProcesarTrabajoPlanificacionUseCase). */
 export type ResultadoProcesarPrueba =
@@ -26,6 +28,8 @@ export interface DependenciasProcesarPrueba {
   /** Para cargar el documento de planificación de origen (la unidad de la que deriva la prueba). */
   readonly documentos: DocumentoRepository;
   readonly generar: GenerarPruebaFormativaUseCase;
+  /** Resuelve las ilustraciones line-art ancladas de los ítems pictóricos (cache compartida). */
+  readonly ilustrador: ResolverIlustracionUseCase;
   readonly uow: UnidadDeTrabajo;
   /** Reintentos máximos antes de 'fallido' (incluye el intento en curso). Default 3. */
   readonly maxIntentos?: number;
@@ -35,6 +39,7 @@ export class ProcesarTrabajoPruebaUseCase {
   private readonly jobs: JobRepository;
   private readonly documentos: DocumentoRepository;
   private readonly generar: GenerarPruebaFormativaUseCase;
+  private readonly ilustrador: ResolverIlustracionUseCase;
   private readonly uow: UnidadDeTrabajo;
   private readonly maxIntentos: number;
 
@@ -42,6 +47,7 @@ export class ProcesarTrabajoPruebaUseCase {
     this.jobs = deps.jobs;
     this.documentos = deps.documentos;
     this.generar = deps.generar;
+    this.ilustrador = deps.ilustrador;
     this.uow = deps.uow;
     this.maxIntentos = deps.maxIntentos ?? 3;
   }
@@ -68,7 +74,13 @@ export class ProcesarTrabajoPruebaUseCase {
 
     try {
       // Genera la prueba formativa (ítems + tabla anclados a OA por la IA; el resto fijo de la unidad).
-      const { valor: prueba, meta } = await this.generar.ejecutarConMeta(unidad);
+      const { valor: pruebaBase, meta } = await this.generar.ejecutarConMeta(unidad);
+
+      // Resuelve las ilustraciones line-art ancladas (FUERA de la tx: hace red/IO). El OA = primero de la
+      // unidad (solo alimenta la metadata del banco). Degrada: sin API key, los ítems no ganan imagen_clave.
+      const oaCodigo = unidad.oa[0]?.codigo ?? '';
+      const items = await resolverIlustracionesItems(pruebaBase.items, oaCodigo, this.ilustrador);
+      const prueba = { ...pruebaBase, items };
 
       // Gate pedagógico determinista (sin red): ítem→OA, una correcta, puntajes si hay ponderación.
       const reporte = pedagogicalGate(prueba);
