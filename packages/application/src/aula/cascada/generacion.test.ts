@@ -36,6 +36,13 @@ describe('INSTR_GUIA', () => {
   it('pide numerar sub-partes con letras para no reiniciar la numeración', () => {
     expect(INSTR_GUIA.texto).toContain('letras (a, b, c)');
   });
+  it('ya NO prohíbe ítems pictóricos (la guía gana imágenes line-art generadas)', () => {
+    expect(INSTR_GUIA.texto).not.toContain("NO uses 'pictorico'");
+  });
+  it('pide al menos un ejercicio pictórico con descripción visual anclada', () => {
+    expect(INSTR_GUIA.texto).toContain("Incluye AL MENOS UN ejercicio 'pictorico'");
+    expect(INSTR_GUIA.texto).toContain("'imagen' = una DESCRIPCIÓN visual CONCRETA");
+  });
 });
 
 describe('INSTR_PRUEBA (imágenes ancladas + conteo abierto)', () => {
