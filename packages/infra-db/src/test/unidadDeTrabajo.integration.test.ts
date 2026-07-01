@@ -7,7 +7,7 @@ import { describe, it, expect } from 'vitest';
 import { sql } from 'drizzle-orm';
 import { crearDbTest } from './pgliteHelper.js';
 import { UnidadDeTrabajoDrizzle } from '../repos/UnidadDeTrabajoDrizzle.js';
-import { corpusVersion } from '../schema/index.js';
+import { corpusVersion, usuario } from '../schema/index.js';
 import type { DrizzleDb } from '../db.js';
 
 // pglite carga WASM la 1ª vez (lento en Windows) — timeout amplio por test.
@@ -24,6 +24,16 @@ async function insertarCorpusVersion(db: TestDb): Promise<string> {
   return row.id;
 }
 
+// Task 3 hizo usuarioId obligatorio en NuevoDocumento (FK NOT NULL) — seedeamos el dueño.
+async function insertarUsuario(db: TestDb): Promise<string> {
+  const [row] = await db
+    .insert(usuario)
+    .values({ id: crypto.randomUUID(), email: 'uow-test@t.cl' })
+    .returning();
+  if (!row) throw new Error('No se pudo insertar usuario');
+  return row.id;
+}
+
 async function contarDocumentos(db: TestDb): Promise<number> {
   const res = await db.execute(sql`SELECT COUNT(*) AS n FROM documento_generado`);
   return Number((res as unknown as { rows: Array<{ n: string }> }).rows[0]?.n ?? 0);
@@ -33,6 +43,7 @@ describe('UnidadDeTrabajoDrizzle — atomicidad (rollback / commit)', () => {
   it('si fn lanza tras un crearBorrador → rollback total (cero filas)', async () => {
     const db = await crearDbTest();
     const cvId = await insertarCorpusVersion(db);
+    const usuarioId = await insertarUsuario(db);
     const uow = new UnidadDeTrabajoDrizzle(db as unknown as DrizzleDb);
 
     // Precondición: no hay documentos antes de la transacción.
@@ -43,6 +54,7 @@ describe('UnidadDeTrabajoDrizzle — atomicidad (rollback / commit)', () => {
       await repos.documentos.crearBorrador({
         tipo: 'planificacion_unidad',
         establecimientoId: 'Colegio Test',
+        usuarioId,
         corpusVersionId: cvId,
         payload: { unidad: 'U1' },
         estadoGeneracion: 'validado',
@@ -60,12 +72,14 @@ describe('UnidadDeTrabajoDrizzle — atomicidad (rollback / commit)', () => {
   it('si fn retorna sin lanzar → commit (las filas persisten)', async () => {
     const db = await crearDbTest();
     const cvId = await insertarCorpusVersion(db);
+    const usuarioId = await insertarUsuario(db);
     const uow = new UnidadDeTrabajoDrizzle(db as unknown as DrizzleDb);
 
     const docId = await uow.enTransaccion(async (repos) => {
       const unidadDoc = await repos.documentos.crearBorrador({
         tipo: 'planificacion_unidad',
         establecimientoId: 'Colegio Test',
+        usuarioId,
         corpusVersionId: cvId,
         payload: { unidad: 'U1' },
         estadoGeneracion: 'validado',
@@ -73,6 +87,7 @@ describe('UnidadDeTrabajoDrizzle — atomicidad (rollback / commit)', () => {
       const claseDoc = await repos.documentos.crearBorrador({
         tipo: 'planificacion_clase',
         establecimientoId: 'Colegio Test',
+        usuarioId,
         corpusVersionId: cvId,
         origenId: unidadDoc.id,
         payload: { clase: 1 },
