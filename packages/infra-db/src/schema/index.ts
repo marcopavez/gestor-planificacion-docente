@@ -66,11 +66,32 @@ export const objetivoAprendizaje = pgTable(
 );
 
 // ---------------------------------------------------------------------------
+// usuario — espejo local del usuario de Supabase Auth + estado de suscripción.
+// id = UUID de Supabase (claim sub); NO se genera localmente (por eso sin defaultRandom).
+// ---------------------------------------------------------------------------
+export const usuario = pgTable('usuario', {
+  id: uuid('id').primaryKey(),
+  email: text('email').notNull(),
+  // trial | activo | vencido | cancelado — gobierna el gate de generación.
+  plan: text('plan').notNull().default('trial'),
+  // Contador de generaciones del período (trial: cuenta contra el límite gratis; activo: tope blando mensual).
+  generacionesUsadas: integer('generaciones_usadas').notNull().default(0),
+  periodoInicio: timestamp('periodo_inicio', { withTimezone: true }),
+  // Espejo del preapproval de Mercado Pago (id + estado crudo) para reconciliar con el webhook.
+  mpPreapprovalId: text('mp_preapproval_id'),
+  suscripcionEstado: text('suscripcion_estado'),
+  // Fin del período pagado; el gate compara contra la fecha actual.
+  periodoFin: timestamp('periodo_fin', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [unique('usuario_email_unique').on(t.email)]);
+
+// ---------------------------------------------------------------------------
 // planificacion_anual — secuencia anual definida por el docente (input humano)
 // ---------------------------------------------------------------------------
 export const planificacionAnual = pgTable('planificacion_anual', {
   id: uuid('id').defaultRandom().primaryKey(),
   establecimiento: text('establecimiento').notNull(),
+  usuarioId: uuid('usuario_id').notNull().references(() => usuario.id),
   asignatura: text('asignatura').notNull(),
   nivel: text('nivel').notNull(),
   anio: integer('anio').notNull(),
@@ -110,6 +131,7 @@ export const documentoGenerado = pgTable('documento_generado', {
   // planificacion_unidad | planificacion_clase | prueba | clase_deck
   tipo: text('tipo').notNull(),
   establecimiento: text('establecimiento').notNull(),
+  usuarioId: uuid('usuario_id').notNull().references(() => usuario.id),
   corpusVersionId: uuid('corpus_version_id')
     .notNull()
     .references(() => corpusVersion.id),
@@ -179,6 +201,7 @@ export const jobGeneracion = pgTable('job_generacion', {
   unidadPlanificadaId: uuid('unidad_planificada_id').references(() => unidadPlanificada.id),
   // 'cascada_unidad' es el único tipo de trabajo en M0 Aula
   tipoTrabajo: text('tipo_trabajo').notNull(),
+  usuarioId: uuid('usuario_id').notNull().references(() => usuario.id),
   // pendiente | en_proceso | hecho | fallido
   estado: text('estado').notNull().default('pendiente'),
   intentos: integer('intentos').notNull().default(0),
@@ -215,3 +238,6 @@ export type NuevaTrazaIa = typeof trazaIa.$inferInsert;
 
 export type JobGeneracion = typeof jobGeneracion.$inferSelect;
 export type NuevoJobGeneracion = typeof jobGeneracion.$inferInsert;
+
+export type Usuario = typeof usuario.$inferSelect;
+export type NuevoUsuario = typeof usuario.$inferInsert;

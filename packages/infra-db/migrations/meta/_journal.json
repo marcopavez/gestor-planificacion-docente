@@ -15,6 +15,13 @@
       "when": 1780800895534,
       "tag": "0001_glorious_tinkerer",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1782924183695,
+      "tag": "0002_fancy_centennial",
+      "breakpoints": true
     }
   ]
 }

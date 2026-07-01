@@ -18,6 +18,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const MIGRATION_PATHS = [
   join(__dirname, '../../migrations/0000_robust_mulholland_black.sql'),
   join(__dirname, '../../migrations/0001_glorious_tinkerer.sql'),
+  join(__dirname, '../../migrations/0002_fancy_centennial.sql'),
 ];
 
 /**
