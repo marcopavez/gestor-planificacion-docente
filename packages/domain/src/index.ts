@@ -29,12 +29,14 @@ export type {
   ExportGuiaPort,
   DatosInstitucionalesGuia,
   ExportPruebaPort,
+  FiltroListarPlan,
   JobRepository,
   LlmPort,
   NormaRepository,
   OaRepository,
   PlanificacionAnualRepository,
   PlantillaRepository,
+  PlanUsuario,
   RerankerPort,
   ReposTransaccion,
   ResultadoVerificacion,
@@ -48,6 +50,8 @@ export type {
   TrazaRepository,
   UnidadDeTrabajo,
   UsoTokens,
+  Usuario,
+  UsuarioRepository,
   VariantePrueba,
   VerificationGate,
 } from './ports/index.js';
@@ -76,6 +80,7 @@ export interface Recuperado<T> {
 export interface NuevoDocumento {
   readonly tipo: string; // 'planificacion_unidad' | 'planificacion_clase' | 'prueba' | 'clase_deck'
   readonly establecimientoId: string;
+  readonly usuarioId: string; // dueño del documento (UUID de Supabase) — todo documento pertenece a un docente
   readonly corpusVersionId: string; // versión REAL del corpus (no placeholder — INV-4, FK NOT NULL)
   readonly unidadPlanificadaId?: string;
   readonly origenId?: string; // self-FK: traza la cadena de la cascada (clase.origen_id = unidad, etc.)

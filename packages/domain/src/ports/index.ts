@@ -264,20 +264,23 @@ export interface DocumentoRepository {
     contenido?: unknown,
     gates?: unknown,
   ): Promise<void>;
-  porId(id: string): Promise<DocumentoGenerado | null>;
+  // usuarioId acota la lectura al dueño; devuelve null si el documento no es del usuario.
+  porId(id: string, usuarioId: string): Promise<DocumentoGenerado | null>;
   // Devuelve la cascada completa desde su raíz: el documento raíz (id = raizId) + todos los
   // que cuelgan de él por origen_id (clase/prueba → unidad; deck → clase). RF-PA.9 / H-PA.9.
-  listarPorRaiz(raizId: string): Promise<DocumentoGenerado[]>;
-  // Cola de revisión HIL (RF-PA.12, H-PA.10): documentos 'borrador'/'en_revision' del
-  // establecimiento, más recientes primero. Solo lo pendiente; no incluye aprobado/rechazado.
-  listarPendientesRevision(establecimientoId: string): Promise<DocumentoGenerado[]>;
+  listarPorRaiz(raizId: string, usuarioId: string): Promise<DocumentoGenerado[]>;
+  // Cola HIL del docente (antes filtraba por establecimiento): documentos 'borrador'/'en_revision'
+  // del usuario, más recientes primero. Solo lo pendiente; no incluye aprobado/rechazado.
+  listarPendientesRevision(usuarioId: string): Promise<DocumentoGenerado[]>;
   // Persiste el resultado de UNA transición HIL ya decidida por la máquina de estados del dominio.
   // El adapter NO valida la transición (eso lo hace `transicionar`); el CHECK chk_aprobado_requiere_humano
   // es la última red contra 'aprobado' sin autorHumano (INV-3). autorHumano = null salvo en 'aprobado'.
+  // usuarioId acota la escritura al dueño (defensa en profundidad además del filtro de lectura).
   actualizarEstadoRevision(
     id: string,
     estado: EstadoRevision,
     autorHumano: string | null,
+    usuarioId: string,
   ): Promise<void>;
 }
 
@@ -289,6 +292,7 @@ export interface TrazaRepository {
 export interface TrabajoCascada {
   readonly id: string;
   readonly unidadPlanificadaId: string;
+  readonly usuarioId: string; // dueño del job (UUID de Supabase) — acota la escritura resultante
   readonly intentos: number; // ya incrementado por tomarSiguiente (cuenta el intento en curso)
 }
 
@@ -297,6 +301,7 @@ export interface TrabajoCascada {
 export interface TrabajoPlanificacion {
   readonly id: string;
   readonly payload: PayloadPlanificacion;
+  readonly usuarioId: string; // dueño del job (UUID de Supabase) — acota la escritura resultante
   readonly intentos: number; // ya incrementado por tomarSiguientePlanificacion (cuenta el intento en curso)
 }
 
@@ -305,6 +310,7 @@ export interface TrabajoPlanificacion {
 export interface TrabajoPrueba {
   readonly id: string;
   readonly payload: PayloadPrueba;
+  readonly usuarioId: string; // dueño del job (UUID de Supabase) — acota la escritura resultante
   readonly intentos: number; // ya incrementado por tomarSiguientePrueba (cuenta el intento en curso)
 }
 
@@ -313,6 +319,7 @@ export interface TrabajoPrueba {
 export interface TrabajoPptInfantil {
   readonly id: string;
   readonly payload: PayloadPptInfantil;
+  readonly usuarioId: string; // dueño del job (UUID de Supabase) — acota la escritura resultante
   readonly intentos: number; // ya incrementado por tomarSiguientePptInfantil (cuenta el intento en curso)
 }
 
@@ -320,6 +327,7 @@ export interface TrabajoPptInfantil {
 export interface TrabajoGuia {
   readonly id: string;
   readonly payload: PayloadGuia;
+  readonly usuarioId: string; // dueño del job (UUID de Supabase) — acota la escritura resultante
   readonly intentos: number; // ya incrementado por tomarSiguienteGuia (cuenta el intento en curso)
 }
 
@@ -327,6 +335,7 @@ export interface TrabajoGuia {
 export interface TrabajoMaterialColorear {
   readonly id: string;
   readonly payload: PayloadMaterialColorear;
+  readonly usuarioId: string; // dueño del job (UUID de Supabase) — acota la escritura resultante
   readonly intentos: number; // ya incrementado por tomarSiguienteMaterialColorear (cuenta el intento en curso)
 }
 
@@ -334,6 +343,7 @@ export interface TrabajoMaterialColorear {
 export interface TrabajoFicha {
   readonly id: string;
   readonly payload: PayloadFicha;
+  readonly usuarioId: string; // dueño del job (UUID de Supabase) — acota la escritura resultante
   readonly intentos: number; // ya incrementado por tomarSiguienteFicha (cuenta el intento en curso)
 }
 
@@ -349,19 +359,19 @@ export interface EstadoJob {
 
 export interface JobRepository {
   // Encola una corrida de la cascada para una unidad; devuelve el id del job creado.
-  encolarCascadaUnidad(unidadPlanificadaId: string): Promise<string>;
+  encolarCascadaUnidad(unidadPlanificadaId: string, usuarioId: string): Promise<string>;
   // Encola una generación de planificación híbrida (RF-2.14); devuelve el id del job creado.
-  encolarPlanificacion(payload: PayloadPlanificacion): Promise<string>;
+  encolarPlanificacion(payload: PayloadPlanificacion, usuarioId: string): Promise<string>;
   // Encola una generación de prueba formativa (Fase 4) desde una unidad ya planificada.
-  encolarPrueba(payload: PayloadPrueba): Promise<string>;
+  encolarPrueba(payload: PayloadPrueba, usuarioId: string): Promise<string>;
   // Encola una generación de PPT infantil (Fase 3) desde una unidad ya planificada.
-  encolarPptInfantil(payload: PayloadPptInfantil): Promise<string>;
+  encolarPptInfantil(payload: PayloadPptInfantil, usuarioId: string): Promise<string>;
   // Encola una generación de GUÍA (Tanda 1) standalone desde un OA.
-  encolarGuia(payload: PayloadGuia): Promise<string>;
+  encolarGuia(payload: PayloadGuia, usuarioId: string): Promise<string>;
   // Encola una generación de MATERIAL PARA COLOREAR (Plan 1) standalone desde un OA.
-  encolarMaterialColorear(payload: PayloadMaterialColorear): Promise<string>;
+  encolarMaterialColorear(payload: PayloadMaterialColorear, usuarioId: string): Promise<string>;
   // Encola una generación de FICHA para colorear (Plan 2) standalone desde un OA.
-  encolarFicha(payload: PayloadFicha): Promise<string>;
+  encolarFicha(payload: PayloadFicha, usuarioId: string): Promise<string>;
   // FOR UPDATE SKIP LOCKED — ADR-003. Marca el job 'en_proceso' e incrementa intentos atómicamente.
   // Filtra por tipo de trabajo 'cascada_unidad' (coexiste con la cola de planificación, H-2.7).
   tomarSiguiente(workerId: string): Promise<TrabajoCascada | null>;
@@ -377,8 +387,9 @@ export interface JobRepository {
   tomarSiguienteMaterialColorear(workerId: string): Promise<TrabajoMaterialColorear | null>;
   // Análogo para la cola 'ficha_colorear' (Plan 2): su propia cola por tipo de trabajo.
   tomarSiguienteFicha(workerId: string): Promise<TrabajoFicha | null>;
-  // Estado del job para el polling de la web; null si el id no existe (H-PA.9).
-  obtenerEstado(jobId: string): Promise<EstadoJob | null>;
+  // Estado del job para el polling de la web; usuarioId acota la lectura al dueño (null si no existe
+  // o no le pertenece — H-PA.9).
+  obtenerEstado(jobId: string, usuarioId: string): Promise<EstadoJob | null>;
   // Éxito: estado='hecho' y documento_id = id del documento raíz de la cascada (la unidad generada).
   marcarHecho(id: string, documentoRaizId: string): Promise<void>;
   // Reintento acotado: vuelve a 'pendiente' y registra el error del intento (otro worker lo retomará).
@@ -417,20 +428,31 @@ export interface CorpusVersionRepository {
 // --- Planificación Anual (RF-PA.4/PA.5 — §4.2 plan-fase-1) ---
 // Solo la interfaz; el adapter Drizzle se implementa en H-PA.3/H-PA.5 (infra-db).
 
+// Filtro de listado: usuarioId acota siempre al dueño; establecimiento pasa a opcional (ya no es
+// el único filtro de pertenencia — un docente puede no fijar establecimiento).
+export interface FiltroListarPlan {
+  usuarioId: string;
+  establecimiento?: string;
+  asignatura?: string;
+  nivel?: string;
+  anio?: number;
+}
+
 export interface PlanificacionAnualRepository {
   // corpusVersionId ligado al corpus vigente en el momento de guardar (INV-4, RF-PA.4).
-  guardar(p: PlanificacionAnual, corpusVersionId: string): Promise<PlanificacionAnualGuardada>;
+  guardar(p: PlanificacionAnual, corpusVersionId: string, usuarioId: string): Promise<PlanificacionAnualGuardada>;
   // Actualiza la cabecera y reemplaza unidades; corpusVersionId puede cambiar si el corpus se actualizó.
-  actualizar(id: string, p: PlanificacionAnual, corpusVersionId: string): Promise<PlanificacionAnualGuardada>;
-  obtener(id: string): Promise<PlanificacionAnualGuardada | null>;
-  listar(filtro: {
-    establecimiento: string;
-    asignatura?: string;
-    nivel?: string;
-    anio?: number;
-  }): Promise<PlanificacionAnualGuardada[]>;
+  actualizar(
+    id: string,
+    p: PlanificacionAnual,
+    corpusVersionId: string,
+    usuarioId: string,
+  ): Promise<PlanificacionAnualGuardada>;
+  obtener(id: string, usuarioId: string): Promise<PlanificacionAnualGuardada | null>;
+  listar(filtro: FiltroListarPlan): Promise<PlanificacionAnualGuardada[]>;
   // Resuelve una unidad y la cabecera de su plan (para derivar el ContextoCascada en el worker — RF-PA.3).
-  obtenerUnidad(unidadPlanificadaId: string): Promise<{
+  // usuarioId acota la lectura al dueño del plan.
+  obtenerUnidad(unidadPlanificadaId: string, usuarioId: string): Promise<{
     unidad: UnidadPlanificada;
     cabecera: {
       id: string;
@@ -441,4 +463,34 @@ export interface PlanificacionAnualRepository {
       corpusVersionId: string;
     };
   } | null>;
+}
+
+// --- Usuario / suscripción (SaaS shell — Task 2) ---
+// Estado de suscripción que el gate y el webhook leen/escriben.
+export type PlanUsuario = 'trial' | 'activo' | 'vencido' | 'cancelado';
+
+export interface Usuario {
+  id: string;
+  email: string;
+  plan: PlanUsuario;
+  generacionesUsadas: number;
+  periodoFin: Date | null;
+  mpPreapprovalId: string | null;
+}
+
+export interface UsuarioRepository {
+  /** Idempotente: crea la fila si no existe (ON CONFLICT DO NOTHING). Llamado tras autenticar. */
+  asegurar(id: string, email: string): Promise<void>;
+  porId(id: string): Promise<Usuario | null>;
+  incrementarGeneraciones(id: string): Promise<void>;
+  /** Actualiza el estado de suscripción desde el webhook de la pasarela. */
+  actualizarSuscripcion(
+    id: string,
+    campos: {
+      plan: PlanUsuario;
+      mpPreapprovalId?: string | null;
+      suscripcionEstado?: string | null;
+      periodoFin?: Date | null;
+    },
+  ): Promise<void>;
 }
