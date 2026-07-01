@@ -21,6 +21,7 @@ interface DocumentoRowSql {
   id: string;
   tipo: string;
   establecimiento: string;
+  usuario_id: string;
   corpus_version_id: string;
   origen_id: string | null;
   unidad_planificada_id: string | null;
@@ -92,6 +93,8 @@ export class DocumentoRepositoryDrizzle implements DocumentoRepository {
         tipo: input.tipo,
         // NuevoDocumento.establecimientoId → columna establecimiento
         establecimiento: input.establecimientoId,
+        // Dueño del documento (UUID de Supabase) — acota toda lectura/escritura posterior (FK NOT NULL).
+        usuarioId: input.usuarioId,
         // corpus_version_id es la versión REAL del corpus vista en esta generación (INV-4, FK NOT NULL).
         corpusVersionId: input.corpusVersionId,
         unidadPlanificadaId: input.unidadPlanificadaId,
@@ -130,11 +133,13 @@ export class DocumentoRepositoryDrizzle implements DocumentoRepository {
       .where(eq(documentoGenerado.id, id));
   }
 
-  async porId(id: string): Promise<DocumentoGenerado | null> {
+  // usuarioId acota la lectura al dueño (RF-PA.12 seguridad): un documento que no es del usuario
+  // se ve como si no existiera (null), no como un 404 distinguible de "no es tuyo".
+  async porId(id: string, usuarioId: string): Promise<DocumentoGenerado | null> {
     const [row] = await this.db
       .select()
       .from(documentoGenerado)
-      .where(eq(documentoGenerado.id, id));
+      .where(and(eq(documentoGenerado.id, id), eq(documentoGenerado.usuarioId, usuarioId)));
 
     return row !== undefined ? filaADominio(row) : null;
   }
@@ -146,12 +151,14 @@ export class DocumentoRepositoryDrizzle implements DocumentoRepository {
    * (Postgres y pglite lo soportan). Orden estable por created_at, luego tipo, para una salida
    * determinista en la UI.
    */
-  async listarPorRaiz(raizId: string): Promise<DocumentoGenerado[]> {
+  // usuarioId ancla la raíz al dueño: los descendientes heredan la pertenencia por origen_id
+  // (no llevan su propio filtro), así que basta con exigir el dueño en el ancla del CTE.
+  async listarPorRaiz(raizId: string, usuarioId: string): Promise<DocumentoGenerado[]> {
     const result = await this.db.execute(
       // WITH RECURSIVE recorre la cadena origen_id partiendo del documento raíz.
       sql`
         WITH RECURSIVE cascada AS (
-          SELECT * FROM documento_generado WHERE id = ${raizId}
+          SELECT * FROM documento_generado WHERE id = ${raizId} AND usuario_id = ${usuarioId}
           UNION ALL
           SELECT d.* FROM documento_generado d
           JOIN cascada c ON d.origen_id = c.id
@@ -166,18 +173,19 @@ export class DocumentoRepositoryDrizzle implements DocumentoRepository {
   }
 
   /**
-   * Cola de revisión HIL (RF-PA.12): documentos pendientes de un establecimiento.
+   * Cola de revisión HIL (RF-PA.12): documentos pendientes DEL DOCENTE (antes filtraba por
+   * establecimiento — un docente ya no comparte cola con otros del mismo establecimiento).
    * 'borrador' y 'en_revision' son los únicos estados que el revisor debe atender;
    * los más recientes primero (created_at DESC). Usa el query builder (no SQL crudo)
    * → pasa por el mapeo de columnas de Drizzle, así que reusa filaADominio.
    */
-  async listarPendientesRevision(establecimientoId: string): Promise<DocumentoGenerado[]> {
+  async listarPendientesRevision(usuarioId: string): Promise<DocumentoGenerado[]> {
     const rows = await this.db
       .select()
       .from(documentoGenerado)
       .where(
         and(
-          eq(documentoGenerado.establecimiento, establecimientoId),
+          eq(documentoGenerado.usuarioId, usuarioId),
           inArray(documentoGenerado.estadoRevision, ['borrador', 'en_revision']),
         ),
       )
@@ -196,6 +204,7 @@ export class DocumentoRepositoryDrizzle implements DocumentoRepository {
     id: string,
     estado: EstadoRevision,
     autorHumano: string | null,
+    usuarioId: string,
   ): Promise<void> {
     await this.db
       .update(documentoGenerado)
@@ -204,6 +213,8 @@ export class DocumentoRepositoryDrizzle implements DocumentoRepository {
         autorHumano,
         updatedAt: new Date(),
       })
-      .where(eq(documentoGenerado.id, id));
+      // usuarioId: defensa en profundidad — el caller ya filtra por dueño al leer, esto lo repite
+      // en la escritura para que un id ajeno no pueda transicionarse aunque se llame directo.
+      .where(and(eq(documentoGenerado.id, id), eq(documentoGenerado.usuarioId, usuarioId)));
   }
 }
