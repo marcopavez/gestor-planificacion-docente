@@ -4,7 +4,9 @@
 import type { PlanificacionAnualGuardada, PlanificacionAnualRepository } from '@faro/domain';
 
 export interface FiltroListarPlan {
-  readonly establecimiento: string;
+  // usuarioId acota siempre al dueño (tenancy) — el repo de dominio ya lo exige (Fase 1).
+  readonly usuarioId: string;
+  readonly establecimiento?: string;
   readonly asignatura?: string;
   readonly nivel?: string;
   readonly anio?: number;

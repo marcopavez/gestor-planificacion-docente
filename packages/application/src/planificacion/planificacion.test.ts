@@ -215,6 +215,8 @@ const PLAN_GUARDADO: PlanificacionAnualGuardada = {
   unidades: PLAN_VALIDO.unidades.map((u, i) => ({ ...u, id: `unidad-id-${i + 1}` })),
 };
 
+const USUARIO_ID = 'usuario-1';
+
 // ---------------------------------------------------------------------------
 // CrearPlanificacionAnualUseCase
 // ---------------------------------------------------------------------------
@@ -229,13 +231,15 @@ describe('CrearPlanificacionAnualUseCase', () => {
       crearReloj(HOY),
     );
 
-    const resultado = await uc.ejecutar(PLAN_VALIDO);
+    const resultado = await uc.ejecutar(PLAN_VALIDO, USUARIO_ID);
 
     expect(resultado.ok).toBe(true);
     if (resultado.ok) {
       expect(resultado.planificacion.id).toBe('plan-id-1');
     }
     expect(planRepo.guardar).toHaveBeenCalledOnce();
+    // El use case reenvía el usuarioId del caller al repo (tenancy, INV-5).
+    expect(planRepo.guardar).toHaveBeenCalledWith(PLAN_VALIDO, 'cv-1', USUARIO_ID);
   });
 
   it('gate bloquea con OA inexistente → no guarda, devuelve {ok: false}', async () => {
@@ -252,7 +256,7 @@ describe('CrearPlanificacionAnualUseCase', () => {
       crearReloj(HOY),
     );
 
-    const resultado = await uc.ejecutar(planConOaFaltante);
+    const resultado = await uc.ejecutar(planConOaFaltante, USUARIO_ID);
 
     expect(resultado.ok).toBe(false);
     if (!resultado.ok) {
@@ -275,7 +279,7 @@ describe('CrearPlanificacionAnualUseCase', () => {
     );
 
     // Verificar que lanza ReglaDominioError con la regla correcta.
-    const error = await uc.ejecutar(PLAN_VALIDO).catch((e: unknown) => e);
+    const error = await uc.ejecutar(PLAN_VALIDO, USUARIO_ID).catch((e: unknown) => e);
     expect(error).toBeInstanceOf(ReglaDominioError);
     expect((error as ReglaDominioError).regla).toBe('sin_corpus');
   });
@@ -289,7 +293,7 @@ describe('CrearPlanificacionAnualUseCase', () => {
       crearReloj(HOY),
     );
 
-    await expect(uc.ejecutar(planInvalido)).rejects.toThrow(ReglaDominioError);
+    await expect(uc.ejecutar(planInvalido, USUARIO_ID)).rejects.toThrow(ReglaDominioError);
   });
 });
 
@@ -314,7 +318,7 @@ describe('EditarPlanificacionAnualUseCase', () => {
       crearReloj(HOY),
     );
 
-    const resultado = await uc.ejecutar('id-inexistente', PLAN_VALIDO);
+    const resultado = await uc.ejecutar('id-inexistente', PLAN_VALIDO, USUARIO_ID);
 
     expect(resultado.ok).toBe(false);
     if (!resultado.ok) {
@@ -322,6 +326,8 @@ describe('EditarPlanificacionAnualUseCase', () => {
     }
     // actualizar NO debe llamarse si el plan no existe.
     expect(planRepo.actualizar).not.toHaveBeenCalled();
+    // obtener SIEMPRE se acota por el usuarioId del caller (tenancy, INV-5).
+    expect(planRepo.obtener).toHaveBeenCalledWith('id-inexistente', USUARIO_ID);
   });
 
   it('happy path: gate pasa → actualiza y devuelve {ok: true}', async () => {
@@ -340,13 +346,15 @@ describe('EditarPlanificacionAnualUseCase', () => {
       crearReloj(HOY),
     );
 
-    const resultado = await uc.ejecutar(PLAN_GUARDADO.id, PLAN_VALIDO);
+    const resultado = await uc.ejecutar(PLAN_GUARDADO.id, PLAN_VALIDO, USUARIO_ID);
 
     expect(resultado.ok).toBe(true);
     if (resultado.ok) {
       expect(resultado.planificacion.id).toBe('plan-id-1');
     }
     expect(planRepo.actualizar).toHaveBeenCalledOnce();
+    // El use case reenvía el usuarioId del caller al repo (tenancy, INV-5).
+    expect(planRepo.actualizar).toHaveBeenCalledWith(PLAN_GUARDADO.id, PLAN_VALIDO, 'cv-1', USUARIO_ID);
   });
 
   it('gate bloquea → no actualiza, devuelve {ok:false, razon:"gate"}', async () => {
@@ -368,7 +376,7 @@ describe('EditarPlanificacionAnualUseCase', () => {
       crearReloj(HOY),
     );
 
-    const resultado = await uc.ejecutar(PLAN_GUARDADO.id, planConOaFaltante);
+    const resultado = await uc.ejecutar(PLAN_GUARDADO.id, planConOaFaltante, USUARIO_ID);
 
     expect(resultado.ok).toBe(false);
     if (!resultado.ok) {

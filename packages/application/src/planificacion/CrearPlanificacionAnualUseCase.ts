@@ -33,7 +33,7 @@ export class CrearPlanificacionAnualUseCase {
     private readonly clock: ClockPort,
   ) {}
 
-  async ejecutar(input: PlanificacionAnual): Promise<ResultadoCrearPlan> {
+  async ejecutar(input: PlanificacionAnual, usuarioId: string): Promise<ResultadoCrearPlan> {
     // 1. Validar el schema del input (errores de estructura, no de dominio).
     const parsed = SchemaPlanificacionAnual.safeParse(input);
     if (!parsed.success) {
@@ -71,8 +71,8 @@ export class CrearPlanificacionAnualUseCase {
       return { ok: false, razon: 'gate', gate: resultadoGate };
     }
 
-    // 5. Gate pasado: guardar y devolver.
-    const planificacion = await this.planes.guardar(plan, version.id);
+    // 5. Gate pasado: guardar (acotado al dueño, INV tenancy) y devolver.
+    const planificacion = await this.planes.guardar(plan, version.id, usuarioId);
     return { ok: true, planificacion };
   }
 }

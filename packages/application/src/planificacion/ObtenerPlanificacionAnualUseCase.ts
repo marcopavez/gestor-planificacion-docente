@@ -6,7 +6,7 @@ import type { PlanificacionAnualGuardada, PlanificacionAnualRepository } from '@
 export class ObtenerPlanificacionAnualUseCase {
   constructor(private readonly planes: PlanificacionAnualRepository) {}
 
-  async ejecutar(id: string): Promise<PlanificacionAnualGuardada | null> {
-    return this.planes.obtener(id);
+  async ejecutar(id: string, usuarioId: string): Promise<PlanificacionAnualGuardada | null> {
+    return this.planes.obtener(id, usuarioId);
   }
 }

@@ -36,9 +36,13 @@ export class EditarPlanificacionAnualUseCase {
     private readonly clock: ClockPort,
   ) {}
 
-  async ejecutar(id: string, input: PlanificacionAnual): Promise<ResultadoEdicion> {
-    // 1. Verificar que el plan existe antes de correr el gate — devuelve discriminante claro.
-    const existente = await this.planes.obtener(id);
+  async ejecutar(
+    id: string,
+    input: PlanificacionAnual,
+    usuarioId: string,
+  ): Promise<ResultadoEdicion> {
+    // 1. Verificar que el plan existe (y es del usuario) antes de correr el gate.
+    const existente = await this.planes.obtener(id, usuarioId);
     if (existente === null) {
       return { ok: false, razon: 'no_encontrada' };
     }
@@ -80,7 +84,7 @@ export class EditarPlanificacionAnualUseCase {
     }
 
     // 6. Actualizar: borra las unidades existentes e inserta las nuevas (replace-all).
-    const planificacion = await this.planes.actualizar(id, plan, version.id);
+    const planificacion = await this.planes.actualizar(id, plan, version.id, usuarioId);
     return { ok: true, planificacion };
   }
 }

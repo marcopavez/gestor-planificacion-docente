@@ -31,18 +31,18 @@ export class RevisarDocumentoUseCase {
   constructor(private readonly documentos: DocumentoRepository) {}
 
   /** borrador → en_revision (RF-PA.11). */
-  async enviarARevision(id: string): Promise<ResultadoRevision> {
-    return this.aplicar(id, 'enviar_a_revision');
+  async enviarARevision(id: string, usuarioId: string): Promise<ResultadoRevision> {
+    return this.aplicar(id, 'enviar_a_revision', usuarioId);
   }
 
   /** en_revision → aprobado; exige autorHumano no vacío (INV-3, Art. 8 bis). */
-  async aprobar(id: string, autorHumano: string): Promise<ResultadoRevision> {
-    return this.aplicar(id, 'aprobar', { autorHumano });
+  async aprobar(id: string, autorHumano: string, usuarioId: string): Promise<ResultadoRevision> {
+    return this.aplicar(id, 'aprobar', usuarioId, { autorHumano });
   }
 
   /** en_revision → rechazado (RF-PA.11). */
-  async rechazar(id: string): Promise<ResultadoRevision> {
-    return this.aplicar(id, 'rechazar');
+  async rechazar(id: string, usuarioId: string): Promise<ResultadoRevision> {
+    return this.aplicar(id, 'rechazar', usuarioId);
   }
 
   // Nota: la máquina del dominio también soporta `reenviar` (rechazado → en_revision); su
@@ -56,9 +56,11 @@ export class RevisarDocumentoUseCase {
   private async aplicar(
     id: string,
     accion: AccionRevision,
+    usuarioId: string,
     ctx?: ContextoTransicion,
   ): Promise<ResultadoRevision> {
-    const doc = await this.documentos.porId(id);
+    // usuarioId acota la lectura al dueño (tenancy): un documento ajeno se ve como inexistente.
+    const doc = await this.documentos.porId(id, usuarioId);
     if (doc === null) {
       return { ok: false, razon: 'no_encontrado' };
     }
@@ -75,10 +77,10 @@ export class RevisarDocumentoUseCase {
       throw e;
     }
 
-    await this.documentos.actualizarEstadoRevision(id, resultado.estado, resultado.autorHumano);
+    await this.documentos.actualizarEstadoRevision(id, resultado.estado, resultado.autorHumano, usuarioId);
 
     // Releemos para devolver el documento con su estado/autor ya persistidos.
-    const actualizado = await this.documentos.porId(id);
+    const actualizado = await this.documentos.porId(id, usuarioId);
     if (actualizado === null) {
       // El documento existía hace un instante; si desaparece, es un fallo de infra → 500.
       throw new Error(`El documento '${id}' desapareció tras actualizar su estado de revisión.`);
