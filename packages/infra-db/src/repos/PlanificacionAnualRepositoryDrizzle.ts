@@ -4,6 +4,7 @@
 
 import { and, asc, eq, inArray, sql } from 'drizzle-orm';
 import type {
+  FiltroListarPlan,
   PlanificacionAnual,
   PlanificacionAnualGuardada,
   PlanificacionAnualRepository,
@@ -56,10 +57,13 @@ export class PlanificacionAnualRepositoryDrizzle implements PlanificacionAnualRe
    * Inserta la cabecera + todas las unidades en una sola transacción (RF-PA.4).
    * corpusVersionId se recibe explícito para cumplir la firma autorizada en H-PA.3:
    *   guardar(p: PlanificacionAnual, corpusVersionId: string): Promise<PlanificacionAnualGuardada>
+   * usuarioId (Task 5): dueño del plan — la columna es NOT NULL (FK a usuario), acota toda
+   * lectura/escritura posterior (obtener/listar/obtenerUnidad).
    */
   async guardar(
     p: PlanificacionAnual,
     corpusVersionId: string,
+    usuarioId: string,
   ): Promise<PlanificacionAnualGuardada> {
     return this.db.transaction(async (tx) => {
       const [cabecera] = await tx
@@ -70,6 +74,7 @@ export class PlanificacionAnualRepositoryDrizzle implements PlanificacionAnualRe
           nivel: p.nivel,
           anio: p.anio,
           corpusVersionId,
+          usuarioId,
         })
         .returning();
 
@@ -103,25 +108,27 @@ export class PlanificacionAnualRepositoryDrizzle implements PlanificacionAnualRe
   /**
    * Actualiza la cabecera y reemplaza todas las unidades en una transacción (RF-PA.5).
    * Borra las unidades existentes del plan e inserta las nuevas (replace-all semántico).
-   * Si el id no existe, lanza error claro para que el use case lo propague al caller.
+   * Si el id no existe (o no es del usuario), lanza error claro para que el use case lo propague.
    */
   async actualizar(
     id: string,
     p: PlanificacionAnual,
     corpusVersionId: string,
+    usuarioId: string,
   ): Promise<PlanificacionAnualGuardada> {
     return this.db.transaction(async (tx) => {
-      // Verificar existencia antes de actualizar para dar error claro (no silencioso).
+      // Verificar existencia (y dueño) antes de actualizar para dar error claro (no silencioso).
       const [existente] = await tx
         .select({ id: planificacionAnual.id })
         .from(planificacionAnual)
-        .where(eq(planificacionAnual.id, id));
+        .where(and(eq(planificacionAnual.id, id), eq(planificacionAnual.usuarioId, usuarioId)));
 
       if (!existente) {
         throw new Error(`PlanificacionAnual con id '${id}' no encontrada`);
       }
 
       // Actualizar cabecera; updatedAt se renueva explícitamente (no tiene defaultNow en UPDATE).
+      // usuario_id en el WHERE: defensa en profundidad (el check de existencia ya lo garantiza).
       const [cabecera] = await tx
         .update(planificacionAnual)
         .set({
@@ -132,7 +139,7 @@ export class PlanificacionAnualRepositoryDrizzle implements PlanificacionAnualRe
           corpusVersionId,
           updatedAt: sql`now()`,
         })
-        .where(eq(planificacionAnual.id, id))
+        .where(and(eq(planificacionAnual.id, id), eq(planificacionAnual.usuarioId, usuarioId)))
         .returning();
 
       if (!cabecera) throw new Error(`Error al actualizar cabecera de PlanificacionAnual '${id}'`);
@@ -163,11 +170,12 @@ export class PlanificacionAnualRepositoryDrizzle implements PlanificacionAnualRe
     });
   }
 
-  async obtener(id: string): Promise<PlanificacionAnualGuardada | null> {
+  // usuarioId acota la lectura al dueño: un plan que no es del usuario se ve como si no existiera.
+  async obtener(id: string, usuarioId: string): Promise<PlanificacionAnualGuardada | null> {
     const [cabecera] = await this.db
       .select()
       .from(planificacionAnual)
-      .where(eq(planificacionAnual.id, id));
+      .where(and(eq(planificacionAnual.id, id), eq(planificacionAnual.usuarioId, usuarioId)));
 
     if (!cabecera) return null;
 
@@ -180,14 +188,12 @@ export class PlanificacionAnualRepositoryDrizzle implements PlanificacionAnualRe
     return filaAGuardada(cabecera, unidades);
   }
 
-  async listar(filtro: {
-    establecimiento: string;
-    asignatura?: string;
-    nivel?: string;
-    anio?: number;
-  }): Promise<PlanificacionAnualGuardada[]> {
-    // Construimos las condiciones de filtro de forma explícita (sin any).
-    const condiciones = [eq(planificacionAnual.establecimiento, filtro.establecimiento)];
+  async listar(filtro: FiltroListarPlan): Promise<PlanificacionAnualGuardada[]> {
+    // usuarioId acota siempre al dueño (Task 5); establecimiento pasa a filtro opcional adicional.
+    const condiciones = [eq(planificacionAnual.usuarioId, filtro.usuarioId)];
+    if (filtro.establecimiento !== undefined) {
+      condiciones.push(eq(planificacionAnual.establecimiento, filtro.establecimiento));
+    }
     if (filtro.asignatura !== undefined) {
       condiciones.push(eq(planificacionAnual.asignatura, filtro.asignatura));
     }
@@ -228,7 +234,10 @@ export class PlanificacionAnualRepositoryDrizzle implements PlanificacionAnualRe
    * Resuelve una unidad + la cabecera de su plan (RF-PA.3). El worker lo usa para construir
    * el ContextoCascada: la unidad aporta los OA; la cabecera aporta asignatura/nivel/corpus.
    */
-  async obtenerUnidad(unidadPlanificadaId: string): Promise<{
+  async obtenerUnidad(
+    unidadPlanificadaId: string,
+    usuarioId: string,
+  ): Promise<{
     unidad: UnidadPlanificada;
     cabecera: {
       id: string;
@@ -239,6 +248,8 @@ export class PlanificacionAnualRepositoryDrizzle implements PlanificacionAnualRe
       corpusVersionId: string;
     };
   } | null> {
+    // usuarioId en el join: una unidad pertenece al plan de su dueño — si el plan no es del
+    // usuario, la unidad se ve como si no existiera (mismo tratamiento que obtener/porId).
     const [row] = await this.db
       .select({
         unidad: unidadPlanificada,
@@ -246,7 +257,12 @@ export class PlanificacionAnualRepositoryDrizzle implements PlanificacionAnualRe
       })
       .from(unidadPlanificada)
       .innerJoin(planificacionAnual, eq(unidadPlanificada.planificacionAnualId, planificacionAnual.id))
-      .where(eq(unidadPlanificada.id, unidadPlanificadaId));
+      .where(
+        and(
+          eq(unidadPlanificada.id, unidadPlanificadaId),
+          eq(planificacionAnual.usuarioId, usuarioId),
+        ),
+      );
 
     if (!row) return null;
 

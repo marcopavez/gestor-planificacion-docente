@@ -5,7 +5,8 @@ import { crearDbTest } from '../test/pgliteHelper.js';
 import { usuario, documentoGenerado, corpusVersion } from '../schema/index.js';
 import { eq } from 'drizzle-orm';
 import { DocumentoRepositoryDrizzle } from './DocumentoRepositoryDrizzle.js';
-import type { NuevoDocumento } from '@faro/domain';
+import { PlanificacionAnualRepositoryDrizzle } from './PlanificacionAnualRepositoryDrizzle.js';
+import type { NuevoDocumento, PlanificacionAnual } from '@faro/domain';
 import type { DrizzleDb } from '../db.js';
 
 // Timeout alto: pglite carga WASM la primera vez y puede tardar hasta 30s en Windows
@@ -113,5 +114,43 @@ describe('DocumentoRepository — aislamiento por usuario (Task 3)', () => {
     // Con el dueño real (A) sí transiciona.
     await repo.actualizarEstadoRevision(dA.id, 'en_revision', null, userA);
     expect((await repo.porId(dA.id, userA))!.estadoRevision).toBe('en_revision');
+  }, T);
+});
+
+// Task 5: PlanificacionAnualRepositoryDrizzle debe acotar lecturas/escrituras al dueño (usuario_id) —
+// un docente no puede listar ni resolver la unidad del plan de otro docente, aunque conozca el id.
+describe('PlanificacionAnualRepository — aislamiento por usuario (Task 5)', () => {
+  it('listar y obtenerUnidad solo devuelven lo del dueño', async () => {
+    const db = await crearDbTest();
+    // PGlite no es asignable a DrizzleDb (mismatch de tipos de sesión) — cast establecido en el repo.
+    const repo = new PlanificacionAnualRepositoryDrizzle(db as unknown as DrizzleDb);
+    const [cv] = await db.insert(corpusVersion).values({ etiqueta: 't' }).returning();
+    const userA = 'a0000000-0000-0000-0000-000000000001';
+    const userB = 'b0000000-0000-0000-0000-000000000002';
+    await db.insert(usuario).values([
+      { id: userA, email: 'a@t.cl' },
+      { id: userB, email: 'b@t.cl' },
+    ]);
+
+    const planA: PlanificacionAnual = {
+      establecimiento: 'Colegio A',
+      asignatura: 'Matemática',
+      nivel: '1° básico',
+      anio: 2026,
+      unidades: [{ orden: 1, titulo: 'U1', oaCodigos: ['MA01 OA 01'] }],
+    };
+    const guardadaA = await repo.guardar(planA, cv!.id, userA);
+    const unidadDeA = guardadaA.unidades[0]!.id;
+
+    // listar({usuarioId: B}) no debe incluir el plan de A.
+    const listadoB = await repo.listar({ usuarioId: userB });
+    expect(listadoB).toHaveLength(0);
+    const listadoA = await repo.listar({ usuarioId: userA });
+    expect(listadoA).toHaveLength(1);
+    expect(listadoA[0]!.id).toBe(guardadaA.id);
+
+    // obtenerUnidad: B no puede resolver la unidad de A (aunque conozca el id); A sí.
+    expect(await repo.obtenerUnidad(unidadDeA, userB)).toBeNull();
+    expect(await repo.obtenerUnidad(unidadDeA, userA)).not.toBeNull();
   }, T);
 });

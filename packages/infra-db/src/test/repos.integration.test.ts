@@ -201,6 +201,7 @@ describe('PlanificacionAnualRepository — round-trip', () => {
   it('guardar con N unidades → obtener devuelve las N unidades en orden', async () => {
     const db = await crearDb();
     const cvId = await insertarCorpusVersion(db);
+    const usuarioId = await insertarUsuarioSql(db);
     const repo = new PlanificacionAnualRepositoryDrizzle(db as unknown as DrizzleDb);
 
     const planInput = {
@@ -221,14 +222,14 @@ describe('PlanificacionAnualRepository — round-trip', () => {
       ],
     };
 
-    const guardada = await repo.guardar(planInput, cvId);
+    const guardada = await repo.guardar(planInput, cvId, usuarioId);
 
     expect(guardada.id).toBeDefined();
     expect(guardada.corpusVersionId).toBe(cvId);
     expect(guardada.establecimiento).toBe('Colegio Faro');
     expect(guardada.unidades).toHaveLength(3);
 
-    const obtenida = await repo.obtener(guardada.id);
+    const obtenida = await repo.obtener(guardada.id, usuarioId);
     expect(obtenida).not.toBeNull();
     expect(obtenida!.id).toBe(guardada.id);
     // Las unidades deben venir ordenadas por campo orden ASC.
@@ -243,6 +244,7 @@ describe('PlanificacionAnualRepository — round-trip', () => {
   it('listar filtra por establecimiento', async () => {
     const db = await crearDb();
     const cvId = await insertarCorpusVersion(db);
+    const usuarioId = await insertarUsuarioSql(db);
     const repo = new PlanificacionAnualRepositoryDrizzle(db as unknown as DrizzleDb);
 
     await repo.guardar(
@@ -254,6 +256,7 @@ describe('PlanificacionAnualRepository — round-trip', () => {
         unidades: [{ orden: 1, titulo: 'U1', oaCodigos: ['MA01 OA 01'] }],
       },
       cvId,
+      usuarioId,
     );
     await repo.guardar(
       {
@@ -264,13 +267,14 @@ describe('PlanificacionAnualRepository — round-trip', () => {
         unidades: [{ orden: 1, titulo: 'U1', oaCodigos: ['LE02 OA 01'] }],
       },
       cvId,
+      usuarioId,
     );
 
-    const resultadoA = await repo.listar({ establecimiento: 'Colegio A' });
+    const resultadoA = await repo.listar({ usuarioId, establecimiento: 'Colegio A' });
     expect(resultadoA).toHaveLength(1);
     expect(resultadoA[0]!.asignatura).toBe('Matemática');
 
-    const resultadoB = await repo.listar({ establecimiento: 'Colegio B' });
+    const resultadoB = await repo.listar({ usuarioId, establecimiento: 'Colegio B' });
     expect(resultadoB).toHaveLength(1);
     expect(resultadoB[0]!.nivel).toBe('2° básico');
   }, T);
@@ -393,8 +397,8 @@ describe('TrazaRepository — round-trip básico', () => {
 
 /**
  * Inserta una planificacion_anual con UNA unidad y devuelve el id de la unidad.
- * SQL directo (no PlanificacionAnualRepositoryDrizzle.guardar): ese repo aún no acepta usuarioId
- * (Task 5 pendiente) — usar el adapter acoplaría estos tests de Job a ese gap ajeno.
+ * SQL directo (no PlanificacionAnualRepositoryDrizzle.guardar): estos tests de Job solo necesitan
+ * el id de la unidad, no acoplarse a la firma completa del repo de planificación.
  */
 async function insertarUnidadPlanificada(db: TestDb, cvId: string, usuarioId: string): Promise<string> {
   const planResult = await db.execute(
@@ -759,6 +763,7 @@ describe('PlanificacionAnualRepository — id de unidad (H-PA.9)', () => {
   it('obtener expone el id de cada unidad', async () => {
     const db = await crearDb();
     const cvId = await insertarCorpusVersion(db);
+    const usuarioId = await insertarUsuarioSql(db);
     const repo = new PlanificacionAnualRepositoryDrizzle(db as unknown as DrizzleDb);
 
     const guardada = await repo.guardar(
@@ -773,6 +778,7 @@ describe('PlanificacionAnualRepository — id de unidad (H-PA.9)', () => {
         ],
       },
       cvId,
+      usuarioId,
     );
 
     // guardar ya devuelve unidades con id (UnidadPlanificadaGuardada).
@@ -781,7 +787,7 @@ describe('PlanificacionAnualRepository — id de unidad (H-PA.9)', () => {
       expect(u.id.length).toBeGreaterThan(0);
     }
 
-    const obtenida = await repo.obtener(guardada.id);
+    const obtenida = await repo.obtener(guardada.id, usuarioId);
     expect(obtenida).not.toBeNull();
     // El id de cada unidad debe coincidir con el de guardar (misma fila).
     expect(obtenida!.unidades.map((u) => u.id)).toEqual(guardada.unidades.map((u) => u.id));
@@ -790,6 +796,7 @@ describe('PlanificacionAnualRepository — id de unidad (H-PA.9)', () => {
   it('listar expone el id de cada unidad', async () => {
     const db = await crearDb();
     const cvId = await insertarCorpusVersion(db);
+    const usuarioId = await insertarUsuarioSql(db);
     const repo = new PlanificacionAnualRepositoryDrizzle(db as unknown as DrizzleDb);
 
     await repo.guardar(
@@ -801,9 +808,10 @@ describe('PlanificacionAnualRepository — id de unidad (H-PA.9)', () => {
         unidades: [{ orden: 1, titulo: 'U1', oaCodigos: ['MA01 OA 01'] }],
       },
       cvId,
+      usuarioId,
     );
 
-    const listadas = await repo.listar({ establecimiento: 'Colegio Z' });
+    const listadas = await repo.listar({ usuarioId, establecimiento: 'Colegio Z' });
     expect(listadas).toHaveLength(1);
     expect(typeof listadas[0]!.unidades[0]!.id).toBe('string');
     expect(listadas[0]!.unidades[0]!.id.length).toBeGreaterThan(0);
