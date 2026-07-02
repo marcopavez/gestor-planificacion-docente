@@ -391,24 +391,26 @@ describe('TrazaRepository — round-trip básico', () => {
 // Round-trip JobRepository (nuevo contrato: cascada-desde-unidad — RF-PA.3, ADR-003)
 // ---------------------------------------------------------------------------
 
-/** Inserta una planificacion_anual con UNA unidad y devuelve el id de la unidad. */
-async function insertarUnidadPlanificada(db: TestDb, cvId: string): Promise<string> {
-  const repo = new PlanificacionAnualRepositoryDrizzle(db as unknown as DrizzleDb);
-  const guardada = await repo.guardar(
-    {
-      establecimiento: 'Colegio Test',
-      asignatura: 'Matemática',
-      nivel: '1° básico',
-      anio: 2026,
-      unidades: [{ orden: 1, titulo: 'U1', oaCodigos: ['MA01 OA 01'] }],
-    },
-    cvId,
+/**
+ * Inserta una planificacion_anual con UNA unidad y devuelve el id de la unidad.
+ * SQL directo (no PlanificacionAnualRepositoryDrizzle.guardar): ese repo aún no acepta usuarioId
+ * (Task 5 pendiente) — usar el adapter acoplaría estos tests de Job a ese gap ajeno.
+ */
+async function insertarUnidadPlanificada(db: TestDb, cvId: string, usuarioId: string): Promise<string> {
+  const planResult = await db.execute(
+    sql`INSERT INTO planificacion_anual (establecimiento, usuario_id, asignatura, nivel, anio, corpus_version_id)
+        VALUES ('Colegio Test', ${usuarioId}, 'Matemática', '1° básico', 2026, ${cvId})
+        RETURNING id`,
   );
-  // obtenerUnidad no devuelve id de unidad; lo leemos directo de la tabla por el plan recién creado.
-  const rows = await db.execute(
-    sql`SELECT id FROM unidad_planificada WHERE planificacion_anual_id = ${guardada.id} LIMIT 1`,
+  const planId = (planResult as unknown as { rows: Array<{ id: string }> }).rows[0]?.id;
+  if (!planId) throw new Error('No se pudo insertar planificacion_anual de prueba');
+
+  const unidadResult = await db.execute(
+    sql`INSERT INTO unidad_planificada (planificacion_anual_id, orden, titulo, oa_codigos)
+        VALUES (${planId}, 1, 'U1', ARRAY['MA01 OA 01'])
+        RETURNING id`,
   );
-  const id = (rows as unknown as { rows: Array<{ id: string }> }).rows[0]?.id;
+  const id = (unidadResult as unknown as { rows: Array<{ id: string }> }).rows[0]?.id;
   if (!id) throw new Error('No se pudo crear la unidad_planificada de prueba');
   return id;
 }
@@ -417,17 +419,19 @@ describe('JobRepository — nuevo contrato cascada-unidad', () => {
   it('encolarCascadaUnidad → tomarSiguiente devuelve la unidad e incrementa intentos → marcarHecho', async () => {
     const db = await crearDb();
     const cvId = await insertarCorpusVersion(db);
-    const unidadId = await insertarUnidadPlanificada(db, cvId);
+    const usuarioId = await insertarUsuarioSql(db);
+    const unidadId = await insertarUnidadPlanificada(db, cvId, usuarioId);
     const { docId } = await insertarDocumentoSql(db, cvId);
     const repo = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
 
-    const jobId = await repo.encolarCascadaUnidad(unidadId);
+    const jobId = await repo.encolarCascadaUnidad(unidadId, usuarioId);
     expect(jobId).toBeDefined();
 
     const job = await repo.tomarSiguiente('worker-01');
     expect(job).not.toBeNull();
     expect(job!.id).toBe(jobId);
     expect(job!.unidadPlanificadaId).toBe(unidadId);
+    expect(job!.usuarioId).toBe(usuarioId);
     // tomarSiguiente cuenta el intento en curso (intentos pasa de 0 a 1).
     expect(job!.intentos).toBe(1);
 
@@ -446,10 +450,11 @@ describe('JobRepository — nuevo contrato cascada-unidad', () => {
   it('reintentar vuelve el job a pendiente con error; marcarFallido lo deja fallido', async () => {
     const db = await crearDb();
     const cvId = await insertarCorpusVersion(db);
-    const unidadId = await insertarUnidadPlanificada(db, cvId);
+    const usuarioId = await insertarUsuarioSql(db);
+    const unidadId = await insertarUnidadPlanificada(db, cvId, usuarioId);
     const repo = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
 
-    await repo.encolarCascadaUnidad(unidadId);
+    await repo.encolarCascadaUnidad(unidadId, usuarioId);
     const job = await repo.tomarSiguiente('worker-01');
     expect(job).not.toBeNull();
 
@@ -486,9 +491,10 @@ describe('JobRepository — cola de prueba formativa (Fase 4)', () => {
   it('encolarPrueba → tomarSiguientePrueba devuelve el payload; tomarSiguiente (cascada) NO la toma', async () => {
     const db = await crearDb();
     const repo = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
+    const usuarioId = await insertarUsuarioSql(db);
     const planDocId = '22222222-2222-4222-8222-222222222222'; // uuid v4 válido (RFC 4122)
 
-    const jobId = await repo.encolarPrueba({ planificacionDocumentoId: planDocId });
+    const jobId = await repo.encolarPrueba({ planificacionDocumentoId: planDocId }, usuarioId);
     expect(jobId).toBeDefined();
 
     // Aislamiento de colas: la cola de cascada NO debe tomar un job de prueba (filtra por tipo_trabajo).
@@ -498,10 +504,11 @@ describe('JobRepository — cola de prueba formativa (Fase 4)', () => {
     expect(job).not.toBeNull();
     expect(job!.id).toBe(jobId);
     expect(job!.payload.planificacionDocumentoId).toBe(planDocId);
+    expect(job!.usuarioId).toBe(usuarioId);
     expect(job!.intentos).toBe(1); // cuenta el intento en curso
 
-    // Tras tomarlo queda en_proceso (visible para el polling de la web).
-    const estado = await repo.obtenerEstado(jobId);
+    // Tras tomarlo queda en_proceso (visible para el polling de la web); obtenerEstado exige el dueño.
+    const estado = await repo.obtenerEstado(jobId, usuarioId);
     expect(estado?.estado).toBe('en_proceso');
   }, T);
 });
@@ -513,9 +520,10 @@ describe('JobRepository — cola de PPT infantil (Fase 3)', () => {
   it('encolarPptInfantil → tomarSiguientePptInfantil devuelve el payload; otras colas NO la toman', async () => {
     const db = await crearDb();
     const repo = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
+    const usuarioId = await insertarUsuarioSql(db);
     const planDocId = '33333333-3333-4333-8333-333333333333'; // uuid v4 válido (RFC 4122)
 
-    const jobId = await repo.encolarPptInfantil({ planificacionDocumentoId: planDocId });
+    const jobId = await repo.encolarPptInfantil({ planificacionDocumentoId: planDocId }, usuarioId);
     expect(jobId).toBeDefined();
 
     // Aislamiento de colas: ni la cascada ni la prueba deben tomar un job de PPT (filtran por tipo_trabajo).
@@ -526,10 +534,11 @@ describe('JobRepository — cola de PPT infantil (Fase 3)', () => {
     expect(job).not.toBeNull();
     expect(job!.id).toBe(jobId);
     expect(job!.payload.planificacionDocumentoId).toBe(planDocId);
+    expect(job!.usuarioId).toBe(usuarioId);
     expect(job!.intentos).toBe(1); // cuenta el intento en curso
 
-    // Tras tomarlo queda en_proceso (visible para el polling de la web).
-    const estado = await repo.obtenerEstado(jobId);
+    // Tras tomarlo queda en_proceso (visible para el polling de la web); obtenerEstado exige el dueño.
+    const estado = await repo.obtenerEstado(jobId, usuarioId);
     expect(estado?.estado).toBe('en_proceso');
   }, T);
 });
@@ -541,14 +550,18 @@ describe('JobRepository — cola de guía del alumno (Tanda 1)', () => {
   it('encolarGuia → tomarSiguienteGuia devuelve el payload; otras colas NO la toman', async () => {
     const db = await crearDb();
     const jobs = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
+    const usuarioId = await insertarUsuarioSql(db);
 
-    const id = await jobs.encolarGuia({
-      asignatura: 'Ciencias Naturales',
-      nivel: '3º básico',
-      oaCodigo: 'CN03 OA 01',
-      conocimiento: 'Los seres vivos',
-      establecimiento: 'Colegio Demo',
-    });
+    const id = await jobs.encolarGuia(
+      {
+        asignatura: 'Ciencias Naturales',
+        nivel: '3º básico',
+        oaCodigo: 'CN03 OA 01',
+        conocimiento: 'Los seres vivos',
+        establecimiento: 'Colegio Demo',
+      },
+      usuarioId,
+    );
     expect(id).toBeDefined();
 
     // Aislamiento de colas: ninguna cola vecina (cascada/prueba/PPT) toma un job de guía (filtran por tipo_trabajo).
@@ -559,6 +572,7 @@ describe('JobRepository — cola de guía del alumno (Tanda 1)', () => {
     const t = await jobs.tomarSiguienteGuia('w-guia');
     expect(t?.id).toBe(id);
     expect(t?.payload.oaCodigo).toBe('CN03 OA 01');
+    expect(t?.usuarioId).toBe(usuarioId);
     expect(t?.intentos).toBe(1);
   }, T);
 });
@@ -570,13 +584,17 @@ describe('JobRepository — cola de material para colorear', () => {
   it('encolarMaterialColorear → tomarSiguienteMaterialColorear devuelve el payload; otras colas NO la toman', async () => {
     const db = await crearDb();
     const jobs = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
+    const usuarioId = await insertarUsuarioSql(db);
 
-    const id = await jobs.encolarMaterialColorear({
-      asignatura: 'Ciencias Naturales',
-      nivel: '2º básico',
-      oaCodigo: 'CN02 OA 01',
-      establecimiento: 'Colegio Demo',
-    });
+    const id = await jobs.encolarMaterialColorear(
+      {
+        asignatura: 'Ciencias Naturales',
+        nivel: '2º básico',
+        oaCodigo: 'CN02 OA 01',
+        establecimiento: 'Colegio Demo',
+      },
+      usuarioId,
+    );
     expect(id).toBeDefined();
 
     // Aislamiento de colas: ninguna cola vecina toma un job de material para colorear (filtran por tipo_trabajo).
@@ -588,6 +606,7 @@ describe('JobRepository — cola de material para colorear', () => {
     const t = await jobs.tomarSiguienteMaterialColorear('w-colorear');
     expect(t?.id).toBe(id);
     expect(t?.payload.oaCodigo).toBe('CN02 OA 01');
+    expect(t?.usuarioId).toBe(usuarioId);
     expect(t?.intentos).toBe(1);
   }, T);
 });
@@ -600,21 +619,25 @@ describe('JobRepository — obtenerEstado (H-PA.9)', () => {
     const db = await crearDb();
     const repo = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
 
-    const estado = await repo.obtenerEstado('00000000-0000-0000-0000-000000000000');
+    const estado = await repo.obtenerEstado(
+      '00000000-0000-0000-0000-000000000000',
+      '00000000-0000-0000-0000-000000000001',
+    );
     expect(estado).toBeNull();
   }, T);
 
   it('refleja pendiente → en_proceso → hecho con documentoId', async () => {
     const db = await crearDb();
     const cvId = await insertarCorpusVersion(db);
-    const unidadId = await insertarUnidadPlanificada(db, cvId);
+    const usuarioId = await insertarUsuarioSql(db);
+    const unidadId = await insertarUnidadPlanificada(db, cvId, usuarioId);
     const { docId } = await insertarDocumentoSql(db, cvId);
     const repo = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
 
-    const jobId = await repo.encolarCascadaUnidad(unidadId);
+    const jobId = await repo.encolarCascadaUnidad(unidadId, usuarioId);
 
     // Recién encolado: pendiente, sin documento, 0 intentos.
-    const inicial = await repo.obtenerEstado(jobId);
+    const inicial = await repo.obtenerEstado(jobId, usuarioId);
     expect(inicial).not.toBeNull();
     expect(inicial!.estado).toBe('pendiente');
     expect(inicial!.documentoId).toBeNull();
@@ -623,15 +646,29 @@ describe('JobRepository — obtenerEstado (H-PA.9)', () => {
 
     // Tomado: en_proceso, intentos = 1.
     await repo.tomarSiguiente('worker-01');
-    const enProceso = await repo.obtenerEstado(jobId);
+    const enProceso = await repo.obtenerEstado(jobId, usuarioId);
     expect(enProceso!.estado).toBe('en_proceso');
     expect(enProceso!.intentos).toBe(1);
 
     // Hecho: documentoId = raíz de la cascada.
     await repo.marcarHecho(jobId, docId);
-    const hecho = await repo.obtenerEstado(jobId);
+    const hecho = await repo.obtenerEstado(jobId, usuarioId);
     expect(hecho!.estado).toBe('hecho');
     expect(hecho!.documentoId).toBe(docId);
+  }, T);
+
+  it('no revela el job a un usuario que no es el dueño (acota por usuarioId)', async () => {
+    const db = await crearDb();
+    const cvId = await insertarCorpusVersion(db);
+    const usuarioId = await insertarUsuarioSql(db);
+    const otroUsuarioId = await insertarUsuarioSql(db);
+    const unidadId = await insertarUnidadPlanificada(db, cvId, usuarioId);
+    const repo = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
+
+    const jobId = await repo.encolarCascadaUnidad(unidadId, usuarioId);
+
+    expect(await repo.obtenerEstado(jobId, otroUsuarioId)).toBeNull();
+    expect(await repo.obtenerEstado(jobId, usuarioId)).not.toBeNull();
   }, T);
 });
 

@@ -3,7 +3,7 @@
 // La exclusión mutua de workers se garantiza con FOR UPDATE SKIP LOCKED en tomarSiguiente.
 // El flujo es cascada-desde-unidad: el job referencia la unidad_planificada, no un documento.
 
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import type {
   EstadoJob,
   JobRepository,
@@ -44,12 +44,13 @@ export class JobRepositoryDrizzle implements JobRepository {
   // tomarSiguiente abre su propia tx (SKIP LOCKED) y por eso exige la instancia top-level.
   constructor(private readonly db: DbOTx) {}
 
-  async encolarCascadaUnidad(unidadPlanificadaId: string): Promise<string> {
+  async encolarCascadaUnidad(unidadPlanificadaId: string, usuarioId: string): Promise<string> {
     const [row] = await this.db
       .insert(jobGeneracion)
       .values({
         unidadPlanificadaId,
         tipoTrabajo: 'cascada_unidad',
+        usuarioId,
         estado: 'pendiente',
       })
       .returning({ id: jobGeneracion.id });
@@ -58,12 +59,13 @@ export class JobRepositoryDrizzle implements JobRepository {
     return row.id;
   }
 
-  async encolarPlanificacion(payload: PayloadPlanificacion): Promise<string> {
+  async encolarPlanificacion(payload: PayloadPlanificacion, usuarioId: string): Promise<string> {
     const [row] = await this.db
       .insert(jobGeneracion)
       .values({
         tipoTrabajo: 'planificacion',
         estado: 'pendiente',
+        usuarioId,
         // El payload (petición del docente) viaja en jsonb; el worker lo valida al tomarlo.
         payload: payload as unknown as Record<string, unknown>,
       })
@@ -73,12 +75,13 @@ export class JobRepositoryDrizzle implements JobRepository {
     return row.id;
   }
 
-  async encolarPrueba(payload: PayloadPrueba): Promise<string> {
+  async encolarPrueba(payload: PayloadPrueba, usuarioId: string): Promise<string> {
     const [row] = await this.db
       .insert(jobGeneracion)
       .values({
         tipoTrabajo: 'prueba_formativa',
         estado: 'pendiente',
+        usuarioId,
         // Referencia al documento de planificación; el worker lo carga y valida al tomar el job.
         payload: payload as unknown as Record<string, unknown>,
       })
@@ -88,12 +91,13 @@ export class JobRepositoryDrizzle implements JobRepository {
     return row.id;
   }
 
-  async encolarPptInfantil(payload: PayloadPptInfantil): Promise<string> {
+  async encolarPptInfantil(payload: PayloadPptInfantil, usuarioId: string): Promise<string> {
     const [row] = await this.db
       .insert(jobGeneracion)
       .values({
         tipoTrabajo: 'ppt_infantil',
         estado: 'pendiente',
+        usuarioId,
         // Referencia al documento de planificación; el worker lo carga y valida al tomar el job.
         payload: payload as unknown as Record<string, unknown>,
       })
@@ -104,10 +108,11 @@ export class JobRepositoryDrizzle implements JobRepository {
   }
 
   /**
-   * Estado del job para el polling de la web (H-PA.9). Solo lectura; null si el id no existe.
+   * Estado del job para el polling de la web (H-PA.9). Solo lectura; null si el id no existe
+   * o no pertenece a usuarioId (el worker no tiene sesión, la web sí — acota por dueño aquí).
    * El union de estado se valida con esEstadoJob para no degradar el tipo a `string`.
    */
-  async obtenerEstado(jobId: string): Promise<EstadoJob | null> {
+  async obtenerEstado(jobId: string, usuarioId: string): Promise<EstadoJob | null> {
     const [row] = await this.db
       .select({
         id: jobGeneracion.id,
@@ -117,7 +122,7 @@ export class JobRepositoryDrizzle implements JobRepository {
         error: jobGeneracion.error,
       })
       .from(jobGeneracion)
-      .where(eq(jobGeneracion.id, jobId));
+      .where(and(eq(jobGeneracion.id, jobId), eq(jobGeneracion.usuarioId, usuarioId)));
 
     if (!row) return null;
     if (!esEstadoJob(row.estado)) {
@@ -146,8 +151,8 @@ export class JobRepositoryDrizzle implements JobRepository {
     return this.db.transaction(async (tx) => {
       // Drizzle no tiene API de primer nivel para FOR UPDATE SKIP LOCKED;
       // usamos sql`` para la cláusula de bloqueo (aceptado por el proyecto per ADR-003).
-      const rows = await tx.execute<{ id: string; unidad_planificada_id: string }>(
-        sql`SELECT id, unidad_planificada_id FROM job_generacion
+      const rows = await tx.execute<{ id: string; unidad_planificada_id: string; usuario_id: string }>(
+        sql`SELECT id, unidad_planificada_id, usuario_id FROM job_generacion
             WHERE estado = 'pendiente' AND tipo_trabajo = 'cascada_unidad'
             ORDER BY created_at ASC
             LIMIT 1
@@ -156,7 +161,9 @@ export class JobRepositoryDrizzle implements JobRepository {
 
       // pglite / pg devuelven las filas en .rows
       const row = (
-        rows as unknown as { rows: Array<{ id: string; unidad_planificada_id: string }> }
+        rows as unknown as {
+          rows: Array<{ id: string; unidad_planificada_id: string; usuario_id: string }>;
+        }
       ).rows[0];
       if (!row) return null;
 
@@ -177,6 +184,7 @@ export class JobRepositoryDrizzle implements JobRepository {
       return {
         id: row.id,
         unidadPlanificadaId: row.unidad_planificada_id,
+        usuarioId: row.usuario_id,
         intentos: actualizado.intentos,
       };
     });
@@ -185,15 +193,17 @@ export class JobRepositoryDrizzle implements JobRepository {
   /** Análogo a tomarSiguiente para la cola 'planificacion' (H-2.7): valida el payload jsonb al tomarlo. */
   async tomarSiguientePlanificacion(workerId: string): Promise<TrabajoPlanificacion | null> {
     return this.db.transaction(async (tx) => {
-      const rows = await tx.execute<{ id: string; payload: unknown }>(
-        sql`SELECT id, payload FROM job_generacion
+      const rows = await tx.execute<{ id: string; payload: unknown; usuario_id: string }>(
+        sql`SELECT id, payload, usuario_id FROM job_generacion
             WHERE estado = 'pendiente' AND tipo_trabajo = 'planificacion'
             ORDER BY created_at ASC
             LIMIT 1
             FOR UPDATE SKIP LOCKED`,
       );
 
-      const row = (rows as unknown as { rows: Array<{ id: string; payload: unknown }> }).rows[0];
+      const row = (
+        rows as unknown as { rows: Array<{ id: string; payload: unknown; usuario_id: string }> }
+      ).rows[0];
       if (!row) return null;
 
       const [actualizado] = await tx
@@ -211,22 +221,24 @@ export class JobRepositoryDrizzle implements JobRepository {
 
       // El payload se validó al encolar; lo revalidamos aquí (defensa: jsonb es opaco).
       const payload = SchemaPayloadPlanificacion.parse(row.payload);
-      return { id: row.id, payload, intentos: actualizado.intentos };
+      return { id: row.id, payload, usuarioId: row.usuario_id, intentos: actualizado.intentos };
     });
   }
 
   /** Análogo a tomarSiguientePlanificacion para la cola 'prueba_formativa' (Fase 4). */
   async tomarSiguientePrueba(workerId: string): Promise<TrabajoPrueba | null> {
     return this.db.transaction(async (tx) => {
-      const rows = await tx.execute<{ id: string; payload: unknown }>(
-        sql`SELECT id, payload FROM job_generacion
+      const rows = await tx.execute<{ id: string; payload: unknown; usuario_id: string }>(
+        sql`SELECT id, payload, usuario_id FROM job_generacion
             WHERE estado = 'pendiente' AND tipo_trabajo = 'prueba_formativa'
             ORDER BY created_at ASC
             LIMIT 1
             FOR UPDATE SKIP LOCKED`,
       );
 
-      const row = (rows as unknown as { rows: Array<{ id: string; payload: unknown }> }).rows[0];
+      const row = (
+        rows as unknown as { rows: Array<{ id: string; payload: unknown; usuario_id: string }> }
+      ).rows[0];
       if (!row) return null;
 
       const [actualizado] = await tx
@@ -243,22 +255,24 @@ export class JobRepositoryDrizzle implements JobRepository {
       if (!actualizado) throw new Error('No se pudo bloquear el job de prueba tomado');
 
       const payload = SchemaPayloadPrueba.parse(row.payload);
-      return { id: row.id, payload, intentos: actualizado.intentos };
+      return { id: row.id, payload, usuarioId: row.usuario_id, intentos: actualizado.intentos };
     });
   }
 
   /** Análogo a tomarSiguientePrueba para la cola 'ppt_infantil' (Fase 3). */
   async tomarSiguientePptInfantil(workerId: string): Promise<TrabajoPptInfantil | null> {
     return this.db.transaction(async (tx) => {
-      const rows = await tx.execute<{ id: string; payload: unknown }>(
-        sql`SELECT id, payload FROM job_generacion
+      const rows = await tx.execute<{ id: string; payload: unknown; usuario_id: string }>(
+        sql`SELECT id, payload, usuario_id FROM job_generacion
             WHERE estado = 'pendiente' AND tipo_trabajo = 'ppt_infantil'
             ORDER BY created_at ASC
             LIMIT 1
             FOR UPDATE SKIP LOCKED`,
       );
 
-      const row = (rows as unknown as { rows: Array<{ id: string; payload: unknown }> }).rows[0];
+      const row = (
+        rows as unknown as { rows: Array<{ id: string; payload: unknown; usuario_id: string }> }
+      ).rows[0];
       if (!row) return null;
 
       const [actualizado] = await tx
@@ -275,16 +289,17 @@ export class JobRepositoryDrizzle implements JobRepository {
       if (!actualizado) throw new Error('No se pudo bloquear el job de PPT infantil tomado');
 
       const payload = SchemaPayloadPptInfantil.parse(row.payload);
-      return { id: row.id, payload, intentos: actualizado.intentos };
+      return { id: row.id, payload, usuarioId: row.usuario_id, intentos: actualizado.intentos };
     });
   }
 
-  async encolarGuia(payload: PayloadGuia): Promise<string> {
+  async encolarGuia(payload: PayloadGuia, usuarioId: string): Promise<string> {
     const [row] = await this.db
       .insert(jobGeneracion)
       .values({
         tipoTrabajo: 'guia',
         estado: 'pendiente',
+        usuarioId,
         // Payload OA + conocimiento; el worker resuelve el OA completo vía OaRepository al tomarlo.
         payload: payload as unknown as Record<string, unknown>,
       })
@@ -297,15 +312,17 @@ export class JobRepositoryDrizzle implements JobRepository {
   /** Análogo a tomarSiguientePrueba para la cola 'guia' (Tanda 1). */
   async tomarSiguienteGuia(workerId: string): Promise<TrabajoGuia | null> {
     return this.db.transaction(async (tx) => {
-      const rows = await tx.execute<{ id: string; payload: unknown }>(
-        sql`SELECT id, payload FROM job_generacion
+      const rows = await tx.execute<{ id: string; payload: unknown; usuario_id: string }>(
+        sql`SELECT id, payload, usuario_id FROM job_generacion
             WHERE estado = 'pendiente' AND tipo_trabajo = 'guia'
             ORDER BY created_at ASC
             LIMIT 1
             FOR UPDATE SKIP LOCKED`,
       );
 
-      const row = (rows as unknown as { rows: Array<{ id: string; payload: unknown }> }).rows[0];
+      const row = (
+        rows as unknown as { rows: Array<{ id: string; payload: unknown; usuario_id: string }> }
+      ).rows[0];
       if (!row) return null;
 
       const [actualizado] = await tx
@@ -322,16 +339,17 @@ export class JobRepositoryDrizzle implements JobRepository {
       if (!actualizado) throw new Error('No se pudo bloquear el job de guía tomado');
 
       const payload = SchemaPayloadGuia.parse(row.payload);
-      return { id: row.id, payload, intentos: actualizado.intentos };
+      return { id: row.id, payload, usuarioId: row.usuario_id, intentos: actualizado.intentos };
     });
   }
 
-  async encolarMaterialColorear(payload: PayloadMaterialColorear): Promise<string> {
+  async encolarMaterialColorear(payload: PayloadMaterialColorear, usuarioId: string): Promise<string> {
     const [row] = await this.db
       .insert(jobGeneracion)
       .values({
         tipoTrabajo: 'material_colorear',
         estado: 'pendiente',
+        usuarioId,
         // Payload OA + contexto del material; el worker genera el line-art al tomarlo.
         payload: payload as unknown as Record<string, unknown>,
       })
@@ -344,15 +362,17 @@ export class JobRepositoryDrizzle implements JobRepository {
   /** Análogo a tomarSiguienteGuia para la cola 'material_colorear'. */
   async tomarSiguienteMaterialColorear(workerId: string): Promise<TrabajoMaterialColorear | null> {
     return this.db.transaction(async (tx) => {
-      const rows = await tx.execute<{ id: string; payload: unknown }>(
-        sql`SELECT id, payload FROM job_generacion
+      const rows = await tx.execute<{ id: string; payload: unknown; usuario_id: string }>(
+        sql`SELECT id, payload, usuario_id FROM job_generacion
             WHERE estado = 'pendiente' AND tipo_trabajo = 'material_colorear'
             ORDER BY created_at ASC
             LIMIT 1
             FOR UPDATE SKIP LOCKED`,
       );
 
-      const row = (rows as unknown as { rows: Array<{ id: string; payload: unknown }> }).rows[0];
+      const row = (
+        rows as unknown as { rows: Array<{ id: string; payload: unknown; usuario_id: string }> }
+      ).rows[0];
       if (!row) return null;
 
       const [actualizado] = await tx
@@ -369,16 +389,17 @@ export class JobRepositoryDrizzle implements JobRepository {
       if (!actualizado) throw new Error('No se pudo bloquear el job de material para colorear tomado');
 
       const payload = SchemaPayloadMaterialColorear.parse(row.payload);
-      return { id: row.id, payload, intentos: actualizado.intentos };
+      return { id: row.id, payload, usuarioId: row.usuario_id, intentos: actualizado.intentos };
     });
   }
 
-  async encolarFicha(payload: PayloadFicha): Promise<string> {
+  async encolarFicha(payload: PayloadFicha, usuarioId: string): Promise<string> {
     const [row] = await this.db
       .insert(jobGeneracion)
       .values({
         tipoTrabajo: 'ficha_colorear',
         estado: 'pendiente',
+        usuarioId,
         // Payload OA + contexto de la ficha; el worker genera los ejercicios al tomarlo.
         payload: payload as unknown as Record<string, unknown>,
       })
@@ -391,15 +412,17 @@ export class JobRepositoryDrizzle implements JobRepository {
   /** Análogo a tomarSiguienteMaterialColorear para la cola 'ficha_colorear' (Plan 2). */
   async tomarSiguienteFicha(workerId: string): Promise<TrabajoFicha | null> {
     return this.db.transaction(async (tx) => {
-      const rows = await tx.execute<{ id: string; payload: unknown }>(
-        sql`SELECT id, payload FROM job_generacion
+      const rows = await tx.execute<{ id: string; payload: unknown; usuario_id: string }>(
+        sql`SELECT id, payload, usuario_id FROM job_generacion
             WHERE estado = 'pendiente' AND tipo_trabajo = 'ficha_colorear'
             ORDER BY created_at ASC
             LIMIT 1
             FOR UPDATE SKIP LOCKED`,
       );
 
-      const row = (rows as unknown as { rows: Array<{ id: string; payload: unknown }> }).rows[0];
+      const row = (
+        rows as unknown as { rows: Array<{ id: string; payload: unknown; usuario_id: string }> }
+      ).rows[0];
       if (!row) return null;
 
       const [actualizado] = await tx
@@ -416,7 +439,7 @@ export class JobRepositoryDrizzle implements JobRepository {
       if (!actualizado) throw new Error('No se pudo bloquear el job de ficha para colorear tomado');
 
       const payload = SchemaPayloadFicha.parse(row.payload); // revalida el jsonb opaco
-      return { id: row.id, payload, intentos: actualizado.intentos };
+      return { id: row.id, payload, usuarioId: row.usuario_id, intentos: actualizado.intentos };
     });
   }
 
