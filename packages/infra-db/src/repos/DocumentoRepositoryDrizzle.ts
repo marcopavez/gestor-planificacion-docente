@@ -160,8 +160,10 @@ export class DocumentoRepositoryDrizzle implements DocumentoRepository {
         WITH RECURSIVE cascada AS (
           SELECT * FROM documento_generado WHERE id = ${raizId} AND usuario_id = ${usuarioId}
           UNION ALL
+          -- Reafirma el dueño en el término recursivo: los descendientes deben ser del mismo
+          -- usuario que el ancla (belt-and-suspenders si algún origen_id cruzara de dueño).
           SELECT d.* FROM documento_generado d
-          JOIN cascada c ON d.origen_id = c.id
+          JOIN cascada c ON d.origen_id = c.id AND d.usuario_id = ${usuarioId}
         )
         SELECT * FROM cascada
         ORDER BY created_at ASC, tipo ASC

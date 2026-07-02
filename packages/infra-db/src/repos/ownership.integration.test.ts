@@ -89,6 +89,38 @@ describe('DocumentoRepository — aislamiento por usuario (Task 3)', () => {
     expect((await repo.listarPorRaiz(dA.id, userA)).length).toBeGreaterThanOrEqual(1);
   }, T);
 
+  it('listarPorRaiz: el término recursivo sigue devolviendo descendientes legítimos del dueño', async () => {
+    const db = await crearDbTest();
+    const repo = new DocumentoRepositoryDrizzle(db as unknown as DrizzleDb);
+    const [cv] = await db.insert(corpusVersion).values({ etiqueta: 't' }).returning();
+    const userA = 'a0000000-0000-0000-0000-000000000001';
+    const userB = 'b0000000-0000-0000-0000-000000000002';
+    await db.insert(usuario).values([
+      { id: userA, email: 'a@t.cl' },
+      { id: userB, email: 'b@t.cl' },
+    ]);
+
+    const raiz = await repo.crearBorrador({
+      tipo: 'planificacion_unidad',
+      establecimientoId: 'X',
+      corpusVersionId: cv!.id,
+      usuarioId: userA,
+    });
+    // Hijo que cuelga de la raíz vía origen_id, del mismo dueño (A).
+    await repo.crearBorrador({
+      tipo: 'clase',
+      establecimientoId: 'X',
+      corpusVersionId: cv!.id,
+      usuarioId: userA,
+      origenId: raiz.id,
+    });
+
+    // El guardia AND d.usuario_id no debe bloquear descendientes legítimos: A ve raíz + hijo.
+    expect((await repo.listarPorRaiz(raiz.id, userA)).length).toBeGreaterThanOrEqual(2);
+    // B sigue sin ver nada (ni la raíz ni el hijo), como antes del endurecimiento.
+    expect(await repo.listarPorRaiz(raiz.id, userB)).toHaveLength(0);
+  }, T);
+
   it('actualizarEstadoRevision: el usuario B no puede transicionar un documento de A (no-op silencioso)', async () => {
     const db = await crearDbTest();
     const repo = new DocumentoRepositoryDrizzle(db as unknown as DrizzleDb);
@@ -152,5 +184,49 @@ describe('PlanificacionAnualRepository — aislamiento por usuario (Task 5)', ()
     // obtenerUnidad: B no puede resolver la unidad de A (aunque conozca el id); A sí.
     expect(await repo.obtenerUnidad(unidadDeA, userB)).toBeNull();
     expect(await repo.obtenerUnidad(unidadDeA, userA)).not.toBeNull();
+  }, T);
+
+  it('actualizar: el usuario B no puede modificar el plan de A (rechaza y no muta nada)', async () => {
+    const db = await crearDbTest();
+    const repo = new PlanificacionAnualRepositoryDrizzle(db as unknown as DrizzleDb);
+    const [cv] = await db.insert(corpusVersion).values({ etiqueta: 't' }).returning();
+    const userA = 'a0000000-0000-0000-0000-000000000001';
+    const userB = 'b0000000-0000-0000-0000-000000000002';
+    await db.insert(usuario).values([
+      { id: userA, email: 'a@t.cl' },
+      { id: userB, email: 'b@t.cl' },
+    ]);
+
+    const planA: PlanificacionAnual = {
+      establecimiento: 'Colegio A',
+      asignatura: 'Matemática',
+      nivel: '1° básico',
+      anio: 2026,
+      unidades: [{ orden: 1, titulo: 'U1', oaCodigos: ['MA01 OA 01'] }],
+    };
+    const guardadaA = await repo.guardar(planA, cv!.id, userA);
+
+    const intentoDeB: PlanificacionAnual = {
+      establecimiento: 'Colegio B (hackeado)',
+      asignatura: 'Lenguaje',
+      nivel: '2° básico',
+      anio: 2027,
+      unidades: [{ orden: 1, titulo: 'U1-B', oaCodigos: ['LE01 OA 01'] }],
+    };
+
+    // El check de existencia+dueño en actualizar() no encuentra el id bajo usuario_id = B →
+    // lanza "no encontrada" (mismo tratamiento que un id inexistente, no distingue "no es tuyo").
+    await expect(repo.actualizar(guardadaA.id, intentoDeB, cv!.id, userB)).rejects.toThrow(
+      `PlanificacionAnual con id '${guardadaA.id}' no encontrada`,
+    );
+
+    // El plan de A queda intacto: ni cabecera ni unidades fueron tocadas por el intento de B.
+    const planTrasIntento = await repo.obtener(guardadaA.id, userA);
+    expect(planTrasIntento).not.toBeNull();
+    expect(planTrasIntento!.establecimiento).toBe('Colegio A');
+    expect(planTrasIntento!.asignatura).toBe('Matemática');
+    expect(planTrasIntento!.anio).toBe(2026);
+    expect(planTrasIntento!.unidades).toHaveLength(1);
+    expect(planTrasIntento!.unidades[0]!.titulo).toBe('U1');
   }, T);
 });
