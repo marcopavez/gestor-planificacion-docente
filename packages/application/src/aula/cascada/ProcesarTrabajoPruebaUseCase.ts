@@ -58,7 +58,7 @@ export class ProcesarTrabajoPruebaUseCase {
 
     // Carga y valida la planificación de origen. Estos son errores PERMANENTES (un reintento no
     // cambiaría el input): documento ausente, contenido no-planificación, o sin corpus_version.
-    const planDoc = await this.documentos.porId(job.payload.planificacionDocumentoId);
+    const planDoc = await this.documentos.porId(job.payload.planificacionDocumentoId, job.usuarioId);
     if (planDoc === null) {
       return this.fallar(job.id, `Planificación '${job.payload.planificacionDocumentoId}' no encontrada.`);
     }
@@ -90,6 +90,7 @@ export class ProcesarTrabajoPruebaUseCase {
         const doc = await repos.documentos.crearBorrador({
           tipo: 'prueba',
           establecimientoId: unidad.establecimiento,
+          usuarioId: job.usuarioId, // dueño del documento = dueño del job (tenancy)
           corpusVersionId, // misma versión que vio la planificación (INV-4)
           origenId: planDoc.id, // la prueba cuelga de la unidad → el export resuelve el encabezado
           payload: prueba,

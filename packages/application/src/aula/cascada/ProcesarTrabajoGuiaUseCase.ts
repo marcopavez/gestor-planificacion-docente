@@ -111,6 +111,7 @@ export class ProcesarTrabajoGuiaUseCase {
         const doc = await repos.documentos.crearBorrador({
           tipo: 'guia',
           establecimientoId: establecimiento,
+          usuarioId: job.usuarioId, // dueño del documento = dueño del job (tenancy)
           corpusVersionId: oa.corpusVersionId, // misma versión que cargó el OA (INV-4)
           // origenId omitido: la guía no cuelga de ninguna unidad (standalone desde el OA)
           payload: guia,

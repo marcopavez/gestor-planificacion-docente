@@ -75,7 +75,7 @@ export class ProcesarTrabajoCascadaUseCase {
 
     try {
       // --- Trabajo SIN escrituras de DB: cargar contexto, correr la cascada y exportar el .pptx ---
-      const u = await this.planes.obtenerUnidad(job.unidadPlanificadaId);
+      const u = await this.planes.obtenerUnidad(job.unidadPlanificadaId, job.usuarioId);
       if (u === null) {
         throw new Error(`Unidad planificada '${job.unidadPlanificadaId}' no encontrada`);
       }
@@ -105,6 +105,7 @@ export class ProcesarTrabajoCascadaUseCase {
         const unidadDoc = await repos.documentos.crearBorrador({
           tipo: 'planificacion_unidad',
           establecimientoId,
+          usuarioId: job.usuarioId, // dueño de los 4 documentos = dueño del job (tenancy)
           corpusVersionId,
           unidadPlanificadaId: job.unidadPlanificadaId,
           payload: res.unidad,
@@ -116,6 +117,7 @@ export class ProcesarTrabajoCascadaUseCase {
         const claseDoc = await repos.documentos.crearBorrador({
           tipo: 'planificacion_clase',
           establecimientoId,
+          usuarioId: job.usuarioId,
           corpusVersionId,
           unidadPlanificadaId: job.unidadPlanificadaId,
           origenId: unidadDoc.id,
@@ -127,6 +129,7 @@ export class ProcesarTrabajoCascadaUseCase {
         const pruebaDoc = await repos.documentos.crearBorrador({
           tipo: 'prueba',
           establecimientoId,
+          usuarioId: job.usuarioId,
           corpusVersionId,
           unidadPlanificadaId: job.unidadPlanificadaId,
           origenId: unidadDoc.id,
@@ -139,6 +142,7 @@ export class ProcesarTrabajoCascadaUseCase {
         const deckDoc = await repos.documentos.crearBorrador({
           tipo: 'clase_deck',
           establecimientoId,
+          usuarioId: job.usuarioId,
           corpusVersionId,
           unidadPlanificadaId: job.unidadPlanificadaId,
           origenId: claseDoc.id,

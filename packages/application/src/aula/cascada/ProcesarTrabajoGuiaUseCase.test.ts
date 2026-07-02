@@ -65,6 +65,7 @@ function dobles() {
   const tomado: TrabajoGuia = {
     id: 'job-1',
     intentos: 1,
+    usuarioId: 'u1',
     payload: {
       asignatura: 'Ciencias Naturales',
       nivel: '3º básico',
@@ -137,6 +138,7 @@ describe('ProcesarTrabajoGuiaUseCase', () => {
     const creado = borradores[0];
     expect(creado?.tipo).toBe('guia');
     expect(creado?.corpusVersionId).toBe('cv-1');
+    expect(creado?.usuarioId).toBe('u1'); // tenancy: el documento nace con el usuarioId del job
     expect(registrar).toHaveBeenCalledOnce();
   });
 
@@ -162,6 +164,7 @@ describe('ProcesarTrabajoGuiaUseCase', () => {
     (jobs.tomarSiguienteGuia as ReturnType<typeof vi.fn>).mockResolvedValue({
       id: 'job-12',
       intentos: 1,
+      usuarioId: 'u1',
       payload: {
         asignatura: 'Ciencias Naturales',
         nivel: '1º básico',

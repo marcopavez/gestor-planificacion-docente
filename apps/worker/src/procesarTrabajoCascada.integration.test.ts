@@ -30,6 +30,7 @@ import {
   OaRepositoryDrizzle,
   PlanificacionAnualRepositoryDrizzle,
   UnidadDeTrabajoDrizzle,
+  UsuarioRepositoryDrizzle,
   type DrizzleDb,
 } from '@faro/infra-db';
 
@@ -39,7 +40,8 @@ const T = 60_000;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 // Las migraciones viven en el paquete infra-db; se resuelven relativo a este archivo de test.
 const MIGRATIONS_DIR = join(__dirname, '../../../packages/infra-db/migrations');
-const MIGRATIONS = ['0000_robust_mulholland_black.sql', '0001_glorious_tinkerer.sql'];
+// 0002 añade la tabla `usuario` + columnas usuario_id NOT NULL (propiedad por docente — tenancy).
+const MIGRATIONS = ['0000_robust_mulholland_black.sql', '0001_glorious_tinkerer.sql', '0002_fancy_centennial.sql'];
 // El LLM de samples sirve los artefactos curados de Matemática 1º básico.
 const SAMPLES_DIR = join(__dirname, '../../../samples/aula-matematica-1b');
 
@@ -63,6 +65,9 @@ const OA_UNIDAD = ['MA01 OA 03', 'MA01 OA 04', 'MA01 OA 06', 'MA01 OA 08', 'MA01
 
 const reloj: ClockPort = { hoy: () => new Date('2026-06-06') };
 
+// Dueño (docente) de los artefactos — tenancy. usuario_id NOT NULL + FK exige que la fila exista antes.
+const USUARIO_ID = '00000000-0000-0000-0000-000000000001';
+
 async function crearDbPglite(): Promise<TestDb> {
   const pg = new PGlite();
   for (const archivo of MIGRATIONS) {
@@ -80,6 +85,9 @@ async function crearDbPglite(): Promise<TestDb> {
 
 /** Ingiere corpus mínimo + 1 PlanificacionAnual con 1 unidad. Devuelve { unidadId } y deps. */
 async function prepararFixture(db: TestDb): Promise<{ unidadId: string; cvId: string }> {
+  // El usuario dueño debe existir antes de insertar plan/job/documento (FK usuario_id NOT NULL).
+  await new UsuarioRepositoryDrizzle(db as unknown as DrizzleDb).asegurar(USUARIO_ID, 'docente@colegio.cl');
+
   const [cv] = await db.insert(corpusVersion).values({ etiqueta: 'v1-mate-1b', estado: 'publicada' }).returning();
   if (!cv) throw new Error('No se pudo crear corpus_version');
 
@@ -105,6 +113,7 @@ async function prepararFixture(db: TestDb): Promise<{ unidadId: string; cvId: st
       unidades: [{ orden: 1, titulo: 'Unidad 1', oaCodigos: OA_UNIDAD }],
     },
     cv.id,
+    USUARIO_ID,
   );
 
   const rows = await db.execute(
@@ -136,7 +145,7 @@ describe('CA-PA.4 — worker cascada end-to-end (pglite + samples + pptx real)',
     const dirSalida = mkdtempSync(join(tmpdir(), 'faro-pptx-'));
 
     const jobs = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
-    const jobId = await jobs.encolarCascadaUnidad(unidadId);
+    const jobId = await jobs.encolarCascadaUnidad(unidadId, USUARIO_ID);
 
     const useCase = construirUseCase(db, crearSamplesLlm(SAMPLES_DIR), dirSalida);
     const r = await useCase.ejecutarSiguiente('worker-01');
@@ -144,13 +153,14 @@ describe('CA-PA.4 — worker cascada end-to-end (pglite + samples + pptx real)',
     expect(r.tipo).toBe('hecho');
     if (r.tipo !== 'hecho') throw new Error('esperaba hecho');
 
-    // 4 documentos, todos en estado 'borrador' (INV-3) con el corpus real.
+    // 4 documentos, todos en estado 'borrador' (INV-3) con el corpus real y el usuario_id del job (tenancy).
     const docs = await db.select().from(documentoGenerado);
     expect(docs).toHaveLength(4);
     for (const d of docs) {
       expect(d.estadoRevision).toBe('borrador');
       expect(d.estadoGeneracion).toBe('validado');
       expect(d.corpusVersionId).toBe(cvId);
+      expect(d.usuarioId).toBe(USUARIO_ID);
     }
 
     const porTipo = new Map(docs.map((d) => [d.tipo, d]));
@@ -204,7 +214,7 @@ describe('CA-PA.4 — worker cascada end-to-end (pglite + samples + pptx real)',
     const dirSalida = mkdtempSync(join(tmpdir(), 'faro-pptx-'));
 
     const jobs = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
-    const jobId = await jobs.encolarCascadaUnidad(unidadId);
+    const jobId = await jobs.encolarCascadaUnidad(unidadId, USUARIO_ID);
 
     // LLM que siempre lanza → la cascada falla en el primer artefacto.
     const llmRoto: LlmPort = {
@@ -249,7 +259,7 @@ describe('CA-PA.4 — worker cascada end-to-end (pglite + samples + pptx real)',
 
     // Corre la cascada para persistir los 4 borradores reales (como el test end-to-end).
     const jobs = new JobRepositoryDrizzle(db as unknown as DrizzleDb);
-    await jobs.encolarCascadaUnidad(unidadId);
+    await jobs.encolarCascadaUnidad(unidadId, USUARIO_ID);
     const useCase = construirUseCase(db, crearSamplesLlm(SAMPLES_DIR), dirSalida);
     const r = await useCase.ejecutarSiguiente('worker-01');
     expect(r.tipo).toBe('hecho');
@@ -262,13 +272,13 @@ describe('CA-PA.4 — worker cascada end-to-end (pglite + samples + pptx real)',
     const revisar = new RevisarDocumentoUseCase(new DocumentoRepositoryDrizzle(db as unknown as DrizzleDb));
 
     // 1) enviar: borrador → en_revision.
-    const r1 = await revisar.enviarARevision(unidadDoc.id);
+    const r1 = await revisar.enviarARevision(unidadDoc.id, USUARIO_ID);
     expect(r1.ok).toBe(true);
     let row = (await db.select().from(documentoGenerado).where(sql`id = ${unidadDoc.id}`))[0];
     expect(row?.estadoRevision).toBe('en_revision');
 
     // 2) aprobar SIN humano: la máquina lo rechaza y NO se persiste.
-    const r2 = await revisar.aprobar(unidadDoc.id, '');
+    const r2 = await revisar.aprobar(unidadDoc.id, '', USUARIO_ID);
     expect(r2.ok).toBe(false);
     if (r2.ok) throw new Error('esperaba que aprobar sin humano fallara');
     expect(r2.razon).toBe('transicion_invalida');
@@ -279,7 +289,7 @@ describe('CA-PA.4 — worker cascada end-to-end (pglite + samples + pptx real)',
     expect(row?.autorHumano).toBeNull();
 
     // 3) aprobar CON humano: en_revision → aprobado, con autor_humano persistido.
-    const r3 = await revisar.aprobar(unidadDoc.id, 'docente@colegio.cl');
+    const r3 = await revisar.aprobar(unidadDoc.id, 'docente@colegio.cl', USUARIO_ID);
     expect(r3.ok).toBe(true);
     if (!r3.ok) throw new Error('esperaba aprobación con humano');
     expect(r3.documento.estadoRevision).toBe('aprobado');

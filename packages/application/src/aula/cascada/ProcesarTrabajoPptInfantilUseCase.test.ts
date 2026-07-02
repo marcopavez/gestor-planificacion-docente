@@ -85,10 +85,11 @@ interface Llamadas {
   hecho: Array<{ id: string; docId: string }>;
   fallido: Array<{ id: string; error: string }>;
   crearBorrador: NuevoDocumento[];
+  porId: Array<{ id: string; usuarioId: string }>;
 }
 
 function montar(opts: { doc: DocumentoGenerado | null; trabajos: (TrabajoPptInfantil | null)[]; claveIlustracion?: string | null }) {
-  const llamadas: Llamadas = { generar: 0, hecho: [], fallido: [], crearBorrador: [] };
+  const llamadas: Llamadas = { generar: 0, hecho: [], fallido: [], crearBorrador: [], porId: [] };
   let i = 0;
 
   const jobs = {
@@ -105,7 +106,9 @@ function montar(opts: { doc: DocumentoGenerado | null; trabajos: (TrabajoPptInfa
   } as unknown as JobRepository;
 
   const documentos = {
-    async porId(id: string): Promise<DocumentoGenerado | null> {
+    // porId acota al dueño: el worker debe pasar el usuarioId del job (INV-5, tenancy).
+    async porId(id: string, usuarioId: string): Promise<DocumentoGenerado | null> {
+      llamadas.porId.push({ id, usuarioId });
       return id === PLAN_DOC_ID ? opts.doc : null;
     },
   } as unknown as DocumentoRepository;
@@ -146,7 +149,7 @@ function montar(opts: { doc: DocumentoGenerado | null; trabajos: (TrabajoPptInfa
 
 describe('ProcesarTrabajoPptInfantilUseCase (Fase 3, worker sin red)', () => {
   it('camino feliz: carga la unidad, genera, persiste borrador "clase_deck" con origen_id = la planificación', async () => {
-    const job: TrabajoPptInfantil = { id: 'job-1', payload: { planificacionDocumentoId: PLAN_DOC_ID }, intentos: 1 };
+    const job: TrabajoPptInfantil = { id: 'job-1', payload: { planificacionDocumentoId: PLAN_DOC_ID }, intentos: 1, usuarioId: 'u1' };
     const { uc, llamadas } = montar({ doc: planDoc(), trabajos: [job] });
 
     const r = await uc.ejecutarSiguiente('worker-1');
@@ -164,10 +167,13 @@ describe('ProcesarTrabajoPptInfantilUseCase (Fase 3, worker sin red)', () => {
     // Sin gate del deck: nace 'validado' y sin resultadoGates.
     expect(creado?.estadoGeneracion).toBe('validado');
     expect(creado?.resultadoGates).toBeUndefined();
+    // Tenancy: el documento nace con el usuarioId del job y la lectura del plan se acota al dueño.
+    expect(creado?.usuarioId).toBe('u1');
+    expect(llamadas.porId).toEqual([{ id: PLAN_DOC_ID, usuarioId: 'u1' }]);
   });
 
   it('resuelve las imágenes de los slides y persiste imagen_clave', async () => {
-    const job: TrabajoPptInfantil = { id: 'job-img', payload: { planificacionDocumentoId: PLAN_DOC_ID }, intentos: 1 };
+    const job: TrabajoPptInfantil = { id: 'job-img', payload: { planificacionDocumentoId: PLAN_DOC_ID }, intentos: 1, usuarioId: 'u1' };
     const { uc, llamadas, ilustrador } = montar({ doc: planDoc(), trabajos: [job], claveIlustracion: 'd00d1234' });
 
     const r = await uc.ejecutarSiguiente('worker-1');
@@ -179,7 +185,7 @@ describe('ProcesarTrabajoPptInfantilUseCase (Fase 3, worker sin red)', () => {
   });
 
   it('planificación de origen no encontrada → fallido (permanente), sin generar', async () => {
-    const job: TrabajoPptInfantil = { id: 'job-2', payload: { planificacionDocumentoId: PLAN_DOC_ID }, intentos: 1 };
+    const job: TrabajoPptInfantil = { id: 'job-2', payload: { planificacionDocumentoId: PLAN_DOC_ID }, intentos: 1, usuarioId: 'u1' };
     const { uc, llamadas } = montar({ doc: null, trabajos: [job] });
 
     const r = await uc.ejecutarSiguiente('worker-1');

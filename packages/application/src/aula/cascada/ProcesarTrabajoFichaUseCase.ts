@@ -81,6 +81,7 @@ export class ProcesarTrabajoFichaUseCase {
         const doc = await repos.documentos.crearBorrador({
           tipo: 'ficha_colorear',
           establecimientoId: establecimiento,
+          usuarioId: job.usuarioId, // dueño del documento = dueño del job (tenancy)
           corpusVersionId: oa.corpusVersionId, // misma versión que cargó el OA (INV-4)
           payload: ficha,
           estadoGeneracion: 'validado', // el schema valida en el ensamblaje; sin gate determinista extra

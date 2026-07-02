@@ -103,6 +103,7 @@ function nuevoUseCase(jobs: JobRepository, oas: OaRepository, uow: UnidadDeTraba
 
 const TRABAJO: TrabajoMaterialColorear = {
   id: 'job-1',
+  usuarioId: 'u1',
   payload: { establecimiento: 'Colegio X', asignatura: 'Matemática', nivel: '1° básico', oaCodigo: 'MA01 OA 01' },
   intentos: 1,
 };
@@ -116,6 +117,7 @@ describe('ProcesarTrabajoMaterialColorearUseCase', () => {
     expect(r.tipo).toBe('hecho');
     expect(creado.doc?.tipo).toBe('material_colorear');
     expect(creado.doc?.corpusVersionId).toBe('cv-1');
+    expect(creado.doc?.usuarioId).toBe('u1'); // tenancy: el documento nace con el usuarioId del job
     // Verifica que marcarHecho se llamó dentro de la transacción (sobre repos.jobs, no el outer JobRepository).
     expect(creado.marcarHecho).toStrictEqual({ jobId: 'job-1', documentoId: 'doc-1' });
   });

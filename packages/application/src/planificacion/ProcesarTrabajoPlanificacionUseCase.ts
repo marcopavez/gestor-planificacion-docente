@@ -69,6 +69,7 @@ export class ProcesarTrabajoPlanificacionUseCase {
         const doc = await repos.documentos.crearBorrador({
           tipo: 'planificacion_unidad',
           establecimientoId: res.plan.establecimiento,
+          usuarioId: job.usuarioId, // dueño del documento = dueño del job (tenancy)
           corpusVersionId: res.corpusVersionId, // versión real del corpus de la que salieron los OA (INV-4)
           payload: res.plan,
           resultadoGates: reporte,
