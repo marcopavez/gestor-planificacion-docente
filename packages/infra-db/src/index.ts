@@ -42,5 +42,6 @@ export { TrazaRepositoryDrizzle } from './repos/TrazaRepositoryDrizzle.js';
 export { JobRepositoryDrizzle } from './repos/JobRepositoryDrizzle.js';
 export { PlanificacionAnualRepositoryDrizzle } from './repos/PlanificacionAnualRepositoryDrizzle.js';
 export { CorpusVersionRepositoryDrizzle } from './repos/CorpusVersionRepositoryDrizzle.js';
+export { UsuarioRepositoryDrizzle } from './repos/UsuarioRepositoryDrizzle.js';
 // Unidad de trabajo transaccional: envuelve la persistencia de la cascada en UNA tx (atomicidad).
 export { UnidadDeTrabajoDrizzle } from './repos/UnidadDeTrabajoDrizzle.js';
